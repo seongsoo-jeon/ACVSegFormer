@@ -1,12 +1,3 @@
-# 💬 AVSegFormer [[paper](https://arxiv.org/abs/2307.01146)]
-The combination of vision and audio has long been a topic of interest among researchers in the multi-modal field. Recently, a new audio-visual segmentation task has been introduced, aiming to locate and segment the corresponding sound source objects in a given video. This task demands pixel-level fine-grained features for the first time, posing significant challenges. In this paper, we propose AVSegFormer, a new method for audio-visual segmentation tasks that leverages the Transformer architecture for its outstanding performance in multi-modal tasks. We combine audio features and learnable queries as decoder inputs to facilitate multi-modal information exchange. Furthermore, we design an audio-visual mixer to amplify the features of target objects. Additionally, we devise an intermediate mask loss to enhance training efficacy. Our method demonstrates robust performance and achieves state-of-the-art results in audio-visual segmentation tasks.
-
-
-## 🚀 What's New
-- (2023.04.28) Upload pre-trained checkpoints and update README.
-- (2023.04.25) We completed the implemention of AVSegFormer and push the code.
-
-
 ## 🏠 Method
 <img width="1009" alt="image" src="image/arch.png">
 

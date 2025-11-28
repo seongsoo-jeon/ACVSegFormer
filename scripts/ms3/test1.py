@@ -1,11 +1,9 @@
 import torch
 import torch.nn
 import os
-# --- 추가된 모듈 ---
 from PIL import Image
 import numpy as np
 import json 
-# --------------------
 from mmcv import Config
 import argparse
 from utils import pyutils
@@ -22,14 +20,13 @@ def save_mask_as_png(mask_tensor, save_path, threshold=0.5):
     else:
         mask_np = mask_tensor.numpy()
         
-    mask_np = (mask_np < threshold).astype(np.uint8) * 255
+    mask_np = (mask_np > threshold).astype(np.uint8) * 255
     
     mask_image = Image.fromarray(mask_np, mode='L')
     
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     
     mask_image.save(save_path)
-    print(f"✅ 마스크가 {save_path}에 저장되었습니다.")
 
 
 def main():
@@ -52,7 +49,7 @@ def main():
 
     test_dataset = build_dataset(**cfg.dataset.test)
     test_dataloader = torch.utils.data.DataLoader(test_dataset,
-                                                  batch_size=cfg.dataset.test.batch_size, # 이제 항상 1
+                                                  batch_size=cfg.dataset.test.batch_size,
                                                   shuffle=False,
                                                   num_workers=cfg.process.num_works,
                                                   pin_memory=True)
@@ -90,8 +87,8 @@ def main():
             if args.save_pred_mask:
                 mask_save_path = os.path.join(
                     args.save_dir, dir_name, 'pred_masks')
-            if current_miou_value > threshold:
-                logger.warning(f'🚨 FAILED BATCH {n_iter} (mIoU: {current_miou_value:.4f}). Saving masks...')
+            if current_miou_value < threshold:
+                logger.warning(f'FAILED BATCH {n_iter} (mIoU: {current_miou_value:.4f}). Saving masks...')
                 
                 video_name = video_name_list[0]
                 failed_batches.append({
@@ -130,7 +127,7 @@ def main():
             os.makedirs(os.path.dirname(failed_list_path), exist_ok=True)
             with open(failed_list_path, 'w') as f:
                 json.dump(failed_batches, f, indent=4)
-            logger.info(f'✅ batches list saved to: {failed_list_path}')
+            logger.info(f'batches list saved to: {failed_list_path}')
 
         logger.info(f'test miou: {miou.item():.4f}, F_score: {F_score:.4f}')
 

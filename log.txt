@@ -45,8 +45,12 @@ ms3_pvt2_1212_0903 : 0.7408 0.6272
 ms3_res50_1214-0127 : 0.6545 0.5375
 ms3_pvt2_1215-2012 : 0.7362 0.6342
 
-
+- with self-attention, No learnable_query, 3 layers
+ms3_res50_1217-0158 : 0.6677 0.5481
+ms3_pvt2_1216-2236 : 0.7088 0.5990
 
 ms3_pvt2_1211-1913 : query generator 어텐션6층만 사용한거 0.7272 0.6067
+
+ms3_res50_1217-0517 : with self attention, no learnable_query, 6 layers 0.6567 0.5395
 
 ms3_pvt2_1213-2202 : 0.7421 0.6413

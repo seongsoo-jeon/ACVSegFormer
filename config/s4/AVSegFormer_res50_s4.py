@@ -79,6 +79,6 @@ loss = dict(
         mix_loss=0.1),
     loss_type='dice')
 process = dict(
-    num_works=8,
+    num_works=16,
     train_epochs=30,
     freeze_epochs=5)

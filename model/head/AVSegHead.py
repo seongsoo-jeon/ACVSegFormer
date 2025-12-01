@@ -6,6 +6,26 @@ from ops.modules import MSDeformAttn
 from torch.nn.init import normal_
 from torch.nn.functional import interpolate
 
+class CrossAttnLayerOnly(nn.Module):
+    def __init__(self, embed_dim, num_heads, hidden_dim) -> None:
+        super().__init__()
+        self.cross_attn = nn.MultiheadAttention(
+            embed_dim, num_heads, bias=False, batch_first=True)
+        self.ffn = nn.Sequential(
+            nn.Linear(embed_dim, hidden_dim),
+            nn.GELU(), 
+            nn.Linear(hidden_dim, embed_dim)
+        )
+        self.norm1 = nn.LayerNorm(embed_dim)
+        self.norm2 = nn.LayerNorm(embed_dim)
+
+    def forward(self, query, key_value_feat):
+        out, _ = self.cross_attn(query, key_value_feat, key_value_feat)
+        query = self.norm1(query + out)
+        
+        out = self.ffn(query)
+        query = self.norm2(query + out)
+        return query
 
 class Interpolate(nn.Module):
     def __init__(self, scale_factor, mode, align_corners=False):
@@ -98,6 +118,13 @@ class AVSegHead(nn.Module):
         self.query_generator = build_generator(**query_generator)
 
         self.transformer = build_transformer(**transformer)
+
+
+        self.cross_attn_layers = nn.ModuleList(
+            [CrossAttnLayerOnly(embed_dim, num_heads=8, hidden_dim=1024)
+             for _ in range(3)]
+        )
+
         if positional_encoding is not None:
             self.positional_encoding = build_positional_encoding(
                 **positional_encoding)
@@ -213,29 +240,18 @@ class AVSegHead(nn.Module):
             (1, )), spatial_shapes.prod(1).cumsum(0)[:-1]))
         valid_ratios = torch.stack([self.get_valid_ratio(m) for m in masks], 1)
 
-
-        if torch.distributed.is_initialized():
-            import torch.distributed as dist
-            world_size = dist.get_world_size() 
-            
-            # 4개 GPU의 src_flatten 조각을 모으기 위한 리스트 생성
-            # 참고: src_flatten의 shape[0]은 현재 10 (GPU당 Batch*T)
-            gathered_src = [torch.zeros_like(src_flatten) for _ in range(world_size)]
-            
-            # 모든 GPU의 텐서를 모아 gathered_src에 저장
-            dist.all_gather(gathered_src, src_flatten)
-            
-            # 모은 텐서 조각들을 배치 차원 (dim=0)으로 합침
-            src_flatten = torch.cat(gathered_src, dim=0) # [40, 1029, 256]이 됨
-
         # prepare queries
         bs = audio_feat.shape[0]
         query = self.query_generator(audio_feat)
-        if self.use_learnable_queries:
-            query = query + \
-                self.learnable_query.weight[None, :, :].repeat(bs, 1, 1)
 
-        memory, outputs = self.transformer(query, src_flatten, spatial_shapes,
+
+        learnable_q = self.learnable_query.weight[None, :, :].repeat(bs, 1, 1)
+        for layer in self.cross_attn_layers:
+            #query = layer(learnable_q, query)
+            learnable_q = layer(learnable_q, audio_feat)
+
+
+        memory, outputs = self.transformer(learnable_q, src_flatten, spatial_shapes,
                                            level_start_index, valid_ratios, lvl_pos_embed_flatten, mask_flatten)
 
         # generate mask feature

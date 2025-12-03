@@ -1,11 +1,4 @@
 "s4" "config/s4/AVSegFormer_res50_s4.py" 기존 성능 : F_score : 86.7, mIoU : 76.38
-(learnable_query, query) attention-> F_score: 0.8712, miou: 0.7562
-
-"m3" "config/ms3/AVSegFormer_res50_ms3.py" 기존 성능 : F_score : 65.6, mIoU : 53.81
-(learnable_query, query) attention-> F_score: 0.6533, miou: 0.5222
-
-
-"s4" "config/s4/AVSegFormer_res50_s4.py" 기존 성능 : F_score : 86.7, mIoU : 76.38
 (learnable_query, audio_feat) attention-> F_score: 0.8675, miou: 0.7618
 S4_res50_20251129-181626.pth
 

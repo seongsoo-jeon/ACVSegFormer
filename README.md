@@ -14,6 +14,16 @@ The combination of vision and audio has long been a topic of interest among rese
 ## 🛠️ Get Started
 
 ### 1. Environments
+## 1.a In Docker
+```shell
+# build image
+docker build -t avsegformer . 
+
+# run container (connect to container by cli)
+docker run --gpus all -it avsegformer bash
+```
+
+## 1.b Local Environments
 ```shell
 # recommended
 pip install torch==1.10.0+cu111 torchvision==0.11.0+cu111 torchaudio==0.10.0 -f https://download.pytorch.org/whl/torch_stable.html

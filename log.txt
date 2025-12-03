@@ -13,3 +13,4 @@ S4_pvt_20251130-173115.pth
 "m3" "config/ms3/AVSegFormer_pvt2_ms3.py" 기존 성능 : F_score : 73.0, mIoU : 61.33
 (learnable_query, audio_feat) attention-> F_score: 0.7359, miou: 0.6238
 MS3_pvt_20251130-091141.pth
+

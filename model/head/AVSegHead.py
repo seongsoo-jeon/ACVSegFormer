@@ -241,17 +241,20 @@ class AVSegHead(nn.Module):
         valid_ratios = torch.stack([self.get_valid_ratio(m) for m in masks], 1)
 
         # prepare queries
+        #bs = audio_feat.shape[0]
+        #query = self.query_generator(audio_feat) // 얘가 원래 거
+
+
+        #learnable_q = self.learnable_query.weight[None, :, :].repeat(bs, 1, 1) // 얘가 잘된애
+        #learnable_q = self.query_generator(audio_feat)
+
+        #for layer in self.cross_attn_layers:
+            #query = layer(learnable_q, query)
+        #    learnable_q = layer(learnable_q, audio_feat)
         bs = audio_feat.shape[0]
         query = self.query_generator(audio_feat)
 
-
-        learnable_q = self.learnable_query.weight[None, :, :].repeat(bs, 1, 1)
-        for layer in self.cross_attn_layers:
-            #query = layer(learnable_q, query)
-            learnable_q = layer(learnable_q, audio_feat)
-
-
-        memory, outputs = self.transformer(learnable_q, src_flatten, spatial_shapes,
+        memory, outputs = self.transformer(query, src_flatten, spatial_shapes,
                                            level_start_index, valid_ratios, lvl_pos_embed_flatten, mask_flatten)
 
         # generate mask feature

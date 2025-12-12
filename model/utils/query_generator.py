@@ -28,12 +28,19 @@ class AttentionLayer(nn.Module):
         self.norm3 = nn.LayerNorm(embed_dim)
 
     def forward(self, query, audio_feat):
-        out1 = self.self_attn(query, query, query)[0]
-        query = self.norm1(query+out1)
-        out2 = self.cross_attn(query, audio_feat, audio_feat)[0]
-        query = self.norm2(query+out2)
-        out3 = self.ffn(query)
-        query = self.norm3(query+out3)
+        # out1 = self.self_attn(query, query, query)[0]
+        # query = self.norm1(query+out1)
+        # out2 = self.cross_attn(query, audio_feat, audio_feat)[0]
+        # query = self.norm2(query+out2)
+        # out3 = self.ffn(query)
+        # query = self.norm3(query+out3)
+
+        out, _ = self.cross_attn(query, audio_feat, audio_feat)
+        query = self.norm1(query + out)
+        
+        out = self.ffn(query)
+        query = self.norm2(query + out)
+
         return query
 
 

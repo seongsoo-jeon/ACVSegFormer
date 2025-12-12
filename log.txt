@@ -7,10 +7,15 @@ S4_res50_20251129-181626.pth
 MS3_res50_20251129-154603.pth
 
 "s4" "config/s4/AVSegFormer_pvt2_s4.py" 기존 성능 : F_score : 90.5, mIoU : 83.06
-(learnable_query, audio_feat) attention-> F_score: , miou: 
+(learnable_query, audio_feat) attention-> F_score: 0.9116, miou: 0.8385
 S4_pvt_20251130-173115.pth
 
 "m3" "config/ms3/AVSegFormer_pvt2_ms3.py" 기존 성능 : F_score : 73.0, mIoU : 61.33
 (learnable_query, audio_feat) attention-> F_score: 0.7359, miou: 0.6238
 MS3_pvt_20251130-091141.pth
 
+
+pvt2_ms3_1211-1913 : query generator 어텐션6층만 사용한거 0.7272 0.6067
+pvt2_ms3_1212-0102 : query generator 구조도 바꾸고 6층 0.7410 0.6271
+pvt2_ms3_1212-0448 : query generator 구조 바꾸고 3층 0.7380 0.6309
+pvt2_ms3_1212_0903 : 구조바꾸고 6층, learnable_query 더하기 0.7408 0.6272

@@ -19,7 +19,7 @@ model = dict(
         fusion_block=dict(type='CrossModalMixer'),
         query_generator=dict(
             type='AttentionGenerator',
-            num_layers=6,
+            num_layers=3,
             query_num=300),
         positional_encoding=dict(
             type='SinePositionalEncoding',

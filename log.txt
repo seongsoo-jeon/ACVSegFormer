@@ -14,8 +14,39 @@ S4_pvt_20251130-173115.pth
 (learnable_query, audio_feat) attention-> F_score: 0.7359, miou: 0.6238
 MS3_pvt_20251130-091141.pth
 
+- Query Generator(with self-attention), with learnable_query, 6 layers
+s4_res50 : 0.867 0.7638
+ms3_res50 : 0.656 0.5381
+s4_pvt2 : 0.905 0.8306
+ms3_pvt2 : 0.730 0.6133
 
-pvt2_ms3_1211-1913 : query generator 어텐션6층만 사용한거 0.7272 0.6067
-pvt2_ms3_1212-0102 : query generator 구조도 바꾸고 6층 0.7410 0.6271
-pvt2_ms3_1212-0448 : query generator 구조 바꾸고 3층 0.7380 0.6309
-pvt2_ms3_1212_0903 : 구조바꾸고 6층, learnable_query 더하기 0.7408 0.6272
+- self-attention 뺀 attention layer(head에 새로 만든거) 3층
+s4_res50_1129-1816 : 0.8675 0.7618
+ms3_res50_1129-1546 : 0.6798 0.5486
+s4_pvt2_1130-1731 : 0.9116 0.8385
+ms3_pvt2_1130-0911 : 0.7359 0.6238
+
+- Query generator(No self-attention), No learnable_query, 6 layers
+ms3_res50_1213-1310 : 0.6692 0.5455
+s4_pvt2_1212-1512 : 0.9114 0.8390
+ms3_pvt2_1212-0102 : 0.7410 0.6271
+
+- Query generator(No self-attention), No learnable_query, 3 layers
+s4_res50_1214-0404 : 0.8711 0.7642
+ms3_res50_1213-1718 : 0.6854 0.5617
+s4_pvt2_1214-1947 : 0.9114 0.8372
+ms3_pvt2_1212-0448 : 0.7380 0.6309
+
+- Query generator(No self-attention), with learnable_query, 6 layers
+ms3_res50_1213-1941 : 0.6715 0.5488
+ms3_pvt2_1212_0903 : 0.7408 0.6272
+
+- Query generator(No self-attention), with learnable_query, 3 layers
+ms3_res50_1214-0127 : 0.6545 0.5375
+ms3_pvt2_1215-2012 : 0.7362 0.6342
+
+
+
+ms3_pvt2_1211-1913 : query generator 어텐션6층만 사용한거 0.7272 0.6067
+
+ms3_pvt2_1213-2202 : 0.7421 0.6413

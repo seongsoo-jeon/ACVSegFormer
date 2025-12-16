@@ -15,14 +15,14 @@ from model import build_model
 from dataloader import build_dataset
 
 
-def save_mask_as_png(mask_tensor, save_path, threshold=0.5)
+def save_mask_as_png(mask_tensor, save_path, threshold=0.5):
     mask_tensor = mask_tensor.squeeze() 
     if mask_tensor.is_cuda:
         mask_np = mask_tensor.cpu().numpy()
     else:
         mask_np = mask_tensor.numpy()
         
-    mask_np = (mask_np > threshold).astype(np.uint8) * 255
+    mask_np = (mask_np < threshold).astype(np.uint8) * 255
     
     mask_image = Image.fromarray(mask_np, mode='L')
     
@@ -63,7 +63,7 @@ def main():
     avg_meter_miou = pyutils.AverageMeter('miou')
     avg_meter_F = pyutils.AverageMeter('F_score')
 
-    save_png_root = os.path.join(args.save_dir, dir_name, 'wrong_predictions')
+    save_png_root = os.path.join(args.save_dir, dir_name, 'predictions')
 
     # Test
     with torch.no_grad():
@@ -90,7 +90,7 @@ def main():
             if args.save_pred_mask:
                 mask_save_path = os.path.join(
                     args.save_dir, dir_name, 'pred_masks')
-            if current_miou_value < threshold:
+            if current_miou_value > threshold:
                 logger.warning(f'🚨 FAILED BATCH {n_iter} (mIoU: {current_miou_value:.4f}). Saving masks...')
                 
                 video_name = video_name_list[0]
@@ -104,15 +104,15 @@ def main():
                 for i in range(total_frames):
                     frame_idx = i + 1
                     
-                    file_name = f'{video_name}_frame_{frame_idx:03d}.png'
+                    file_name = f'frame_{frame_idx:03d}.png'
                     
-                    pred_mask_dir = os.path.join(save_png_root, 'pred')
+                    pred_mask_dir = os.path.join(save_png_root, video_name, 'pred')
                     pred_mask_path = os.path.join(pred_mask_dir, file_name)
-                    save_mask_as_png(output[i], pred_mask_path, threshold=0.5) 
+                    save_mask_as_png(output[i], pred_mask_path) 
                     
-                    gt_mask_dir = os.path.join(save_png_root, 'gt')
+                    gt_mask_dir = os.path.join(save_png_root, video_name, 'gt')
                     gt_mask_path = os.path.join(gt_mask_dir, file_name)
-                    save_mask_as_png(mask[i], gt_mask_path, threshold=0.5)
+                    save_mask_as_png(mask[i], gt_mask_path)
 
             avg_meter_miou.add({'miou': miou})
             avg_meter_F.add({'F_score': F_score})
@@ -123,14 +123,14 @@ def main():
         F_score = (avg_meter_F.pop('F_score'))
         
         logger.info(f'--- Test Finished ---')
-        logger.info(f'Total Failed Batches (mIoU < {threshold}): {len(failed_batches)}')
+        logger.info(f'Total Batches (mIoU < {threshold}): {len(failed_batches)}')
     
         if failed_batches:
-            failed_list_path = os.path.join(args.save_dir, dir_name, 'failed_batches.json')
+            failed_list_path = os.path.join(args.save_dir, dir_name, 'good_batches.json')
             os.makedirs(os.path.dirname(failed_list_path), exist_ok=True)
             with open(failed_list_path, 'w') as f:
                 json.dump(failed_batches, f, indent=4)
-            logger.info(f'✅ Failed batches list saved to: {failed_list_path}')
+            logger.info(f'✅ batches list saved to: {failed_list_path}')
 
         logger.info(f'test miou: {miou.item():.4f}, F_score: {F_score:.4f}')
 

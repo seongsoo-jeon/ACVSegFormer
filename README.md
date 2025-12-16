@@ -26,7 +26,7 @@ docker build -t avsegformer .
 
 # run container (connect to container by cli && ./data to /app/AVSegFormer/data)
 docker run --gpus all \
-    -v $(pwd)/data:/app/AVSegFormer/data \
+    -v "$(pwd)/data":/app/AVSegFormer/data --shm-size=16g \
     -it avsegformer bash
 ```
 

@@ -253,9 +253,9 @@ class AVSegHead(nn.Module):
         #    learnable_q = layer(learnable_q, audio_feat)
         bs = audio_feat.shape[0]
         query = self.query_generator(audio_feat)
-        if self.use_learnable_queries:
-            query = query + \
-                self.learnable_query.weight[None, :, :].repeat(bs, 1, 1)
+        # if self.use_learnable_queries:
+        #     query = query + \
+        #         self.learnable_query.weight[None, :, :].repeat(bs, 1, 1)
 
         memory, outputs = self.transformer(query, src_flatten, spatial_shapes,
                                            level_start_index, valid_ratios, lvl_pos_embed_flatten, mask_flatten)

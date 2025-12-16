@@ -8,3 +8,4 @@ pretrained/*
 !pretrained/.gitkeep
 work_dir/*
 !work_dir/.gitkeep
+**/.DS_Store

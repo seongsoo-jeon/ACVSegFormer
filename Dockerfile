@@ -26,17 +26,15 @@ RUN pip install pandas \
     resampy \
     soundfile
 
-WORKDIR /app
-RUN git clone https://github.com/vvvb-github/AVSegFormer.git
-
+WORKDIR /app/AVSegFormer
 COPY ./ ./
-RUN mv -f /app/data /app/AVSegFormer/
 
-WORKDIR /app/AVSegFormer/ops
 # 'IndexError'를 해결하기 위해 타겟 CUDA 아키텍처를 명시적으로 설정
 ENV TORCH_CUDA_ARCH_LIST="6.0 6.1 7.0 7.5 8.0 8.6+PTX"
 # setup.py가 빌드 중 GPU 가시성 없이 CUDA를 강제로 사용하도록 환경 변수 설정
 ENV FORCE_CUDA=1
+
+WORKDIR /app/AVSegFormer/ops
 RUN sh make.sh
 
 CMD ["/bin/bash"]

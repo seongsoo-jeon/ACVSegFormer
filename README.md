@@ -1,55 +1,68 @@
-# 💬 AVSegFormer [[paper](https://arxiv.org/abs/2307.01146)]
-The combination of vision and audio has long been a topic of interest among researchers in the multi-modal field. Recently, a new audio-visual segmentation task has been introduced, aiming to locate and segment the corresponding sound source objects in a given video. This task demands pixel-level fine-grained features for the first time, posing significant challenges. In this paper, we propose AVSegFormer, a new method for audio-visual segmentation tasks that leverages the Transformer architecture for its outstanding performance in multi-modal tasks. We combine audio features and learnable queries as decoder inputs to facilitate multi-modal information exchange. Furthermore, we design an audio-visual mixer to amplify the features of target objects. Additionally, we devise an intermediate mask loss to enhance training efficacy. Our method demonstrates robust performance and achieves state-of-the-art results in audio-visual segmentation tasks.
-
-
-## 🚀 What's New
-- (2023.04.28) Upload pre-trained checkpoints and update README.
-- (2023.04.25) We completed the implemention of AVSegFormer and push the code.
-
-
-## 🏠 Method
+# Q-AVSegFormer
 <img width="1009" alt="image" src="image/arch.png">
+할것. 
+1. 이름 정하기
+2. 내용 설명 
+3. architecture 사진 붙이기
 
 
-## 🛠️ Get Started
+## Updates
+- (미래) document 완료하기
+- (2025.12.17) We completed the implemention of Q-AVSegFormer.
 
-### 1. Environments
-## 1.a In Docker
+
+
+## How To Start?
+
+### 1. Requirements and Installation
+## a. Want to Use Docker
 ```shell
+# project clone
+git clone https://github.com/seongsoo-jeon/avsegformer.git
+cd avsegformer
+
 # build image
 docker build -t avsegformer . 
 
-# run container (connect to container by cli)
-docker run --gpus all -it avsegformer bash
+# run container (connect to container by cli && ./data to /app/AVSegFormer/data)
+docker run --gpus all \
+    -v $(pwd)/data:/app/AVSegFormer/data \
+    -it avsegformer bash
 ```
 
-## 1.b Local Environments
+## b. Local Environments
 ```shell
+# project clone
+git clone https://github.com/seongsoo-jeon/avsegformer.git
+cd avsegformer
+
 # recommended
 pip install torch==1.10.0+cu111 torchvision==0.11.0+cu111 torchaudio==0.10.0 -f https://download.pytorch.org/whl/torch_stable.html
 pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu111/torch1.10.0/index.html
-pip install pandas
-pip install timm
-pip install resampy
-pip install soundfile
+pip install pandas timm resampy soundfile
+
 # build MSDeformAttention
 cd ops
 sh make.sh
 ```
 
 
-### 2. Data
-
-Please refer to the link [AVSBenchmark](https://github.com/OpenNLPLab/AVSBench) to download the datasets. You can put the data under `data` folder or rename your own folder. Remember to modify the path in config files. The `data` directory is as bellow:
+### 2. Data Preparation
+Please refer to the link [AVSBenchmark](https://github.com/OpenNLPLab/AVSBench) to download the datasets. You can put the data under `data` folder. Remember to modify the path in config files. The `data` directory is as bellow:
 ```
 |--data
-   |--AVSS
    |--Multi-sources
+      |--ms3_meta
+      |--ms3_meta_data.csv
    |--Single-source
+      |--s4_data
+      |--s4_meta_data.csv
+   |--AVSS
 ```
 
 
 ### 3. Download Pre-Trained Models
+- 이거 수정 필요
 
 - The pretrained backbone is available from benchmark [AVSBench pretrained backbones](https://drive.google.com/drive/folders/1386rcFHJ1QEQQMF6bV1rXJTzy8v26RTV).
 - We provides pre-trained models for all three subtasks. You can download them from [AVSegFormer pretrained models](https://drive.google.com/drive/folders/1ZYZOWAfoXcGPDsocswEN7ZYvcAn4H8kY).
@@ -83,7 +96,7 @@ bash test.sh ${TASK} ${CONFIG} ${CHECKPOINT}
 ```
 
 
-## 🤝 Citation
+## Citation
 
 If you use our model, please consider cite following papers:
 ```
@@ -94,12 +107,14 @@ If you use our model, please consider cite following papers:
       year={2023},
 }
 
-@misc{gao2023avsegformer,
+@misc{gao2023avsegformeraudiovisualsegmentationtransformer,
       title={AVSegFormer: Audio-Visual Segmentation with Transformer}, 
       author={Shengyi Gao and Zhe Chen and Guo Chen and Wenhai Wang and Tong Lu},
       year={2023},
       eprint={2307.01146},
       archivePrefix={arXiv},
-      primaryClass={cs.CV}
+      primaryClass={cs.CV},
 }
+
+@~{우리꺼.. 논문??? ㅋㅋㅋ}
 ```

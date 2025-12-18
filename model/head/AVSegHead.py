@@ -240,24 +240,13 @@ class AVSegHead(nn.Module):
             (1, )), spatial_shapes.prod(1).cumsum(0)[:-1]))
         valid_ratios = torch.stack([self.get_valid_ratio(m) for m in masks], 1)
 
-        # prepare queries
-        #bs = audio_feat.shape[0]
-        #query = self.query_generator(audio_feat) // 얘가 원래 거
-
-
-        #learnable_q = self.learnable_query.weight[None, :, :].repeat(bs, 1, 1) // 얘가 잘된애
-        #learnable_q = self.query_generator(audio_feat)
-
-        #for layer in self.cross_attn_layers:
-            #query = layer(learnable_q, query)
-        #    learnable_q = layer(learnable_q, audio_feat)
         bs = audio_feat.shape[0]
         query = self.query_generator(audio_feat)
-        if self.use_learnable_queries:
-            query = query + \
-                self.learnable_query.weight[None, :, :].repeat(bs, 1, 1)
+        # if self.use_learnable_queries:
+        #     query = query + \
+        #         self.learnable_query.weight[None, :, :].repeat(bs, 1, 1)
 
-        memory, outputs = self.transformer(query, src_flatten, spatial_shapes,
+        memory, outputs, attn_maps_list = self.transformer(query, src_flatten, spatial_shapes,
                                            level_start_index, valid_ratios, lvl_pos_embed_flatten, mask_flatten)
 
         # generate mask feature
@@ -281,7 +270,7 @@ class AVSegHead(nn.Module):
         pred_mask = mask_feature + pred_feature
         pred_mask = self.fc(pred_mask)
 
-        return pred_mask, mask_feature
+        return pred_mask, mask_feature, attn_maps_list
 
     # def forward_prediction_head(self, output, mask_embed, spatial_shapes, level_start_index):
     #     masks = torch.einsum('bqc,bqn->bcn', output, mask_embed)

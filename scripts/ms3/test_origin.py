@@ -54,19 +54,6 @@ def main():
 
             output, _, _ = model(audio, imgs)
             
-            # output, _, attn_maps = model(audio, imgs)
-
-            # attn_save_path = os.path.join(args.save_dir, dir_name, 'attention_maps')
-            # os.makedirs(attn_save_path, exist_ok=True)
-
-            # for layer_idx, attn_map_layer in enumerate(attn_maps):
-            #     attn_map_avg_heads = attn_map_layer.mean(dim=1) 
-                
-            #     for batch_idx, video_name in enumerate(video_name_list):
-            #         current_attn = attn_map_avg_heads[batch_idx].cpu().numpy()
-                    
-            #         file_name = f"{video_name}_{n_iter}_L{layer_idx+1}.npy" 
-            #         np.save(os.path.join(attn_save_path, file_name), current_attn)
 
 
 

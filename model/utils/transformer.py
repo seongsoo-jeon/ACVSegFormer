@@ -110,18 +110,21 @@ class AVSTransformerDecoderLayer(nn.Module):
 
     def forward(self, query, src, reference_points, spatial_shapes, level_start_index, padding_mask=None):
         # self attention
-        out1 = self.self_attn(query, query, query)[0]
+        out1, self_attn_weights = self.self_attn(query, query, query, need_weights=True)
         query = query + self.dropout1(out1)
         query = self.norm1(query)
         # cross attention
 
-        out2 = self.cross_attn(
-            query, src, src, key_padding_mask=padding_mask)[0]
+        out2, cross_attn_weights = self.cross_attn(
+            query, src, src, key_padding_mask=padding_mask, need_weights=True)
         query = query + self.dropout2(out2)
         query = self.norm2(query)
         # ffn
         query = self.ffn(query)
-        return query
+        return query, {
+            'self': self_attn_weights,
+            'cross': cross_attn_weights
+        }
 
 
 class AVSTransformerDecoder(nn.Module):
@@ -136,11 +139,13 @@ class AVSTransformerDecoder(nn.Module):
     def forward(self, query, src, reference_points, spatial_shapes, level_start_index, padding_mask=None):
         out = query
         outputs = []
+        attn_maps = []
         for layer in self.layers:
-            out = layer(out, src, reference_points, spatial_shapes,
+            out, attn = layer(out, src, reference_points, spatial_shapes,
                         level_start_index, padding_mask)
             outputs.append(out)
-        return outputs
+            attn_maps.append(attn)
+        return outputs, attn_maps
 
 
 class AVSTransformer(nn.Module):
@@ -158,9 +163,9 @@ class AVSTransformer(nn.Module):
     def forward(self, query, src, spatial_shapes, level_start_index, valid_ratios, pos=None, padding_mask=None):
         memory, reference_points = self.encoder(
             src, spatial_shapes, level_start_index, valid_ratios, pos, padding_mask)
-        outputs = self.decoder(query, memory, reference_points,
+        outputs, attn_maps = self.decoder(query, memory, reference_points,
                                spatial_shapes, level_start_index, padding_mask)
-        return memory, outputs
+        return memory, outputs, attn_maps
 
 
 def build_transformer(type, **kwargs):

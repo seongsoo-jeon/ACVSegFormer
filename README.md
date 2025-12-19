@@ -28,6 +28,9 @@ docker build -t avsegformer .
 docker run --gpus all \
     -v "$(pwd)/data:/app/AVSegFormer/data" --shm-size=16g \
     -it avsegformer bash
+
+# if window (powershell)
+# docker run --gpus all -v "${PWD}/data:/app/AVSegFormer/data" --shm-size=16g -it avsegformer bash
 ```
 
 ## b. Local Environments

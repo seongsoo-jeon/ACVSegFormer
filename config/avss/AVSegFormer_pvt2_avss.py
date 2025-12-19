@@ -18,8 +18,8 @@ model = dict(
         use_learnable_queries=True,
         fusion_block=dict(type='CrossModalMixer'),
         query_generator=dict(
-            type='AttentionGenerator',
-            num_layers=6,
+            type='QueryGenerator',
+            num_layers=3,
             query_num=300),
         positional_encoding=dict(
             type='SinePositionalEncoding',

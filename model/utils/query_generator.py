@@ -44,7 +44,7 @@ class AttentionLayer(nn.Module):
         return query
 
 
-class AttentionGenerator(nn.Module):
+class QueryGenerator(nn.Module):
     def __init__(self, num_layers, query_num, embed_dim=256, num_heads=8, hidden_dim=1024):
         super().__init__()
         self.num_layers = num_layers
@@ -72,8 +72,8 @@ class AttentionGenerator(nn.Module):
 
 
 def build_generator(type, **kwargs):
-    if type == 'AttentionGenerator':
-        return AttentionGenerator(**kwargs)
+    if type == 'QueryGenerator':
+        return QueryGenerator(**kwargs)
     elif type == 'RepeatGenerator':
         return RepeatGenerator(**kwargs)
     else:

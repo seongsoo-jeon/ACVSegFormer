@@ -64,38 +64,38 @@ def main():
     # Test
     logger.info(f'Starting test with batch_size={cfg.dataset.test.batch_size}')
     with torch.no_grad():
-        for n_iter, batch_data in enumerate(test_dataloader):
-            imgs, audio, mask, category_list, video_name_list = batch_data
+        for batch_idx, batch_data in enumerate(test_dataloader):
+            images, audio_feat, gt_mask, categories, video_names = batch_data
 
-            imgs = imgs.cuda()
-            audio = audio.cuda()
-            mask = mask.cuda()
-            B, frame, C, H, W = imgs.shape
+            images = images.cuda()
+            audio_feat = audio_feat.cuda()
+            gt_mask = gt_mask.cuda()
+            batch, frames, channels, height, width = images.shape
             
-            total_frames = B * frame 
+            total_frames = batch * frames 
             
-            imgs = imgs.view(total_frames, C, H, W)
-            mask = mask.view(total_frames, H, W)
-            audio = audio.view(-1, audio.shape[2],
-                               audio.shape[3], audio.shape[4])
+            images = images.view(total_frames, channels, height, width)
+            gt_mask = gt_mask.view(total_frames, height, width)
+            audio_feat = audio_feat.view(-1, audio_feat.shape[2],
+                                         audio_feat.shape[3], audio_feat.shape[4])
 
-            output, _ = model(audio, imgs)
+            pred_mask, *_ = model(audio_feat, images)
             
-            miou = mask_iou(output.squeeze(1), mask) 
-            F_score = Eval_Fmeasure(output.squeeze(1), mask)
+            miou = mask_iou(pred_mask.squeeze(1), gt_mask) 
+            f_score = Eval_Fmeasure(pred_mask.squeeze(1), gt_mask)
 
             if args.save_pred_mask:
                 mask_save_path = os.path.join(
                     args.save_dir, dir_name, 'pred_masks')
-                save_mask(output.squeeze(1), mask_save_path,
-                          category_list, video_name_list)
+                save_mask(pred_mask.squeeze(1), mask_save_path,
+                          categories, video_names)
 
             current_miou_value = miou.item()
             save_png_root = os.path.join(args.save_dir, dir_name, 'wrong_predictions')
             
             if current_miou_value < threshold:
-                video_name = video_name_list[0]
-                category = category_list[0]
+                video_name = video_names[0]
+                category = categories[0]
 
                 logger.warning(f'🚨 FAILED! Saving masks for {video_name} (mIoU: {current_miou_value:.4f})')
 
@@ -105,25 +105,25 @@ def main():
                     pred_mask_dir = os.path.join(save_png_root, category, video_name, 'pred')
                     pred_mask_path = os.path.join(pred_mask_dir, f'frame_{frame_idx:03d}.png')
 
-                    save_mask_as_png(output[i], pred_mask_path, threshold=0.5) 
+                    save_mask_as_png(pred_mask[i], pred_mask_path, threshold=0.5) 
 
 
                     gt_mask_dir = os.path.join(save_png_root, category, video_name, 'gt')
                     gt_mask_path = os.path.join(gt_mask_dir, f'frame_{frame_idx:03d}.png')
 
-                    save_mask_as_png(mask[i], gt_mask_path, threshold=0.5)
+                    save_mask_as_png(gt_mask[i], gt_mask_path, threshold=0.5)
                 failed_videos.append({
                     'video_name': video_name,
                     'category': category,
                     'miou': current_miou_value,
-                    'n_iter': n_iter 
+                    'batch_idx': batch_idx 
                 })
                 logger.warning(f'🚨 FAILED: {video_name} (Category: {category}, mIoU: {current_miou_value:.4f})')
 
             avg_meter_miou.add({'miou': miou})
-            avg_meter_F.add({'F_score': F_score})
-            logger.info('n_iter: {}, iou: {:.4f}, F_score: {:.4f}'.format(
-                n_iter, current_miou_value, F_score))
+            avg_meter_F.add({'F_score': f_score})
+            logger.info('batch_idx: {}, iou: {:.4f}, F_score: {:.4f}'.format(
+                batch_idx, current_miou_value, f_score))
 
         miou = (avg_meter_miou.pop('miou'))
         F_score = (avg_meter_F.pop('F_score'))

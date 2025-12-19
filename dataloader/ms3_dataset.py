@@ -12,6 +12,9 @@ from PIL import Image
 from torchvision import transforms
 
 from .io_utils import load_image_in_PIL_to_Tensor, load_audio_lm
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class MS3Dataset(Dataset):
@@ -24,8 +27,8 @@ class MS3Dataset(Dataset):
         self.cfg = cfg
         df_all = pd.read_csv(cfg.anno_csv, sep=',')
         self.df_split = df_all[df_all['split'] == split]
-        print("{}/{} videos are used for {}".format(len(self.df_split),
-              len(df_all), self.split))
+        logger.info("{}/{} videos are used for {}".format(len(self.df_split),
+                len(df_all), self.split))
         self.img_transform = transforms.Compose([
             transforms.Resize([512, 512]),
             transforms.ToTensor(),

@@ -76,22 +76,22 @@ def main():
         if epoch == cfg.process.freeze_epochs:
             model.module.freeze_backbone(False)
 
-        for n_iter, batch_data in enumerate(train_dataloader):
+        for batch_idx, batch_data in enumerate(train_dataloader):
             # [bs, 5, 3, 224, 224], [bs, 5, 1, 96, 64], [bs, 1, 1, 224, 224]
-            imgs, audio, mask = batch_data
+            images, audio_feat, gt_mask = batch_data
 
-            imgs = imgs.cuda()
-            audio = audio.cuda()
-            mask = mask.cuda()
-            B, frame, C, H, W = imgs.shape
-            imgs = imgs.view(B * frame, C, H, W)
-            mask = mask.view(B, H, W)
-            audio = audio.view(-1, audio.shape[2],
-                               audio.shape[3], audio.shape[4])
+            images = images.cuda()
+            audio_feat = audio_feat.cuda()
+            gt_mask = gt_mask.cuda()
+            batch, frames, channels, height, width = images.shape
+            images = images.view(batch * frames, channels, height, width)
+            gt_mask = gt_mask.view(batch, height, width)
+            audio_feat = audio_feat.view(-1, audio_feat.shape[2],
+                                         audio_feat.shape[3], audio_feat.shape[4])
 
-            output, mask_feature, attn_maps = model(audio, imgs)  # [bs*5, 1, 224, 224]
+            pred_mask, mask_feature, attn_maps = model(audio_feat, images)  # [bs*5, 1, 224, 224]
             loss, loss_dict = IouSemanticAwareLoss(
-                output, mask_feature, mask.unsqueeze(1).unsqueeze(1), **cfg.loss)
+                pred_mask, mask_feature, gt_mask.unsqueeze(1).unsqueeze(1), **cfg.loss)
             loss_util.add_loss(loss, loss_dict)
             optimizer.zero_grad()
             loss.backward()
@@ -107,22 +107,22 @@ def main():
         # Validation:
         model.eval()
         with torch.no_grad():
-            for n_iter, batch_data in enumerate(val_dataloader):
+            for batch_idx, batch_data in enumerate(val_dataloader):
                 # [bs, 5, 3, 224, 224], [bs, 5, 1, 96, 64], [bs, 5, 1, 224, 224]
-                imgs, audio, mask, _, _ = batch_data
+                images, audio_feat, gt_mask, _, _ = batch_data
 
-                imgs = imgs.cuda()
-                audio = audio.cuda()
-                mask = mask.cuda()
-                B, frame, C, H, W = imgs.shape
-                imgs = imgs.view(B * frame, C, H, W)
-                mask = mask.view(B * frame, H, W)
-                audio = audio.view(-1, audio.shape[2],
-                                   audio.shape[3], audio.shape[4])
+                images = images.cuda()
+                audio_feat = audio_feat.cuda()
+                gt_mask = gt_mask.cuda()
+                batch, frames, channels, height, width = images.shape
+                images = images.view(batch * frames, channels, height, width)
+                gt_mask = gt_mask.view(batch * frames, height, width)
+                audio_feat = audio_feat.view(-1, audio_feat.shape[2],
+                                             audio_feat.shape[3], audio_feat.shape[4])
 
-                output, _ = model(audio, imgs)
+                pred_mask, _ = model(audio_feat, images)
 
-                miou = mask_iou(output.squeeze(1), mask)
+                miou = mask_iou(pred_mask.squeeze(1), gt_mask)
                 avg_meter_miou.add({'miou': miou})
 
             miou = (avg_meter_miou.pop('miou'))

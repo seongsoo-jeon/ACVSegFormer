@@ -69,69 +69,69 @@ def main():
 
     # Test
     with torch.no_grad():
-        for n_iter, batch_data in enumerate(test_dataloader):
-            imgs, audio, mask, video_name_list = batch_data
+        for batch_idx, batch_data in enumerate(test_dataloader):
+            images, audio_feat, gt_mask, video_names = batch_data
 
-            imgs = imgs.cuda()
-            audio = audio.cuda()
-            mask = mask.cuda()
-            B, frame, C, H, W = imgs.shape
-            total_frames = B * frame
-            
-            video_name = video_name_list[0] 
-            
-            imgs = imgs.view(total_frames, C, H, W)
-            mask = mask.view(total_frames, H, W)
-            audio = audio.view(-1, audio.shape[2],
-                               audio.shape[3], audio.shape[4])
+            images = images.cuda()
+            audio_feat = audio_feat.cuda()
+            gt_mask = gt_mask.cuda()
+            batch, frames, channels, height, width = images.shape
+            total_frames = batch * frames
 
-            output, _ = model(audio, imgs) 
-            
-            miou = mask_iou(output.squeeze(1), mask)
+            video_name = video_names[0]
+
+            images = images.view(total_frames, channels, height, width)
+            gt_mask = gt_mask.view(total_frames, height, width)
+            audio_feat = audio_feat.view(-1, audio_feat.shape[2],
+                                         audio_feat.shape[3], audio_feat.shape[4])
+
+            pred_mask, *_ = model(audio_feat, images)
+
+            miou = mask_iou(pred_mask.squeeze(1), gt_mask)
             current_miou_value = miou.item()
-            F_score = Eval_Fmeasure(output.squeeze(1), mask)
+            f_score = Eval_Fmeasure(pred_mask.squeeze(1), gt_mask)
 
             if current_miou_value > miou_analysis_threshold:
-                
+
                 base_video_pred_dir = os.path.join(mask_save_root, video_name)
-    
+
                 if os.path.exists(base_video_pred_dir):
-                    
+
                     logger.info('FAILED BATCH {} (mIoU: {:.4f} < {:.4f}). Saving to CONTRAST...'.format(
-                        n_iter, current_miou_value, miou_analysis_threshold))
-                    
+                        batch_idx, current_miou_value, miou_analysis_threshold))
+
                     failed_batches.append({
-                        'iter': n_iter,
+                        'iter': batch_idx,
                         'miou': current_miou_value,
-                        'F_score': F_score, 
+                        'F_score': f_score,
                         'video_name': video_name
                     })
                     video_pred_dir = os.path.join(mask_save_root, 'contrast', video_name, 'pred')
-                    
+
                     for i in range(total_frames):
                         frame_idx = i + 1
-                        
+
                         file_name = f'{video_name}_frame_{frame_idx:03d}.png'
                         pred_mask_path = os.path.join(video_pred_dir, file_name)
-                        
-                        save_mask_as_png(output[i], pred_mask_path) 
-                        
+
+                        save_mask_as_png(pred_mask[i], pred_mask_path)
+
                 else:
                     logger.debug(f"Skipping save for {video_name}: Base folder not found and mIoU < {miou_analysis_threshold}.")
                     pass
 
 
             avg_meter_miou.add({'miou': miou})
-            avg_meter_F.add({'F_score': F_score})
-            logger.info('n_iter: {}, iou: {:.4f}, F_score: {:.4f}'.format(
-                n_iter, current_miou_value, F_score))
+            avg_meter_F.add({'F_score': f_score})
+            logger.info('batch_idx: {}, iou: {:.4f}, F_score: {:.4f}'.format(
+                batch_idx, current_miou_value, f_score))
 
         miou = (avg_meter_miou.pop('miou'))
-        F_score = (avg_meter_F.pop('F_score'))
-        
+        f_score = (avg_meter_F.pop('F_score'))
+
         logger.info('--- Test Finished ---')
         logger.info('Total Failed Batches (mIoU < {:.4f}): {}'.format(miou_analysis_threshold, len(failed_batches)))
-    
+
         if failed_batches:
             failed_list_path = os.path.join(args.save_dir, dir_name, 'failed_batches.json')
             os.makedirs(os.path.dirname(failed_list_path), exist_ok=True)
@@ -139,7 +139,7 @@ def main():
                 json.dump(failed_batches, f, indent=4)
             logger.info('Failed batches list saved to: {}'.format(failed_list_path))
 
-        logger.info('test miou: {:.4f}, F_score: {:.4f}'.format(miou.item(), F_score))
+        logger.info('test miou: {:.4f}, F_score: {:.4f}'.format(miou.item(), f_score))
 
 
 if __name__ == '__main__':

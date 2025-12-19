@@ -2,7 +2,9 @@ import torch
 import torch.nn as nn
 import math
 import torchvision.models as models
+import logging
 
+logger = logging.getLogger(__name__)
 
 def conv3x3(in_planes, out_planes, stride=1):
     """3x3 convolution with padding"""
@@ -134,7 +136,8 @@ class B2_ResNet(nn.Module):
                 all_params[k] = v
         assert len(all_params.keys()) == len(self.state_dict().keys())
         self.load_state_dict(all_params)
-        print(f'==> Load pretrained ResNet50 parameters from {path}')
+
+        logger.info(f'==> Load pretrained ResNet50 parameters from {path}')
 
     def _make_layer(self, block, planes, blocks, stride=1):
         downsample = None

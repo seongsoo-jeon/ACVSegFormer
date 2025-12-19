@@ -117,5 +117,12 @@ If you use our model, please consider cite following papers:
       primaryClass={cs.CV},
 }
 
-@~{우리꺼.. 논문??? ㅋㅋㅋ}
+@misc{ours2025code,
+      title={Less is More: Simplifying Query Generation for Audio-Visual Segmentation}, 
+      author={SeongSoo Jeon, Yunjae Yu},
+      year={2025},
+      publisher={GitHub},
+      journal={GitHub repository},  
+      howpublished={\url{https://github.com/seongsoo-jeon/avsegformer.git}},
+}
 ```

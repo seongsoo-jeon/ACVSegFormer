@@ -152,7 +152,7 @@ def main():
                     gt_temporal_mask_flag = gt_temporal_mask_flag.view(
                         B * frame)  # [B*T]
 
-                    output, _ = model(audio, imgs, vid_temporal_mask_flag)
+                    output, *_ = model(audio, imgs, vid_temporal_mask_flag)
 
                     _miou_pc, _fscore_pc, _cls_pc, _ = calc_color_miou_fscore(
                         output, mask)

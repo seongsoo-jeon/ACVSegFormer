@@ -64,64 +64,64 @@ def main():
 
     # Test
     with torch.no_grad():
-        for n_iter, batch_data in enumerate(test_dataloader):
-            imgs, audio, mask, video_name_list = batch_data
+        for batch_idx, batch_data in enumerate(test_dataloader):
+            images, audio_feat, gt_mask, video_names = batch_data
 
-            imgs = imgs.cuda()
-            audio = audio.cuda()
-            mask = mask.cuda()
-            B, frame, C, H, W = imgs.shape
-            total_frames = B * frame
-            
-            imgs = imgs.view(total_frames, C, H, W)
-            mask = mask.view(total_frames, H, W)
-            audio = audio.view(-1, audio.shape[2],
-                               audio.shape[3], audio.shape[4])
+            images = images.cuda()
+            audio_feat = audio_feat.cuda()
+            gt_mask = gt_mask.cuda()
+            batch, frames, channels, height, width = images.shape
+            total_frames = batch * frames
 
-            output, _ = model(audio, imgs)
-            
-            miou = mask_iou(output.squeeze(1), mask)
+            images = images.view(total_frames, channels, height, width)
+            gt_mask = gt_mask.view(total_frames, height, width)
+            audio_feat = audio_feat.view(-1, audio_feat.shape[2],
+                                         audio_feat.shape[3], audio_feat.shape[4])
+
+            pred_mask, *_ = model(audio_feat, images)
+
+            miou = mask_iou(pred_mask.squeeze(1), gt_mask)
             current_miou_value = miou.item()
-            F_score = Eval_Fmeasure(output.squeeze(1), mask)
+            f_score = Eval_Fmeasure(pred_mask.squeeze(1), gt_mask)
 
             if args.save_pred_mask:
                 mask_save_path = os.path.join(
                     args.save_dir, dir_name, 'pred_masks')
             if current_miou_value < threshold:
-                logger.warning(f'FAILED BATCH {n_iter} (mIoU: {current_miou_value:.4f}). Saving masks...')
-                
-                video_name = video_name_list[0]
+                logger.warning(f'FAILED BATCH {batch_idx} (mIoU: {current_miou_value:.4f}). Saving masks...')
+
+                video_name = video_names[0]
                 failed_batches.append({
-                    'iter': n_iter,
+                    'iter': batch_idx,
                     'miou': current_miou_value,
-                    'F_score': F_score, 
+                    'F_score': f_score,
                     'video_name': video_name
                 })
 
                 for i in range(total_frames):
                     frame_idx = i + 1
-                    
+
                     file_name = f'frame_{frame_idx:03d}.png'
-                    
+
                     pred_mask_dir = os.path.join(save_png_root, video_name, 'pred')
                     pred_mask_path = os.path.join(pred_mask_dir, file_name)
-                    save_mask_as_png(output[i], pred_mask_path) 
-                    
+                    save_mask_as_png(pred_mask[i], pred_mask_path)
+
                     gt_mask_dir = os.path.join(save_png_root, video_name, 'gt')
                     gt_mask_path = os.path.join(gt_mask_dir, file_name)
-                    save_mask_as_png(mask[i], gt_mask_path)
+                    save_mask_as_png(gt_mask[i], gt_mask_path)
 
             avg_meter_miou.add({'miou': miou})
-            avg_meter_F.add({'F_score': F_score})
-            logger.info('n_iter: {}, iou: {:.4f}, F_score: {:.4f}'.format(
-                n_iter, current_miou_value, F_score))
+            avg_meter_F.add({'F_score': f_score})
+            logger.info('batch_idx: {}, iou: {:.4f}, F_score: {:.4f}'.format(
+                batch_idx, current_miou_value, f_score))
 
         miou = (avg_meter_miou.pop('miou'))
-        F_score = (avg_meter_F.pop('F_score'))
-        
+        f_score = (avg_meter_F.pop('F_score'))
+
         logger.info(f'--- Test Finished ---')
         logger.info(f'Total Batches (mIoU < {threshold}): {len(failed_batches)}')
-    
+
         if failed_batches:
             failed_list_path = os.path.join(args.save_dir, dir_name, 'good_batches.json')
             os.makedirs(os.path.dirname(failed_list_path), exist_ok=True)
@@ -129,7 +129,7 @@ def main():
                 json.dump(failed_batches, f, indent=4)
             logger.info(f'batches list saved to: {failed_list_path}')
 
-        logger.info(f'test miou: {miou.item():.4f}, F_score: {F_score:.4f}')
+        logger.info(f'test miou: {miou.item():.4f}, F_score: {f_score:.4f}')
 
 
 if __name__ == '__main__':

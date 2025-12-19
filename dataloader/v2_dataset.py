@@ -14,6 +14,9 @@ from PIL import Image
 from torchvision import transforms
 
 from .io_utils import load_image_in_PIL_to_Tensor, load_audio_lm, _crop_resize_img, _resize_img
+import logging
+
+logger = logging.getLogger(__name__)
 
 # from .config import cfg_avs
 
@@ -56,7 +59,7 @@ def color_mask_to_label(mask, v_pallete):
         class_map = np.all(equality, axis=-1)
         semantic_map.append(class_map)
     semantic_map = np.stack(semantic_map, axis=-1).astype(np.float32)
-    # pdb.set_trace() # there is only one '1' value for each pixel, run np.sum(semantic_map, axis=-1)
+    # (debug trace removed)
     label = np.argmax(semantic_map, axis=-1)
     return label
 
@@ -86,8 +89,8 @@ class V2Dataset(Dataset):
         self.df_split = df_all[df_all['split'] == split]
         if debug_flag:
             self.df_split = self.df_split[:100]
-        print("{}/{} videos are used for {}.".format(len(self.df_split),
-              len(df_all), self.split))
+        logger.info("{}/{} videos are used for {}.".format(len(self.df_split),
+                    len(df_all), self.split))
         self.img_transform = transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
@@ -156,7 +159,7 @@ class V2Dataset(Dataset):
             # mask_path =  os.path.join(color_mask_base_path, mask_path_list[mask_id])
             color_label = load_color_mask_in_PIL_to_Tensor(
                 mask_path, v_pallete=self.v2_pallete, split=self.split, cfg=self.cfg)
-            # print('color_label.shape: ', color_label.shape)
+            # removed debug print
             labels.append(color_label)
         for pad_j in range(label_pad_zero_num):
             color_label = torch.zeros_like(color_label)

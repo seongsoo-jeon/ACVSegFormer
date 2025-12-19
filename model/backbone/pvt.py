@@ -10,6 +10,9 @@ from timm.models.vision_transformer import _cfg
 # from mmseg.utils import get_root_logger
 # from mmcv.runner import load_checkpoint
 import math
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Mlp(nn.Module):
@@ -273,7 +276,7 @@ class PyramidVisionTransformerV2(nn.Module):
                       if k in pvt_model_dict.keys()}
         pvt_model_dict.update(state_dict)
         self.load_state_dict(pvt_model_dict)
-        print(f'==> Load pvt-v2-b5 parameters pretrained on ImageNet: {path}')
+        logger.info(f'==> Load pvt-v2-b5 parameters pretrained on ImageNet: {path}')
 
     def _init_weights(self, m):
         if isinstance(m, nn.Linear):

@@ -66,7 +66,7 @@ def main():
             gt_temporal_mask_flag = gt_temporal_mask_flag.view(
                 B * frame)  # [B*T]
 
-            output, _ = model(audio, imgs, vid_temporal_mask_flag)
+            output, *_ = model(audio, imgs, vid_temporal_mask_flag)
             if args.save_pred_mask:
                 mask_save_path = os.path.join(
                     args.save_dir, dir_name, 'pred_masks')

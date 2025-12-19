@@ -21,7 +21,7 @@ class AVSegFormer(nn.Module):
         self.embed_dim = embed_dim
         self.T = T
         self.freeze_audio_backbone = freeze_audio_backbone
-        self.backbone = build_backbone(**backbone)
+        self.image_backbone = build_backbone(**backbone)
         self.vggish = VGGish(**vggish)
         self.head = build_head(**head)
         self.audio_proj = nn.Linear(audio_dim, embed_dim)
@@ -34,7 +34,7 @@ class AVSegFormer(nn.Module):
         self.neck = neck
 
     def freeze_backbone(self, freeze=False):
-        for p in self.backbone.parameters():
+        for p in self.image_backbone.parameters():
             p.requires_grad = not freeze
 
     def mul_temporal_mask(self, feats, vid_temporal_mask_flag=None):
@@ -51,7 +51,7 @@ class AVSegFormer(nn.Module):
             return out
 
     def extract_feat(self, x):
-        feats = self.backbone(x)
+        feats = self.image_backbone(x)
         if self.neck is not None:
             feats = self.neck(feats)
         return feats

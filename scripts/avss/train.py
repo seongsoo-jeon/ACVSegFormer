@@ -108,7 +108,7 @@ def main():
                 B * frame)  # [B*T]
 
             # [bs*5, 24, 224, 224]
-            output, mask_feature = model(audio, imgs, vid_temporal_mask_flag)
+            output, mask_feature, attn_maps = model(audio, imgs, vid_temporal_mask_flag)
             loss, loss_dict = IouSemanticAwareLoss(
                 output, mask_feature, label, gt_temporal_mask_flag, **cfg.loss)
             loss_util.add_loss(loss, loss_dict)

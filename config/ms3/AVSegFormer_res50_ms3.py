@@ -17,7 +17,7 @@ model = dict(
         query_num=300,
         fusion_block=dict(type='CrossModalMixer'),
         query_generator=dict(
-            type='AttentiveQueryGenerator',
+            type='QueryGenerator',
             num_layers=3,
             query_num=300),
         positional_encoding=dict(

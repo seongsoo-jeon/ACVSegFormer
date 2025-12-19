@@ -89,7 +89,7 @@ def main():
             audio = audio.view(-1, audio.shape[2],
                                audio.shape[3], audio.shape[4])
 
-            output, mask_feature = model(audio, imgs)  # [bs*5, 1, 224, 224]
+            output, mask_feature, attn_maps = model(audio, imgs)  # [bs*5, 1, 224, 224]
             loss, loss_dict = IouSemanticAwareLoss(
                 output, mask_feature, mask.unsqueeze(1).unsqueeze(1), **cfg.loss)
             loss_util.add_loss(loss, loss_dict)

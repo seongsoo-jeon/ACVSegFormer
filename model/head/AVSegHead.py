@@ -6,7 +6,6 @@ from ops.modules import MSDeformAttn
 from torch.nn.init import normal_
 from torch.nn.functional import interpolate
 
-
 class Interpolate(nn.Module):
     def __init__(self, scale_factor, mode, align_corners=False):
         super(Interpolate, self).__init__()

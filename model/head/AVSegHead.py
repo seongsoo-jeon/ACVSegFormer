@@ -11,13 +11,13 @@ class Interpolate(nn.Module):
     def __init__(self, scale_factor, mode, align_corners=False):
         super(Interpolate, self).__init__()
 
-        self.interp = interpolate
+        self.interpolate = interpolate
         self.scale_factor = scale_factor
         self.mode = mode
         self.align_corners = align_corners
 
     def forward(self, x):
-        x = self.interp(
+        x = self.interpolate(
             x, scale_factor=self.scale_factor, mode=self.mode, align_corners=self.align_corners
         )
         return x
@@ -43,7 +43,7 @@ class SimpleFPN(nn.Module):
     def __init__(self, channel=256, layers=3):
         super().__init__()
 
-        assert layers == 3  # only designed for 3 layers
+        assert layers == 3
         self.up1 = nn.Sequential(
             Interpolate(scale_factor=2, mode='bilinear'),
             nn.Conv2d(channel, channel, kernel_size=3, stride=1, padding=1)
@@ -79,7 +79,6 @@ class AVSegHead(nn.Module):
                  valid_indices=[1, 2, 3],
                  scale_factor=4,
                  positional_encoding=None,
-                 use_learnable_queries=True,
                  fusion_block=None) -> None:
         super().__init__()
 
@@ -90,20 +89,10 @@ class AVSegHead(nn.Module):
         self.valid_indices = valid_indices
         self.num_feats = len(valid_indices)
         self.scale_factor = scale_factor
-        self.use_learnable_queries = use_learnable_queries
         self.level_embed = nn.Parameter(
             torch.Tensor(self.num_feats, embed_dim))
-        self.learnable_query = nn.Embedding(query_num, embed_dim)
-
         self.query_generator = build_generator(**query_generator)
-
         self.transformer = build_transformer(**transformer)
-
-
-        self.cross_attn_layers = nn.ModuleList(
-            [CrossAttnLayerOnly(embed_dim, num_heads=8, hidden_dim=1024)
-             for _ in range(3)]
-        )
 
         if positional_encoding is not None:
             self.positional_encoding = build_positional_encoding(
@@ -223,7 +212,7 @@ class AVSegHead(nn.Module):
         # prepare queries
         bs = audio_feat.shape[0]
         query = self.query_generator(audio_feat)
-        memory, outputs = self.transformer(query, src_flatten, spatial_shapes,
+        memory, outputs, attn_maps_list = self.transformer(query, src_flatten, spatial_shapes,
                                            level_start_index, valid_ratios, lvl_pos_embed_flatten, mask_flatten)
 
         # generate mask feature
@@ -247,20 +236,4 @@ class AVSegHead(nn.Module):
         pred_mask = mask_feature + pred_feature
         pred_mask = self.fc(pred_mask)
 
-        return pred_mask, mask_feature
-
-    # def forward_prediction_head(self, output, mask_embed, spatial_shapes, level_start_index):
-    #     masks = torch.einsum('bqc,bqn->bcn', output, mask_embed)
-    #     splitted_masks = self.reform_output_squences(
-    #         masks, spatial_shapes, level_start_index, 2)
-
-    #     bs = output.shape[0]
-    #     reforms = []
-    #     for i, embed in enumerate(splitted_masks):
-    #         embed = embed.view(
-    #             bs, -1, spatial_shapes[i][0], spatial_shapes[i][1])
-    #         reforms.append(embed)
-
-    #     attn_mask = self.fpn(reforms)
-    #     attn_mask = self.attn_fc(attn_mask)
-    #     return attn_mask
+        return pred_mask, mask_feature, attn_maps_list

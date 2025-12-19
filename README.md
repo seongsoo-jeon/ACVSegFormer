@@ -1,5 +1,5 @@
 # Less is More: Simplifying Query Generation for Audio-Visual Segmentation
-<img width="1009" alt="image" src="image/arch.png">
+<img width="1009" alt="image" src="image/architecture.png">
 할것. 
 1. 이름 정하기
 2. 내용 설명 
@@ -7,8 +7,8 @@
 
 
 ## Updates
-- (미래) document 완료하기
-- (2025.12.17) We completed the implemention of Q-AVSegFormer.
+- (2025.12.19) document(README, ...) creation complete!
+- (2025.12.17) We completed the implemention of AVSegFormer(our improved version).
 
 
 

@@ -67,9 +67,9 @@ class AVSegFormer(nn.Module):
         img_feat = self.extract_feat(frames)
         img_feat = self.mul_temporal_mask(img_feat, vid_temporal_mask_flag)
 
-        pred, mask_feature = self.head(img_feat, audio_feat)
+        pred, mask_feature, attn_maps = self.head(img_feat, audio_feat)
         pred = self.mul_temporal_mask(pred, vid_temporal_mask_flag)
         mask_feature = self.mul_temporal_mask(
             mask_feature, vid_temporal_mask_flag)
 
-        return pred, mask_feature
+        return pred, mask_feature, attn_maps

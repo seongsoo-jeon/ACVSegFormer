@@ -1,36 +1,68 @@
-## 🏠 Method
+# Q-AVSegFormer
 <img width="1009" alt="image" src="image/arch.png">
+할것. 
+1. 이름 정하기
+2. 내용 설명 
+3. architecture 사진 붙이기
 
 
-## 🛠️ Get Started
+## Updates
+- (미래) document 완료하기
+- (2025.12.17) We completed the implemention of Q-AVSegFormer.
 
-### 1. Environments
+
+
+## How To Start?
+
+### 1. Requirements and Installation
+## a. Want to Use Docker
 ```shell
+# project clone
+git clone https://github.com/seongsoo-jeon/avsegformer.git
+cd avsegformer
+
+# build image
+docker build -t avsegformer . 
+
+# run container (connect to container by cli && ./data to /app/AVSegFormer/data)
+docker run --gpus all \
+    -v $(pwd)/data:/app/AVSegFormer/data \
+    -it avsegformer bash
+```
+
+## b. Local Environments
+```shell
+# project clone
+git clone https://github.com/seongsoo-jeon/avsegformer.git
+cd avsegformer
+
 # recommended
 pip install torch==1.10.0+cu111 torchvision==0.11.0+cu111 torchaudio==0.10.0 -f https://download.pytorch.org/whl/torch_stable.html
 pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu111/torch1.10.0/index.html
-pip install pandas
-pip install timm
-pip install resampy
-pip install soundfile
+pip install pandas timm resampy soundfile
+
 # build MSDeformAttention
 cd ops
 sh make.sh
 ```
 
 
-### 2. Data
-
-Please refer to the link [AVSBenchmark](https://github.com/OpenNLPLab/AVSBench) to download the datasets. You can put the data under `data` folder or rename your own folder. Remember to modify the path in config files. The `data` directory is as bellow:
+### 2. Data Preparation
+Please refer to the link [AVSBenchmark](https://github.com/OpenNLPLab/AVSBench) to download the datasets. You can put the data under `data` folder. Remember to modify the path in config files. The `data` directory is as bellow:
 ```
 |--data
-   |--AVSS
    |--Multi-sources
+      |--ms3_meta
+      |--ms3_meta_data.csv
    |--Single-source
+      |--s4_data
+      |--s4_meta_data.csv
+   |--AVSS
 ```
 
 
 ### 3. Download Pre-Trained Models
+- 이거 수정 필요
 
 - The pretrained backbone is available from benchmark [AVSBench pretrained backbones](https://drive.google.com/drive/folders/1386rcFHJ1QEQQMF6bV1rXJTzy8v26RTV).
 - We provides pre-trained models for all three subtasks. You can download them from [AVSegFormer pretrained models](https://drive.google.com/drive/folders/1ZYZOWAfoXcGPDsocswEN7ZYvcAn4H8kY).
@@ -64,7 +96,7 @@ bash test.sh ${TASK} ${CONFIG} ${CHECKPOINT}
 ```
 
 
-## 🤝 Citation
+## Citation
 
 If you use our model, please consider cite following papers:
 ```
@@ -75,12 +107,14 @@ If you use our model, please consider cite following papers:
       year={2023},
 }
 
-@misc{gao2023avsegformer,
+@misc{gao2023avsegformeraudiovisualsegmentationtransformer,
       title={AVSegFormer: Audio-Visual Segmentation with Transformer}, 
       author={Shengyi Gao and Zhe Chen and Guo Chen and Wenhai Wang and Tong Lu},
       year={2023},
       eprint={2307.01146},
       archivePrefix={arXiv},
-      primaryClass={cs.CV}
+      primaryClass={cs.CV},
 }
+
+@~{우리꺼.. 논문??? ㅋㅋㅋ}
 ```

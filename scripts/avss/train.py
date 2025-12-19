@@ -61,7 +61,8 @@ def main():
                                                  batch_size=cfg.dataset.val.batch_size,
                                                  shuffle=False,
                                                  num_workers=cfg.process.num_works,
-                                                 pin_memory=True)
+                                                 pin_memory=True,
+                                                 drop_last=True)
     N_CLASSES = train_dataset.num_classes
 
     # optimizer

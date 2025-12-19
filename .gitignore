@@ -2,6 +2,10 @@
 **/__pycache__/**
 *.pth
 temp
-data
-pretrained
-work_dir
+data/*
+!data/.gitkeep
+pretrained/*
+!pretrained/.gitkeep
+work_dir/*
+!work_dir/.gitkeep
+**/.DS_Store

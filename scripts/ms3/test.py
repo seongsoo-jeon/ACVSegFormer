@@ -9,8 +9,6 @@ from utility import mask_iou, Eval_Fmeasure, save_mask
 from utils.logger import getLogger
 from model import build_model
 from dataloader import build_dataset
-import matplotlib.pyplot as plt
-
 
 
 def main():
@@ -33,8 +31,7 @@ def main():
     # Test data
     test_dataset = build_dataset(**cfg.dataset.test)
     test_dataloader = torch.utils.data.DataLoader(test_dataset,
-                                                  #batch_size=cfg.dataset.test.batch_size,
-                                                  batch_size=1,
+                                                  batch_size=cfg.dataset.test.batch_size,
                                                   shuffle=False,
                                                   num_workers=cfg.process.num_works,
                                                   pin_memory=True)
@@ -55,57 +52,10 @@ def main():
             audio = audio.view(-1, audio.shape[2],
                                audio.shape[3], audio.shape[4])
 
-            output, mask_feature, attn_maps = model(audio, imgs)
+            output, _, _ = model(audio, imgs)
+            
 
-            if len(attn_maps) > 0:
-                visual_dir = os.path.join(args.save_dir, dir_name, 'attention_results')
-                os.makedirs(visual_dir, exist_ok=True)
-                
-                raw_vid_name = video_name_list[0]
-                clean_vid_name = raw_vid_name.replace('/', '_')
 
-                last_attn = attn_maps[-1]
-                q_idx = 0 
-                T = 5
-
-                cross_map = last_attn['cross'][0].cpu().numpy() # [Q, Total_L]
-                
-                try:
-                    cross_map_part = cross_map[q_idx, :5120].reshape(T, 32, 32)
-                    
-                    fig, axes = plt.subplots(1, T, figsize=(20, 4))
-                    for t in range(T):
-                        attn_frame = cross_map_part[t]
-                        attn_frame = (attn_frame - attn_frame.min()) / (attn_frame.max() - attn_frame.min() + 1e-8)
-                        
-                        axes[t].imshow(attn_frame, cmap='jet')
-                        axes[t].set_title(f"Time {t}")
-                        axes[t].axis('off')
-                    
-                    cross_save_path = os.path.join(visual_dir, f"{clean_vid_name}_cross_attn.png")
-                    plt.suptitle(f"Cross-Attention: {raw_vid_name}", fontsize=16)
-                    plt.tight_layout()
-                    plt.savefig(cross_save_path)
-                    plt.close()
-                    logger.info(f"Saved Cross-Attn: {cross_save_path}")
-
-                except Exception as e:
-                    logger.error(f"Cross-Attn 시각화 실패: {e}")
-
-                self_map = last_attn['self'][0].cpu().numpy() # [Q, Q]
-                
-                plt.figure(figsize=(10, 8))
-                plt.imshow(self_map, cmap='viridis')
-                plt.colorbar()
-                plt.title(f"Self-Attention Matrix\n{raw_vid_name}", fontsize=12)
-                plt.xlabel("Key Queries")
-                plt.ylabel("Query Queries")
-                
-                self_save_path = os.path.join(visual_dir, f"{clean_vid_name}_self_attn.png")
-                plt.tight_layout()
-                plt.savefig(self_save_path)
-                plt.close()
-                logger.info(f"Saved Self-Attn: {self_save_path}") 
 
             if args.save_pred_mask:
                 mask_save_path = os.path.join(

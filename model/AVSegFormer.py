@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 from .backbone import build_backbone
-# from .neck import build_neck
 from .head import build_head
 from .vggish import VGGish
 
@@ -33,10 +32,6 @@ class AVSegFormer(nn.Module):
         self.freeze_backbone(True)
 
         self.neck = neck
-        # if neck is not None:
-        #     self.neck = build_neck(**neck)
-        # else:
-        #     self.neck = None
 
     def freeze_backbone(self, freeze=False):
         for p in self.backbone.parameters():

@@ -119,6 +119,7 @@ class AVSTransformerDecoderLayer(nn.Module):
             query, src, src, key_padding_mask=padding_mask)[0]
         query = query + self.dropout2(out2)
         query = self.norm2(query)
+        
         # ffn
         query = self.ffn(query)
         return query

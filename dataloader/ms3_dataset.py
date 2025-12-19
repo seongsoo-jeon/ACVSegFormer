@@ -11,20 +11,7 @@ import cv2
 from PIL import Image
 from torchvision import transforms
 
-
-def load_image_in_PIL_to_Tensor(path, mode='RGB', transform=None):
-    img_pil = Image.open(path).convert(mode)
-    if transform:
-        img_tensor = transform(img_pil)
-        return img_tensor
-    return img_pil
-
-
-def load_audio_lm(audio_lm_path):
-    with open(audio_lm_path, 'rb') as fr:
-        audio_log_mel = pickle.load(fr)
-    audio_log_mel = audio_log_mel.detach()  # [5, 1, 96, 64]
-    return audio_log_mel
+from .io_utils import load_image_in_PIL_to_Tensor, load_audio_lm
 
 
 class MS3Dataset(Dataset):

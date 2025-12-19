@@ -6,26 +6,6 @@ from ops.modules import MSDeformAttn
 from torch.nn.init import normal_
 from torch.nn.functional import interpolate
 
-class CrossAttnLayerOnly(nn.Module):
-    def __init__(self, embed_dim, num_heads, hidden_dim) -> None:
-        super().__init__()
-        self.cross_attn = nn.MultiheadAttention(
-            embed_dim, num_heads, bias=False, batch_first=True)
-        self.ffn = nn.Sequential(
-            nn.Linear(embed_dim, hidden_dim),
-            nn.GELU(), 
-            nn.Linear(hidden_dim, embed_dim)
-        )
-        self.norm1 = nn.LayerNorm(embed_dim)
-        self.norm2 = nn.LayerNorm(embed_dim)
-
-    def forward(self, query, key_value_feat):
-        out, _ = self.cross_attn(query, key_value_feat, key_value_feat)
-        query = self.norm1(query + out)
-        
-        out = self.ffn(query)
-        query = self.norm2(query + out)
-        return query
 
 class Interpolate(nn.Module):
     def __init__(self, scale_factor, mode, align_corners=False):
@@ -190,9 +170,9 @@ class AVSegHead(nn.Module):
         _, H, W = mask.shape
         valid_H = torch.sum(~mask[:, :, 0], 1)
         valid_W = torch.sum(~mask[:, 0, :], 1)
-        valid_ratio_h = valid_H.float() / H
-        valid_ratio_w = valid_W.float() / W
-        valid_ratio = torch.stack([valid_ratio_w, valid_ratio_h], -1)
+        valid_ratio_H = valid_H.float() / H
+        valid_ratio_W = valid_W.float() / W
+        valid_ratio = torch.stack([valid_ratio_W, valid_ratio_H], -1)
         return valid_ratio
 
     def reform_output_squences(self, memory, spatial_shapes, level_start_index, dim=1):
@@ -241,22 +221,8 @@ class AVSegHead(nn.Module):
         valid_ratios = torch.stack([self.get_valid_ratio(m) for m in masks], 1)
 
         # prepare queries
-        #bs = audio_feat.shape[0]
-        #query = self.query_generator(audio_feat) // 얘가 원래 거
-
-
-        #learnable_q = self.learnable_query.weight[None, :, :].repeat(bs, 1, 1) // 얘가 잘된애
-        #learnable_q = self.query_generator(audio_feat)
-
-        #for layer in self.cross_attn_layers:
-            #query = layer(learnable_q, query)
-        #    learnable_q = layer(learnable_q, audio_feat)
         bs = audio_feat.shape[0]
         query = self.query_generator(audio_feat)
-        # if self.use_learnable_queries:
-        #     query = query + \
-        #         self.learnable_query.weight[None, :, :].repeat(bs, 1, 1)
-
         memory, outputs = self.transformer(query, src_flatten, spatial_shapes,
                                            level_start_index, valid_ratios, lvl_pos_embed_flatten, mask_flatten)
 

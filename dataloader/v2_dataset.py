@@ -13,6 +13,8 @@ import json
 from PIL import Image
 from torchvision import transforms
 
+from .io_utils import load_image_in_PIL_to_Tensor, load_audio_lm, _crop_resize_img, _resize_img
+
 # from .config import cfg_avs
 
 
@@ -44,37 +46,6 @@ def get_v2_pallete(label_to_idx_path, num_cls=71):
     return v2_pallete
 
 
-def crop_resize_img(crop_size, img, img_is_mask=False):
-    outsize = crop_size
-    short_size = outsize
-    w, h = img.size
-    if w > h:
-        oh = short_size
-        ow = int(1.0 * w * oh / h)
-    else:
-        ow = short_size
-        oh = int(1.0 * h * ow / w)
-    if not img_is_mask:
-        img = img.resize((ow, oh), Image.BILINEAR)
-    else:
-        img = img.resize((ow, oh), Image.NEAREST)
-    # center crop
-    w, h = img.size
-    x1 = int(round((w - outsize) / 2.))
-    y1 = int(round((h - outsize) / 2.))
-    img = img.crop((x1, y1, x1 + outsize, y1 + outsize))
-    # print("crop for train. set")
-    return img
-
-
-def resize_img(crop_size, img, img_is_mask=False):
-    outsize = crop_size
-    # only resize for val./test. set
-    if not img_is_mask:
-        img = img.resize((outsize, outsize), Image.BILINEAR)
-    else:
-        img = img.resize((outsize, outsize), Image.NEAREST)
-    return img
 
 
 def color_mask_to_label(mask, v_pallete):
@@ -90,44 +61,17 @@ def color_mask_to_label(mask, v_pallete):
     return label
 
 
-def load_image_in_PIL_to_Tensor(path, split='train', mode='RGB', transform=None, cfg=None):
-    img_PIL = Image.open(path).convert(mode)
-    if cfg.crop_img_and_mask:
-        if split == 'train':
-            img_PIL = crop_resize_img(
-                cfg.crop_size, img_PIL, img_is_mask=False)
-        else:
-            img_PIL = resize_img(cfg.crop_size,
-                                 img_PIL, img_is_mask=False)
-    if transform:
-        img_tensor = transform(img_PIL)
-        return img_tensor
-    return img_PIL
-
-
 def load_color_mask_in_PIL_to_Tensor(path, v_pallete, split='train', mode='RGB', cfg=None):
     color_mask_PIL = Image.open(path).convert(mode)
-    if cfg.crop_img_and_mask:
+    if cfg is not None and getattr(cfg, 'crop_img_and_mask', False):
         if split == 'train':
-            color_mask_PIL = crop_resize_img(
-                cfg.crop_size, color_mask_PIL, img_is_mask=True)
+            color_mask_PIL = _crop_resize_img(cfg.crop_size, color_mask_PIL, img_is_mask=True)
         else:
-            color_mask_PIL = resize_img(
-                cfg.crop_size, color_mask_PIL, img_is_mask=True)
-    # obtain semantic label
+            color_mask_PIL = _resize_img(cfg.crop_size, color_mask_PIL, img_is_mask=True)
     color_label = color_mask_to_label(color_mask_PIL, v_pallete)
     color_label = torch.from_numpy(color_label)  # [H, W]
     color_label = color_label.unsqueeze(0)
-    # binary_mask = (color_label != (cfg_avs.NUM_CLASSES-1)).float()
-    # return color_label, binary_mask # both [1, H, W]
     return color_label  # both [1, H, W]
-
-
-def load_audio_lm(audio_lm_path):
-    with open(audio_lm_path, 'rb') as fr:
-        audio_log_mel = pickle.load(fr)
-    audio_log_mel = audio_log_mel.detach()  # [5, 1, 96, 64]
-    return audio_log_mel
 
 
 class V2Dataset(Dataset):

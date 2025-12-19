@@ -13,11 +13,11 @@ from torchvision import transforms
 
 
 def load_image_in_PIL_to_Tensor(path, mode='RGB', transform=None):
-    img_PIL = Image.open(path).convert(mode)
+    img_pil = Image.open(path).convert(mode)
     if transform:
-        img_tensor = transform(img_PIL)
+        img_tensor = transform(img_pil)
         return img_tensor
-    return img_PIL
+    return img_pil
 
 
 def load_audio_lm(audio_lm_path):

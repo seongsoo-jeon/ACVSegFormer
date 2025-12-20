@@ -1,13 +1,9 @@
 # Less is More: Simplifying Query Generation for Audio-Visual Segmentation
 <img width="1009" alt="image" src="image/architecture.png">
-할것. 
-1. 이름 정하기
-2. 내용 설명 
-3. architecture 사진 붙이기
 
 
 ## Updates
-- (2025.12.19) document(README, ...) creation complete!
+- (2025.12.20) document(README, ...) creation complete!
 - (2025.12.17) We completed the implemention of AVSegFormer(our improved version).
 
 
@@ -126,3 +122,4 @@ If you use our model, please consider cite following papers:
       howpublished={\url{https://github.com/seongsoo-jeon/avsegformer.git}},
 }
 ```
+

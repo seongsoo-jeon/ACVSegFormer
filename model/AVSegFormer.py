@@ -72,4 +72,4 @@ class AVSegFormer(nn.Module):
         mask_feature = self.mul_temporal_mask(
             mask_feature, vid_temporal_mask_flag)
 
-        return pred, mask_feature, attn_maps
+        return pred, mask_feature

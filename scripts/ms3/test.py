@@ -52,7 +52,7 @@ def main():
             audio_feat = audio_feat.view(-1, audio_feat.shape[2],
                                          audio_feat.shape[3], audio_feat.shape[4])
 
-            pred_mask, _, _ = model(audio_feat, images)
+            pred_mask, _ = model(audio_feat, images)
 
             if args.save_pred_mask:
                 mask_save_path = os.path.join(

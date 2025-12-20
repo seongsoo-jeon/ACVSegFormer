@@ -65,12 +65,12 @@ Please refer to the link [AVSBenchmark](https://github.com/OpenNLPLab/AVSBench) 
 - The pretrained backbone is available from benchmark [AVSBench pretrained backbones](https://drive.google.com/drive/folders/1386rcFHJ1QEQQMF6bV1rXJTzy8v26RTV).
 - We use AVSegFormer's pre-trained models for all three subtasks. You can download them from [AVSegFormer pretrained models](https://drive.google.com/drive/folders/1ZYZOWAfoXcGPDsocswEN7ZYvcAn4H8kY).
 
-|Method|Backbone|Subset|Lr schd|Config|mIoU|F-score|Download|
+|Method|Backbone|Subset|Lr schd|Config|mIoU|F-score|
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|AVSegFormer-R50|ResNet-50|S4|30ep|[config](config/s4/AVSegFormer_res50_s4.py)|76.42|87.1|[ckpt](https://1drv.ms/u/c/2fe081366d17e11a/IQD8BC_2tbcGTrJt0k6OjsceASsEyHsPWJd3zp_hs1lItIs?e=Q52Xw8)|
-|AVSegFormer-PVTv2|PVTv2-B5|S4|30ep|[config](config/s4/AVSegFormer_pvt2_s4.py)|83.72|91.1|[ckpt](https://1drv.ms/u/c/2fe081366d17e11a/IQDB1r0x7-uOTakligfHjRiHAXK_NCEYISqmQnuEg4qIw7E)|
-|AVSegFormer-R50|ResNet-50|MS3|60ep|[config](config/ms3/AVSegFormer_res50_ms3.py)|56.17|68.5|[ckpt](https://1drv.ms/u/c/2fe081366d17e11a/IQAP-12XnYWMRYJK8k66DoqpAd8GSRQPdRHNoVB8ARUAtiQ?e=3U79G8)|
-|AVSegFormer-PVTv2|PVTv2-B5|MS3|60ep|[config](config/ms3/AVSegFormer_pvt2_ms3.py)|63.09|73.8|[ckpt](https://1drv.ms/u/c/2fe081366d17e11a/IQCa5YMct54YQKpr6ZUteFk2Ab9ndNnYrG2MX4i-0EyFafo?e=KXkOUp)|
+|AVSegFormer-R50|ResNet-50|S4|30ep|[config](config/s4/AVSegFormer_res50_s4.py)|76.42|87.1|
+|AVSegFormer-PVTv2|PVTv2-B5|S4|30ep|[config](config/s4/AVSegFormer_pvt2_s4.py)|83.72|91.1|
+|AVSegFormer-R50|ResNet-50|MS3|60ep|[config](config/ms3/AVSegFormer_res50_ms3.py)|56.17|68.5|
+|AVSegFormer-PVTv2|PVTv2-B5|MS3|60ep|[config](config/ms3/AVSegFormer_pvt2_ms3.py)|63.09|73.8|
 
 
 
@@ -122,4 +122,5 @@ If you use our model, please consider cite following papers:
       howpublished={\url{https://github.com/seongsoo-jeon/avsegformer.git}},
 }
 ```
+
 

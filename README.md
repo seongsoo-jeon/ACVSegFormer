@@ -66,7 +66,7 @@ Please refer to the link [AVSBenchmark](https://github.com/OpenNLPLab/AVSBench) 
 - We use AVSegFormer's pre-trained models for all three subtasks. You can download them from [AVSegFormer pretrained models](https://drive.google.com/drive/folders/1ZYZOWAfoXcGPDsocswEN7ZYvcAn4H8kY).
 
 |Method|Backbone|Subset|Lr schd|Config|mIoU|F-score|
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 |AVSegFormer-R50|ResNet-50|S4|30ep|[config](config/s4/AVSegFormer_res50_s4.py)|76.42|87.1|
 |AVSegFormer-PVTv2|PVTv2-B5|S4|30ep|[config](config/s4/AVSegFormer_pvt2_s4.py)|83.72|91.1|
 |AVSegFormer-R50|ResNet-50|MS3|60ep|[config](config/ms3/AVSegFormer_res50_ms3.py)|56.17|68.5|
@@ -122,5 +122,6 @@ If you use our model, please consider cite following papers:
       howpublished={\url{https://github.com/seongsoo-jeon/avsegformer.git}},
 }
 ```
+
 
 

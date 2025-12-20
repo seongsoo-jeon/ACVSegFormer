@@ -97,14 +97,14 @@ def Eval_Fmeasure(pred, gt, pr_num=255):
         output:
             iou: size [1] (size_average=True) or [N] (size_average=False)
     """
-    print('=> eval [FMeasure]..')
+    logger.info('=> eval [FMeasure]..')
     # =======================================[important]
     pred = torch.sigmoid(pred)
     N = pred.size(0)
     beta2 = 0.3
     avg_f, img_num = 0.0, 0
     score = torch.zeros(pr_num)
-    print("{} videos in this batch".format(N))
+    logger.info("%d videos in this batch" % N)
 
     for img_id in range(N):
         # examples with totally black GTs are out of consideration
@@ -122,7 +122,7 @@ def Eval_Fmeasure(pred, gt, pr_num=255):
 
 def save_mask(pred_masks, save_base_path, video_name_list):
     # pred_mask: [bs*5, 1, 224, 224]
-    # print(f"=> {len(video_name_list)} videos in this batch")
+    # removed debug print
 
     if not os.path.exists(save_base_path):
         os.makedirs(save_base_path, exist_ok=True)
@@ -161,7 +161,7 @@ def save_raw_img_mask(anno_file_path, raw_img_base_path, mask_base_path, split='
             raw_img = cv2.imread(os.path.join(raw_img_path, img_name))
             mask = cv2.imread(os.path.join(
                 mask_base_path, 'pred_masks', video_name, "%s_%d.png" % (video_name, img_id)))
-            # pdb.set_trace()
+            # removed debug trace
             raw_img_mask = cv2.addWeighted(raw_img, 1, mask, r, 0)
             save_img_path = os.path.join(
                 mask_base_path, 'img_add_masks', video_name)
@@ -169,4 +169,4 @@ def save_raw_img_mask(anno_file_path, raw_img_base_path, mask_base_path, split='
                 os.makedirs(save_img_path, exist_ok=True)
             cv2.imwrite(os.path.join(save_img_path, img_name), raw_img_mask)
         count += 1
-    print(f'count: {count} videos')
+    logger.info(f'count: {count} videos')

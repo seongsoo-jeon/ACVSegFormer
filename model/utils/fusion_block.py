@@ -13,7 +13,7 @@ class CrossModalMixer(nn.Module):
 
         self.q_proj = nn.Linear(dim, dim, bias=qkv_bias)
         self.kv_proj = nn.Linear(dim, dim * 2, bias=qkv_bias)
-        self.attn_drop = nn.Dropout(dropout)
+        # self.attn_drop = nn.Dropout(dropout)
         self.proj = nn.Linear(dim, dim)
         self.proj_drop = nn.Dropout(dropout)
 

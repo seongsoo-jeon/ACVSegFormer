@@ -15,11 +15,10 @@ model = dict(
         in_channels=[256, 512, 1024, 2048],
         num_classes=71,
         query_num=300,
-        use_learnable_queries=True,
         fusion_block=dict(type='CrossModalMixer'),
         query_generator=dict(
-            type='AttentionGenerator',
-            num_layers=6,
+            type='QueryGenerator',
+            num_layers=3,
             query_num=300),
         positional_encoding=dict(
             type='SinePositionalEncoding',

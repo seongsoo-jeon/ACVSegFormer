@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 from .backbone import build_backbone
-# from .neck import build_neck
 from .head import build_head
 from .vggish import VGGish
 
@@ -22,7 +21,7 @@ class AVSegFormer(nn.Module):
         self.embed_dim = embed_dim
         self.T = T
         self.freeze_audio_backbone = freeze_audio_backbone
-        self.backbone = build_backbone(**backbone)
+        self.image_backbone = build_backbone(**backbone)
         self.vggish = VGGish(**vggish)
         self.head = build_head(**head)
         self.audio_proj = nn.Linear(audio_dim, embed_dim)
@@ -33,13 +32,9 @@ class AVSegFormer(nn.Module):
         self.freeze_backbone(True)
 
         self.neck = neck
-        # if neck is not None:
-        #     self.neck = build_neck(**neck)
-        # else:
-        #     self.neck = None
 
     def freeze_backbone(self, freeze=False):
-        for p in self.backbone.parameters():
+        for p in self.image_backbone.parameters():
             p.requires_grad = not freeze
 
     def mul_temporal_mask(self, feats, vid_temporal_mask_flag=None):
@@ -56,7 +51,7 @@ class AVSegFormer(nn.Module):
             return out
 
     def extract_feat(self, x):
-        feats = self.backbone(x)
+        feats = self.image_backbone(x)
         if self.neck is not None:
             feats = self.neck(feats)
         return feats
@@ -77,4 +72,4 @@ class AVSegFormer(nn.Module):
         mask_feature = self.mul_temporal_mask(
             mask_feature, vid_temporal_mask_flag)
 
-        return pred, mask_feature, attn_maps
+        return pred, mask_feature

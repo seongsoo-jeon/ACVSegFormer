@@ -1,23 +1,11 @@
-import torch
-from torch.nn import functional as F
-
 import os
-import shutil
-import logging
-import cv2
 import numpy as np
+import torch
 from PIL import Image
-
-import sys
-import time
-import pandas as pd
-import pdb
-from torchvision import transforms
 
 
 def save_color_mask(pred_masks, save_base_path, video_name_list, v_pallete, resize, resized_mask_size, T=10):
     # pred_mask: [bs*5, N_CLASSES, 224, 224]
-    # print(f"=> {len(video_name_list)} videos in this batch")
 
     if not os.path.exists(save_base_path):
         os.makedirs(save_base_path, exist_ok=True)
@@ -43,8 +31,8 @@ def save_color_mask(pred_masks, save_base_path, video_name_list, v_pallete, resi
         one_video_masks = pred_rgb_masks[idx] # [5, 224, 224, 3]
         for video_id in range(len(one_video_masks)):
             one_mask = one_video_masks[video_id]
-            output_name = "%s_%d.png"%(video_name, video_id)
-            im = Image.fromarray(one_mask)#.convert('RGB')
+            output_name = "%s_%d.png" % (video_name, video_id)
+            im = Image.fromarray(one_mask)
             if resize:
                 im = im.resize(resized_mask_size)
             im.save(os.path.join(mask_save_path, output_name), format='PNG')

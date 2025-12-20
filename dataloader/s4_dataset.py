@@ -12,20 +12,10 @@ import cv2
 from PIL import Image
 from torchvision import transforms
 
+from .io_utils import load_image_in_PIL_to_Tensor, load_audio_lm
+import logging
 
-def load_image_in_PIL_to_Tensor(path, mode='RGB', transform=None):
-    img_PIL = Image.open(path).convert(mode)
-    if transform:
-        img_tensor = transform(img_PIL)
-        return img_tensor
-    return img_PIL
-
-
-def load_audio_lm(audio_lm_path):
-    with open(audio_lm_path, 'rb') as fr:
-        audio_log_mel = pickle.load(fr)
-    audio_log_mel = audio_log_mel.detach()  # [5, 1, 96, 64]
-    return audio_log_mel
+logger = logging.getLogger(__name__)
 
 
 class S4Dataset(Dataset):
@@ -38,8 +28,8 @@ class S4Dataset(Dataset):
         self.mask_num = 1 if self.split == 'train' else 5
         df_all = pd.read_csv(cfg.anno_csv, sep=',')
         self.df_split = df_all[df_all['split'] == split]
-        print("{}/{} videos are used for {}".format(len(self.df_split),
-              len(df_all), self.split))
+        logger.info("{}/{} videos are used for {}".format(len(self.df_split),
+                len(df_all), self.split))
         self.img_transform = transforms.Compose([
             transforms.Resize([512, 512]),
             transforms.ToTensor(),

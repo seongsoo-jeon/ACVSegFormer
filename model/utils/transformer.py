@@ -36,6 +36,7 @@ class AVSTransformerEncoderLayer(nn.Module):
             src, pos), reference_points, src, spatial_shapes, level_start_index, padding_mask)
         src = src + self.dropout1(src2)
         src = self.norm1(src)
+
         # ffn
         src = self.ffn(src)
         return src
@@ -88,7 +89,6 @@ class AVSTransformerDecoderLayer(nn.Module):
         self.norm1 = nn.LayerNorm(dim)
 
         # cross attention
-        # self.cross_attn = MSDeformAttn(dim, num_levels, num_heads, num_points)
         self.cross_attn = nn.MultiheadAttention(
             dim, num_heads, dropout=dropout, batch_first=True)
         self.dropout2 = nn.Dropout(dropout)
@@ -119,6 +119,7 @@ class AVSTransformerDecoderLayer(nn.Module):
             query, src, src, key_padding_mask=padding_mask, need_weights=True)
         query = query + self.dropout2(out2)
         query = self.norm2(query)
+
         # ffn
         query = self.ffn(query)
         return query, {
@@ -146,7 +147,6 @@ class AVSTransformerDecoder(nn.Module):
             outputs.append(out)
             attn_maps.append(attn)
         return outputs, attn_maps
-
 
 class AVSTransformer(nn.Module):
     def __init__(self, encoder, decoder, *args, **kwargs) -> None:

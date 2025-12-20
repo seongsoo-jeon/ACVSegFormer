@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import time
 import sys
+import logging
 from multiprocessing.pool import ThreadPool
 
 
@@ -53,7 +54,8 @@ class Timer:
         self.stage_start = self.start
 
         if starting_msg is not None:
-            print(starting_msg, time.ctime(time.time()))
+            logger = logging.getLogger(__name__)
+            logger.info(f"{starting_msg} {time.ctime(time.time())}")
 
     def update_progress(self, progress):
         self.elapsed = time.time() - self.start

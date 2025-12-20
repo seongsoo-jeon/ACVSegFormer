@@ -10,10 +10,13 @@ from timm.models.vision_transformer import _cfg
 # from mmseg.utils import get_root_logger
 # from mmcv.runner import load_checkpoint
 import math
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Mlp(nn.Module):
-    def __init__(self, in_features, hidden_features=None, out_features=None, act_layer=nn.GELU, drop=0., linear=False):
+    def __init__(self, in_features, hidden_features=None, out_features=None, act_layer=nn.GELU, dropout=0., linear=False):
         super().__init__()
         out_features = out_features or in_features
         hidden_features = hidden_features or in_features
@@ -21,7 +24,7 @@ class Mlp(nn.Module):
         self.dwconv = DWConv(hidden_features)
         self.act = act_layer()
         self.fc2 = nn.Linear(hidden_features, out_features)
-        self.drop = nn.Dropout(drop)
+        self.dropout = nn.Dropout(dropout)
         self.linear = linear
 
         if self.linear:
@@ -49,9 +52,9 @@ class Mlp(nn.Module):
             x = self.relu(x)
         x = self.dwconv(x, H, W)
         x = self.act(x)
-        x = self.drop(x)
+        x = self.dropout(x)
         x = self.fc2(x)
-        x = self.drop(x)
+        x = self.dropout(x)
         return x
 
 
@@ -137,21 +140,21 @@ class Attention(nn.Module):
 
 class Block(nn.Module):
 
-    def __init__(self, dim, num_heads, mlp_ratio=4., qkv_bias=False, qk_scale=None, drop=0., attn_drop=0.,
+    def __init__(self, dim, num_heads, mlp_ratio=4., qkv_bias=False, qk_scale=None, proj_drop=0., attn_drop=0.,
                  drop_path=0., act_layer=nn.GELU, norm_layer=nn.LayerNorm, sr_ratio=1, linear=False):
         super().__init__()
         self.norm1 = norm_layer(dim)
         self.attn = Attention(
             dim,
             num_heads=num_heads, qkv_bias=qkv_bias, qk_scale=qk_scale,
-            attn_drop=attn_drop, proj_drop=drop, sr_ratio=sr_ratio, linear=linear)
-        # NOTE: drop path for stochastic depth, we shall see if this is better than dropout here
+            attn_drop=attn_drop, proj_drop=proj_drop, sr_ratio=sr_ratio, linear=linear)
+        # NOTE: proj_drop path for stochastic depth, we shall see if this is better than proj_drop here
         self.drop_path = DropPath(
             drop_path) if drop_path > 0. else nn.Identity()
         self.norm2 = norm_layer(dim)
         mlp_hidden_dim = int(dim * mlp_ratio)
         self.mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim,
-                       act_layer=act_layer, drop=drop, linear=linear)
+                       act_layer=act_layer, dropout=proj_drop, linear=linear)
 
         self.apply(self._init_weights)
 
@@ -247,7 +250,7 @@ class PyramidVisionTransformerV2(nn.Module):
             block = nn.ModuleList([Block(
                 dim=embed_dims[i], num_heads=num_heads[i], mlp_ratio=mlp_ratios[i], qkv_bias=qkv_bias,
                 qk_scale=qk_scale,
-                drop=drop_rate, attn_drop=attn_drop_rate, drop_path=dpr[cur +
+                proj_drop=drop_rate, attn_drop=attn_drop_rate, drop_path=dpr[cur +
                                                                         j], norm_layer=norm_layer,
                 sr_ratio=sr_ratios[i], linear=linear)
                 for j in range(depths[i])])
@@ -273,7 +276,7 @@ class PyramidVisionTransformerV2(nn.Module):
                       if k in pvt_model_dict.keys()}
         pvt_model_dict.update(state_dict)
         self.load_state_dict(pvt_model_dict)
-        print(f'==> Load pvt-v2-b5 parameters pretrained on ImageNet: {path}')
+        logger.info(f'==> Load pvt-v2-b5 parameters pretrained on ImageNet: {path}')
 
     def _init_weights(self, m):
         if isinstance(m, nn.Linear):

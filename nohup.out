@@ -1,0 +1,601 @@
+/usr/local/lib/python3.8/dist-packages/mmcv/__init__.py:20: UserWarning: On January 1, 2023, MMCV will release v2.0.0, in which it will remove components related to the training process and add a data transformation module. In addition, it will rename the package names mmcv to mmcv-lite and mmcv-full to mmcv. See https://github.com/open-mmlab/mmcv/blob/master/docs/en/compatibility.md for more details.
+  warnings.warn(
+/usr/local/lib/python3.8/dist-packages/timm/models/layers/__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+/usr/local/lib/python3.8/dist-packages/timm/models/registry.py:4: FutureWarning: Importing from timm.models.registry is deprecated, please import via timm.models
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.models", FutureWarning)
+/app/AVSegFormer/model/backbone/pvt.py:351: UserWarning: Overwriting pvt_v2_b5 in registry with model.backbone.pvt.pvt_v2_b5. This is because the name being registered conflicts with an existing name. Please check if this is not expected.
+  def pvt_v2_b5(init_weights_path=False, **kwargs):
+2025-12-20 01:08:53,155 INFO ==> Load config from config/ms3/AVSegFormer_pvt2_ms3.py
+2025-12-20 01:08:53,240 INFO ==> model = dict(
+    type='AVSegFormer',
+    neck=None,
+    backbone=dict(
+        type='pvt_v2_b5', init_weights_path='pretrained/pvt_v2_b5.pth'),
+    vggish=dict(
+        freeze_audio_extractor=True,
+        pretrained_vggish_model_path='pretrained/vggish-10086976.pth',
+        preprocess_audio_to_log_mel=False,
+        postprocess_log_mel_with_pca=False,
+        pretrained_pca_params_path=None),
+    head=dict(
+        type='AVSegHead',
+        in_channels=[64, 128, 320, 512],
+        num_classes=1,
+        query_num=300,
+        fusion_block=dict(type='CrossModalMixer'),
+        query_generator=dict(
+            type='QueryGenerator', num_layers=3, query_num=300),
+        positional_encoding=dict(type='SinePositionalEncoding', num_feats=128),
+        transformer=dict(
+            type='AVSTransformer',
+            encoder=dict(
+                num_layers=6, layer=dict(dim=256, ffn_dim=2048, dropout=0.1)),
+            decoder=dict(
+                num_layers=6, layer=dict(dim=256, ffn_dim=2048,
+                                         dropout=0.1)))),
+    audio_dim=128,
+    embed_dim=256,
+    freeze_audio_backbone=True,
+    T=5)
+dataset = dict(
+    train=dict(
+        type='MS3Dataset',
+        split='train',
+        anno_csv='data/Multi-sources/ms3_meta_data.csv',
+        dir_img='data/Multi-sources/ms3_data/visual_frames',
+        dir_audio_log_mel='data/Multi-sources/ms3_data/audio_log_mel',
+        dir_mask='data/Multi-sources/ms3_data/gt_masks',
+        img_size=(224, 224),
+        batch_size=2),
+    val=dict(
+        type='MS3Dataset',
+        split='val',
+        anno_csv='data/Multi-sources/ms3_meta_data.csv',
+        dir_img='data/Multi-sources/ms3_data/visual_frames',
+        dir_audio_log_mel='data/Multi-sources/ms3_data/audio_log_mel',
+        dir_mask='data/Multi-sources/ms3_data/gt_masks',
+        img_size=(224, 224),
+        batch_size=2),
+    test=dict(
+        type='MS3Dataset',
+        split='test',
+        anno_csv='data/Multi-sources/ms3_meta_data.csv',
+        dir_img='data/Multi-sources/ms3_data/visual_frames',
+        dir_audio_log_mel='data/Multi-sources/ms3_data/audio_log_mel',
+        dir_mask='data/Multi-sources/ms3_data/gt_masks',
+        img_size=(224, 224),
+        batch_size=2))
+optimizer = dict(type='AdamW', lr=2e-05)
+loss = dict(weight_dict=dict(iou_loss=1.0, mix_loss=0.1), loss_type='dice')
+process = dict(num_works=8, train_epochs=60, freeze_epochs=10)
+
+2025-12-20 01:08:59,538 INFO ==> Total params: 182.03M
+/app/AVSegFormer/model/utils/positional_encoding.py:75: UserWarning: __floordiv__ is deprecated, and its behavior will change in a future version of pytorch. It currently rounds toward 0 (like the 'trunc' function NOT 'floor'). This results in incorrect rounding for negative values. To keep the current behavior, use torch.div(a, b, rounding_mode='trunc'), or for actual floor division, use torch.div(a, b, rounding_mode='floor').
+  dim_t = self.temperature**(2 * (dim_t // 2) / self.num_feats)
+/usr/local/lib/python3.8/dist-packages/torch/functional.py:445: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at  ../aten/src/ATen/native/TensorShape.cpp:2157.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+2025-12-20 01:09:09,314 INFO ==> Iter:    0/ 8880, Total_Loss:0.7073, iou_loss:0.6441, mix_loss:0.0632, lr: 0.000020
+2025-12-20 01:09:28,561 INFO ==> Iter:   20/ 8880, Total_Loss:0.8618, iou_loss:0.7882, mix_loss:0.0735, lr: 0.000020
+2025-12-20 01:09:47,949 INFO ==> Iter:   40/ 8880, Total_Loss:0.7520, iou_loss:0.6818, mix_loss:0.0702, lr: 0.000020
+2025-12-20 01:10:07,160 INFO ==> Iter:   60/ 8880, Total_Loss:0.6267, iou_loss:0.5610, mix_loss:0.0656, lr: 0.000020
+2025-12-20 01:10:26,464 INFO ==> Iter:   80/ 8880, Total_Loss:0.6262, iou_loss:0.5590, mix_loss:0.0672, lr: 0.000020
+2025-12-20 01:10:45,695 INFO ==> Iter:  100/ 8880, Total_Loss:0.6053, iou_loss:0.5383, mix_loss:0.0670, lr: 0.000020
+2025-12-20 01:11:04,943 INFO ==> Iter:  120/ 8880, Total_Loss:0.6107, iou_loss:0.5440, mix_loss:0.0667, lr: 0.000020
+2025-12-20 01:11:24,235 INFO ==> Iter:  140/ 8880, Total_Loss:0.6365, iou_loss:0.5645, mix_loss:0.0720, lr: 0.000020
+2025-12-20 01:11:52,993 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 01:11:52,994 INFO ==> Epoch: 0, Miou: 0.3630032241344452, maxMiou: 0.3630032241344452
+2025-12-20 01:12:07,042 INFO ==> Iter:  160/ 8880, Total_Loss:0.6469, iou_loss:0.5752, mix_loss:0.0717, lr: 0.000020
+2025-12-20 01:12:26,395 INFO ==> Iter:  180/ 8880, Total_Loss:0.6137, iou_loss:0.5447, mix_loss:0.0690, lr: 0.000020
+2025-12-20 01:12:45,640 INFO ==> Iter:  200/ 8880, Total_Loss:0.6119, iou_loss:0.5402, mix_loss:0.0717, lr: 0.000020
+2025-12-20 01:13:05,003 INFO ==> Iter:  220/ 8880, Total_Loss:0.5661, iou_loss:0.4996, mix_loss:0.0664, lr: 0.000020
+2025-12-20 01:13:24,363 INFO ==> Iter:  240/ 8880, Total_Loss:0.5423, iou_loss:0.4763, mix_loss:0.0660, lr: 0.000020
+2025-12-20 01:13:43,645 INFO ==> Iter:  260/ 8880, Total_Loss:0.5190, iou_loss:0.4488, mix_loss:0.0702, lr: 0.000020
+2025-12-20 01:14:02,976 INFO ==> Iter:  280/ 8880, Total_Loss:0.5456, iou_loss:0.4766, mix_loss:0.0690, lr: 0.000020
+2025-12-20 01:14:39,844 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 01:14:39,845 INFO ==> Epoch: 1, Miou: 0.44322001934051514, maxMiou: 0.44322001934051514
+2025-12-20 01:14:46,123 INFO ==> Iter:  300/ 8880, Total_Loss:0.5030, iou_loss:0.4336, mix_loss:0.0694, lr: 0.000020
+2025-12-20 01:15:05,562 INFO ==> Iter:  320/ 8880, Total_Loss:0.4834, iou_loss:0.4140, mix_loss:0.0694, lr: 0.000020
+2025-12-20 01:15:24,825 INFO ==> Iter:  340/ 8880, Total_Loss:0.5290, iou_loss:0.4604, mix_loss:0.0685, lr: 0.000020
+2025-12-20 01:15:44,086 INFO ==> Iter:  360/ 8880, Total_Loss:0.4962, iou_loss:0.4245, mix_loss:0.0717, lr: 0.000020
+2025-12-20 01:16:03,403 INFO ==> Iter:  380/ 8880, Total_Loss:0.4536, iou_loss:0.3832, mix_loss:0.0704, lr: 0.000020
+2025-12-20 01:16:22,598 INFO ==> Iter:  400/ 8880, Total_Loss:0.4924, iou_loss:0.4246, mix_loss:0.0678, lr: 0.000020
+2025-12-20 01:16:41,849 INFO ==> Iter:  420/ 8880, Total_Loss:0.4695, iou_loss:0.4013, mix_loss:0.0682, lr: 0.000020
+2025-12-20 01:17:00,911 INFO ==> Iter:  440/ 8880, Total_Loss:0.3866, iou_loss:0.3193, mix_loss:0.0673, lr: 0.000020
+2025-12-20 01:17:26,334 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 01:17:26,335 INFO ==> Epoch: 2, Miou: 0.48435282707214355, maxMiou: 0.48435282707214355
+2025-12-20 01:17:44,251 INFO ==> Iter:  460/ 8880, Total_Loss:0.4762, iou_loss:0.4035, mix_loss:0.0727, lr: 0.000020
+2025-12-20 01:18:03,540 INFO ==> Iter:  480/ 8880, Total_Loss:0.3882, iou_loss:0.3243, mix_loss:0.0639, lr: 0.000020
+2025-12-20 01:18:22,879 INFO ==> Iter:  500/ 8880, Total_Loss:0.3972, iou_loss:0.3295, mix_loss:0.0677, lr: 0.000020
+2025-12-20 01:18:42,137 INFO ==> Iter:  520/ 8880, Total_Loss:0.4279, iou_loss:0.3609, mix_loss:0.0670, lr: 0.000020
+2025-12-20 01:19:01,376 INFO ==> Iter:  540/ 8880, Total_Loss:0.4193, iou_loss:0.3516, mix_loss:0.0677, lr: 0.000020
+2025-12-20 01:19:20,466 INFO ==> Iter:  560/ 8880, Total_Loss:0.4705, iou_loss:0.4005, mix_loss:0.0700, lr: 0.000020
+2025-12-20 01:19:39,797 INFO ==> Iter:  580/ 8880, Total_Loss:0.4203, iou_loss:0.3500, mix_loss:0.0702, lr: 0.000020
+2025-12-20 01:20:12,751 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 01:20:12,752 INFO ==> Epoch: 3, Miou: 0.5014286637306213, maxMiou: 0.5014286637306213
+2025-12-20 01:20:22,916 INFO ==> Iter:  600/ 8880, Total_Loss:0.4008, iou_loss:0.3302, mix_loss:0.0706, lr: 0.000020
+2025-12-20 01:20:42,241 INFO ==> Iter:  620/ 8880, Total_Loss:0.4422, iou_loss:0.3678, mix_loss:0.0744, lr: 0.000020
+2025-12-20 01:21:01,344 INFO ==> Iter:  640/ 8880, Total_Loss:0.3944, iou_loss:0.3281, mix_loss:0.0663, lr: 0.000020
+2025-12-20 01:21:20,454 INFO ==> Iter:  660/ 8880, Total_Loss:0.4601, iou_loss:0.3884, mix_loss:0.0717, lr: 0.000020
+2025-12-20 01:21:39,713 INFO ==> Iter:  680/ 8880, Total_Loss:0.3875, iou_loss:0.3205, mix_loss:0.0670, lr: 0.000020
+2025-12-20 01:21:58,857 INFO ==> Iter:  700/ 8880, Total_Loss:0.3216, iou_loss:0.2570, mix_loss:0.0646, lr: 0.000020
+2025-12-20 01:22:18,072 INFO ==> Iter:  720/ 8880, Total_Loss:0.4174, iou_loss:0.3471, mix_loss:0.0703, lr: 0.000020
+2025-12-20 01:22:58,713 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 01:22:58,714 INFO ==> Epoch: 4, Miou: 0.5238325595855713, maxMiou: 0.5238325595855713
+2025-12-20 01:23:01,139 INFO ==> Iter:  740/ 8880, Total_Loss:0.3897, iou_loss:0.3179, mix_loss:0.0718, lr: 0.000020
+2025-12-20 01:23:20,483 INFO ==> Iter:  760/ 8880, Total_Loss:0.3657, iou_loss:0.2957, mix_loss:0.0700, lr: 0.000020
+2025-12-20 01:23:39,754 INFO ==> Iter:  780/ 8880, Total_Loss:0.3676, iou_loss:0.2981, mix_loss:0.0695, lr: 0.000020
+2025-12-20 01:23:58,896 INFO ==> Iter:  800/ 8880, Total_Loss:0.3578, iou_loss:0.2891, mix_loss:0.0687, lr: 0.000020
+2025-12-20 01:24:18,109 INFO ==> Iter:  820/ 8880, Total_Loss:0.3934, iou_loss:0.3237, mix_loss:0.0696, lr: 0.000020
+2025-12-20 01:24:37,319 INFO ==> Iter:  840/ 8880, Total_Loss:0.3964, iou_loss:0.3264, mix_loss:0.0700, lr: 0.000020
+2025-12-20 01:24:56,569 INFO ==> Iter:  860/ 8880, Total_Loss:0.3411, iou_loss:0.2733, mix_loss:0.0678, lr: 0.000020
+2025-12-20 01:25:15,739 INFO ==> Iter:  880/ 8880, Total_Loss:0.3726, iou_loss:0.3031, mix_loss:0.0695, lr: 0.000020
+2025-12-20 01:25:44,932 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 01:25:44,932 INFO ==> Epoch: 5, Miou: 0.5257611274719238, maxMiou: 0.5257611274719238
+2025-12-20 01:25:58,922 INFO ==> Iter:  900/ 8880, Total_Loss:0.3430, iou_loss:0.2752, mix_loss:0.0678, lr: 0.000020
+2025-12-20 01:26:18,284 INFO ==> Iter:  920/ 8880, Total_Loss:0.3279, iou_loss:0.2607, mix_loss:0.0672, lr: 0.000020
+2025-12-20 01:26:37,465 INFO ==> Iter:  940/ 8880, Total_Loss:0.3124, iou_loss:0.2475, mix_loss:0.0649, lr: 0.000020
+2025-12-20 01:26:56,619 INFO ==> Iter:  960/ 8880, Total_Loss:0.3455, iou_loss:0.2748, mix_loss:0.0707, lr: 0.000020
+2025-12-20 01:27:15,800 INFO ==> Iter:  980/ 8880, Total_Loss:0.3501, iou_loss:0.2819, mix_loss:0.0682, lr: 0.000020
+2025-12-20 01:27:35,060 INFO ==> Iter: 1000/ 8880, Total_Loss:0.3734, iou_loss:0.3038, mix_loss:0.0696, lr: 0.000020
+2025-12-20 01:27:54,249 INFO ==> Iter: 1020/ 8880, Total_Loss:0.3622, iou_loss:0.2930, mix_loss:0.0692, lr: 0.000020
+2025-12-20 01:28:31,038 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 01:28:31,039 INFO ==> Epoch: 6, Miou: 0.5419921278953552, maxMiou: 0.5419921278953552
+2025-12-20 01:28:37,419 INFO ==> Iter: 1040/ 8880, Total_Loss:0.4210, iou_loss:0.3447, mix_loss:0.0762, lr: 0.000020
+2025-12-20 01:28:56,740 INFO ==> Iter: 1060/ 8880, Total_Loss:0.3292, iou_loss:0.2571, mix_loss:0.0721, lr: 0.000020
+2025-12-20 01:29:15,957 INFO ==> Iter: 1080/ 8880, Total_Loss:0.2954, iou_loss:0.2286, mix_loss:0.0668, lr: 0.000020
+2025-12-20 01:29:35,104 INFO ==> Iter: 1100/ 8880, Total_Loss:0.2752, iou_loss:0.2087, mix_loss:0.0665, lr: 0.000020
+2025-12-20 01:29:54,278 INFO ==> Iter: 1120/ 8880, Total_Loss:0.3803, iou_loss:0.3101, mix_loss:0.0702, lr: 0.000020
+2025-12-20 01:30:13,455 INFO ==> Iter: 1140/ 8880, Total_Loss:0.2882, iou_loss:0.2218, mix_loss:0.0664, lr: 0.000020
+2025-12-20 01:30:32,706 INFO ==> Iter: 1160/ 8880, Total_Loss:0.3232, iou_loss:0.2550, mix_loss:0.0682, lr: 0.000020
+2025-12-20 01:30:51,776 INFO ==> Iter: 1180/ 8880, Total_Loss:0.3861, iou_loss:0.3150, mix_loss:0.0710, lr: 0.000020
+2025-12-20 01:31:15,792 INFO ==> Epoch: 7, Miou: 0.5263973474502563, maxMiou: 0.5419921278953552
+2025-12-20 01:31:33,666 INFO ==> Iter: 1200/ 8880, Total_Loss:0.3646, iou_loss:0.2970, mix_loss:0.0676, lr: 0.000020
+2025-12-20 01:31:52,863 INFO ==> Iter: 1220/ 8880, Total_Loss:0.2642, iou_loss:0.1911, mix_loss:0.0731, lr: 0.000020
+2025-12-20 01:32:12,169 INFO ==> Iter: 1240/ 8880, Total_Loss:0.3239, iou_loss:0.2555, mix_loss:0.0684, lr: 0.000020
+2025-12-20 01:32:31,305 INFO ==> Iter: 1260/ 8880, Total_Loss:0.3532, iou_loss:0.2813, mix_loss:0.0719, lr: 0.000020
+2025-12-20 01:32:50,546 INFO ==> Iter: 1280/ 8880, Total_Loss:0.3330, iou_loss:0.2652, mix_loss:0.0677, lr: 0.000020
+2025-12-20 01:33:09,704 INFO ==> Iter: 1300/ 8880, Total_Loss:0.3693, iou_loss:0.2954, mix_loss:0.0739, lr: 0.000020
+2025-12-20 01:33:28,893 INFO ==> Iter: 1320/ 8880, Total_Loss:0.2751, iou_loss:0.2094, mix_loss:0.0658, lr: 0.000020
+2025-12-20 01:34:00,603 INFO ==> Epoch: 8, Miou: 0.5324842929840088, maxMiou: 0.5419921278953552
+2025-12-20 01:34:10,740 INFO ==> Iter: 1340/ 8880, Total_Loss:0.2776, iou_loss:0.2096, mix_loss:0.0680, lr: 0.000020
+2025-12-20 01:34:30,092 INFO ==> Iter: 1360/ 8880, Total_Loss:0.2725, iou_loss:0.2023, mix_loss:0.0702, lr: 0.000020
+2025-12-20 01:34:49,277 INFO ==> Iter: 1380/ 8880, Total_Loss:0.3025, iou_loss:0.2338, mix_loss:0.0687, lr: 0.000020
+2025-12-20 01:35:08,398 INFO ==> Iter: 1400/ 8880, Total_Loss:0.2955, iou_loss:0.2282, mix_loss:0.0673, lr: 0.000020
+2025-12-20 01:35:27,664 INFO ==> Iter: 1420/ 8880, Total_Loss:0.3123, iou_loss:0.2445, mix_loss:0.0678, lr: 0.000020
+2025-12-20 01:35:46,819 INFO ==> Iter: 1440/ 8880, Total_Loss:0.3026, iou_loss:0.2341, mix_loss:0.0684, lr: 0.000020
+2025-12-20 01:36:06,023 INFO ==> Iter: 1460/ 8880, Total_Loss:0.3189, iou_loss:0.2465, mix_loss:0.0725, lr: 0.000020
+2025-12-20 01:36:45,303 INFO ==> Epoch: 9, Miou: 0.5393840670585632, maxMiou: 0.5419921278953552
+2025-12-20 01:36:47,892 INFO ==> Iter: 1480/ 8880, Total_Loss:0.2907, iou_loss:0.2246, mix_loss:0.0661, lr: 0.000020
+2025-12-20 01:37:11,427 INFO ==> Iter: 1500/ 8880, Total_Loss:0.2836, iou_loss:0.2177, mix_loss:0.0660, lr: 0.000020
+2025-12-20 01:37:34,950 INFO ==> Iter: 1520/ 8880, Total_Loss:0.3505, iou_loss:0.2806, mix_loss:0.0699, lr: 0.000020
+2025-12-20 01:37:58,317 INFO ==> Iter: 1540/ 8880, Total_Loss:0.3936, iou_loss:0.3255, mix_loss:0.0681, lr: 0.000020
+2025-12-20 01:38:21,967 INFO ==> Iter: 1560/ 8880, Total_Loss:0.3177, iou_loss:0.2476, mix_loss:0.0700, lr: 0.000020
+2025-12-20 01:38:45,518 INFO ==> Iter: 1580/ 8880, Total_Loss:0.2989, iou_loss:0.2307, mix_loss:0.0681, lr: 0.000020
+2025-12-20 01:39:09,255 INFO ==> Iter: 1600/ 8880, Total_Loss:0.2742, iou_loss:0.2041, mix_loss:0.0701, lr: 0.000020
+2025-12-20 01:39:32,846 INFO ==> Iter: 1620/ 8880, Total_Loss:0.3278, iou_loss:0.2550, mix_loss:0.0728, lr: 0.000020
+2025-12-20 01:40:02,962 INFO ==> Epoch: 10, Miou: 0.5306966304779053, maxMiou: 0.5419921278953552
+2025-12-20 01:40:20,112 INFO ==> Iter: 1640/ 8880, Total_Loss:0.3198, iou_loss:0.2497, mix_loss:0.0701, lr: 0.000020
+2025-12-20 01:40:43,923 INFO ==> Iter: 1660/ 8880, Total_Loss:0.3331, iou_loss:0.2640, mix_loss:0.0691, lr: 0.000020
+2025-12-20 01:41:07,527 INFO ==> Iter: 1680/ 8880, Total_Loss:0.3214, iou_loss:0.2483, mix_loss:0.0732, lr: 0.000020
+2025-12-20 01:41:31,340 INFO ==> Iter: 1700/ 8880, Total_Loss:0.2927, iou_loss:0.2268, mix_loss:0.0659, lr: 0.000020
+2025-12-20 01:41:54,750 INFO ==> Iter: 1720/ 8880, Total_Loss:0.2500, iou_loss:0.1802, mix_loss:0.0698, lr: 0.000020
+2025-12-20 01:42:18,391 INFO ==> Iter: 1740/ 8880, Total_Loss:0.2717, iou_loss:0.2022, mix_loss:0.0695, lr: 0.000020
+2025-12-20 01:42:41,976 INFO ==> Iter: 1760/ 8880, Total_Loss:0.3817, iou_loss:0.3098, mix_loss:0.0719, lr: 0.000020
+2025-12-20 01:43:22,961 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 01:43:22,962 INFO ==> Epoch: 11, Miou: 0.5454561114311218, maxMiou: 0.5454561114311218
+2025-12-20 01:43:30,560 INFO ==> Iter: 1780/ 8880, Total_Loss:0.2322, iou_loss:0.1710, mix_loss:0.0613, lr: 0.000020
+2025-12-20 01:43:54,477 INFO ==> Iter: 1800/ 8880, Total_Loss:0.2381, iou_loss:0.1752, mix_loss:0.0629, lr: 0.000020
+2025-12-20 01:44:18,000 INFO ==> Iter: 1820/ 8880, Total_Loss:0.3319, iou_loss:0.2571, mix_loss:0.0748, lr: 0.000020
+2025-12-20 01:44:41,713 INFO ==> Iter: 1840/ 8880, Total_Loss:0.2611, iou_loss:0.1918, mix_loss:0.0694, lr: 0.000020
+2025-12-20 01:45:05,253 INFO ==> Iter: 1860/ 8880, Total_Loss:0.3586, iou_loss:0.2884, mix_loss:0.0702, lr: 0.000020
+2025-12-20 01:45:28,886 INFO ==> Iter: 1880/ 8880, Total_Loss:0.2641, iou_loss:0.1951, mix_loss:0.0690, lr: 0.000020
+2025-12-20 01:45:52,592 INFO ==> Iter: 1900/ 8880, Total_Loss:0.2382, iou_loss:0.1681, mix_loss:0.0702, lr: 0.000020
+2025-12-20 01:46:16,097 INFO ==> Iter: 1920/ 8880, Total_Loss:0.3251, iou_loss:0.2568, mix_loss:0.0683, lr: 0.000020
+2025-12-20 01:46:41,504 INFO ==> Epoch: 12, Miou: 0.5397233963012695, maxMiou: 0.5454561114311218
+2025-12-20 01:47:03,393 INFO ==> Iter: 1940/ 8880, Total_Loss:0.3047, iou_loss:0.2294, mix_loss:0.0753, lr: 0.000020
+2025-12-20 01:47:27,023 INFO ==> Iter: 1960/ 8880, Total_Loss:0.2598, iou_loss:0.1864, mix_loss:0.0734, lr: 0.000020
+2025-12-20 01:47:50,696 INFO ==> Iter: 1980/ 8880, Total_Loss:0.2465, iou_loss:0.1793, mix_loss:0.0672, lr: 0.000020
+2025-12-20 01:48:14,355 INFO ==> Iter: 2000/ 8880, Total_Loss:0.3068, iou_loss:0.2374, mix_loss:0.0693, lr: 0.000020
+2025-12-20 01:48:37,954 INFO ==> Iter: 2020/ 8880, Total_Loss:0.2449, iou_loss:0.1795, mix_loss:0.0654, lr: 0.000020
+2025-12-20 01:49:01,519 INFO ==> Iter: 2040/ 8880, Total_Loss:0.1890, iou_loss:0.1260, mix_loss:0.0630, lr: 0.000020
+2025-12-20 01:49:25,176 INFO ==> Iter: 2060/ 8880, Total_Loss:0.2862, iou_loss:0.2156, mix_loss:0.0706, lr: 0.000020
+2025-12-20 01:50:01,440 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 01:50:01,442 INFO ==> Epoch: 13, Miou: 0.6006981134414673, maxMiou: 0.6006981134414673
+2025-12-20 01:50:13,827 INFO ==> Iter: 2080/ 8880, Total_Loss:0.2855, iou_loss:0.2112, mix_loss:0.0743, lr: 0.000020
+2025-12-20 01:50:37,707 INFO ==> Iter: 2100/ 8880, Total_Loss:0.2305, iou_loss:0.1638, mix_loss:0.0667, lr: 0.000020
+2025-12-20 01:51:01,382 INFO ==> Iter: 2120/ 8880, Total_Loss:0.2008, iou_loss:0.1342, mix_loss:0.0666, lr: 0.000020
+2025-12-20 01:51:25,118 INFO ==> Iter: 2140/ 8880, Total_Loss:0.2545, iou_loss:0.1809, mix_loss:0.0735, lr: 0.000020
+2025-12-20 01:51:48,609 INFO ==> Iter: 2160/ 8880, Total_Loss:0.3144, iou_loss:0.2445, mix_loss:0.0699, lr: 0.000020
+2025-12-20 01:52:12,455 INFO ==> Iter: 2180/ 8880, Total_Loss:0.2385, iou_loss:0.1703, mix_loss:0.0682, lr: 0.000020
+2025-12-20 01:52:35,966 INFO ==> Iter: 2200/ 8880, Total_Loss:0.2767, iou_loss:0.2082, mix_loss:0.0686, lr: 0.000020
+2025-12-20 01:53:21,743 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 01:53:21,744 INFO ==> Epoch: 14, Miou: 0.6084391474723816, maxMiou: 0.6084391474723816
+2025-12-20 01:53:24,549 INFO ==> Iter: 2220/ 8880, Total_Loss:0.1951, iou_loss:0.1288, mix_loss:0.0663, lr: 0.000020
+2025-12-20 01:53:48,588 INFO ==> Iter: 2240/ 8880, Total_Loss:0.2113, iou_loss:0.1424, mix_loss:0.0689, lr: 0.000020
+2025-12-20 01:54:12,369 INFO ==> Iter: 2260/ 8880, Total_Loss:0.2277, iou_loss:0.1599, mix_loss:0.0678, lr: 0.000020
+2025-12-20 01:54:36,119 INFO ==> Iter: 2280/ 8880, Total_Loss:0.2223, iou_loss:0.1511, mix_loss:0.0712, lr: 0.000020
+2025-12-20 01:54:59,606 INFO ==> Iter: 2300/ 8880, Total_Loss:0.2854, iou_loss:0.2136, mix_loss:0.0718, lr: 0.000020
+2025-12-20 01:55:23,216 INFO ==> Iter: 2320/ 8880, Total_Loss:0.2525, iou_loss:0.1841, mix_loss:0.0684, lr: 0.000020
+2025-12-20 01:55:46,951 INFO ==> Iter: 2340/ 8880, Total_Loss:0.2457, iou_loss:0.1774, mix_loss:0.0683, lr: 0.000020
+2025-12-20 01:56:10,452 INFO ==> Iter: 2360/ 8880, Total_Loss:0.2217, iou_loss:0.1528, mix_loss:0.0689, lr: 0.000020
+2025-12-20 01:56:40,633 INFO ==> Epoch: 15, Miou: 0.6045247912406921, maxMiou: 0.6084391474723816
+2025-12-20 01:56:57,707 INFO ==> Iter: 2380/ 8880, Total_Loss:0.1939, iou_loss:0.1264, mix_loss:0.0675, lr: 0.000020
+2025-12-20 01:57:21,580 INFO ==> Iter: 2400/ 8880, Total_Loss:0.2660, iou_loss:0.1946, mix_loss:0.0713, lr: 0.000020
+2025-12-20 01:57:45,222 INFO ==> Iter: 2420/ 8880, Total_Loss:0.2737, iou_loss:0.2000, mix_loss:0.0737, lr: 0.000020
+2025-12-20 01:58:08,687 INFO ==> Iter: 2440/ 8880, Total_Loss:0.2187, iou_loss:0.1497, mix_loss:0.0690, lr: 0.000020
+2025-12-20 01:58:32,325 INFO ==> Iter: 2460/ 8880, Total_Loss:0.2155, iou_loss:0.1477, mix_loss:0.0679, lr: 0.000020
+2025-12-20 01:58:55,900 INFO ==> Iter: 2480/ 8880, Total_Loss:0.1883, iou_loss:0.1242, mix_loss:0.0641, lr: 0.000020
+2025-12-20 01:59:19,491 INFO ==> Iter: 2500/ 8880, Total_Loss:0.2072, iou_loss:0.1387, mix_loss:0.0685, lr: 0.000020
+2025-12-20 01:59:59,071 INFO ==> Epoch: 16, Miou: 0.5873149037361145, maxMiou: 0.6084391474723816
+2025-12-20 02:00:06,593 INFO ==> Iter: 2520/ 8880, Total_Loss:0.2574, iou_loss:0.1873, mix_loss:0.0701, lr: 0.000020
+2025-12-20 02:00:30,581 INFO ==> Iter: 2540/ 8880, Total_Loss:0.1971, iou_loss:0.1259, mix_loss:0.0713, lr: 0.000020
+2025-12-20 02:00:54,266 INFO ==> Iter: 2560/ 8880, Total_Loss:0.1913, iou_loss:0.1251, mix_loss:0.0663, lr: 0.000020
+2025-12-20 02:01:17,982 INFO ==> Iter: 2580/ 8880, Total_Loss:0.1967, iou_loss:0.1280, mix_loss:0.0688, lr: 0.000020
+2025-12-20 02:01:41,637 INFO ==> Iter: 2600/ 8880, Total_Loss:0.2732, iou_loss:0.2023, mix_loss:0.0709, lr: 0.000020
+2025-12-20 02:02:05,031 INFO ==> Iter: 2620/ 8880, Total_Loss:0.2680, iou_loss:0.1971, mix_loss:0.0710, lr: 0.000020
+2025-12-20 02:02:28,616 INFO ==> Iter: 2640/ 8880, Total_Loss:0.2343, iou_loss:0.1647, mix_loss:0.0696, lr: 0.000020
+2025-12-20 02:02:52,156 INFO ==> Iter: 2660/ 8880, Total_Loss:0.1788, iou_loss:0.1118, mix_loss:0.0670, lr: 0.000020
+2025-12-20 02:03:18,811 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 02:03:18,813 INFO ==> Epoch: 17, Miou: 0.6195081472396851, maxMiou: 0.6195081472396851
+2025-12-20 02:03:40,580 INFO ==> Iter: 2680/ 8880, Total_Loss:0.2109, iou_loss:0.1407, mix_loss:0.0702, lr: 0.000020
+2025-12-20 02:04:04,519 INFO ==> Iter: 2700/ 8880, Total_Loss:0.1917, iou_loss:0.1252, mix_loss:0.0666, lr: 0.000020
+2025-12-20 02:04:28,125 INFO ==> Iter: 2720/ 8880, Total_Loss:0.2313, iou_loss:0.1632, mix_loss:0.0682, lr: 0.000020
+2025-12-20 02:04:51,700 INFO ==> Iter: 2740/ 8880, Total_Loss:0.1794, iou_loss:0.1101, mix_loss:0.0693, lr: 0.000020
+2025-12-20 02:05:15,406 INFO ==> Iter: 2760/ 8880, Total_Loss:0.2019, iou_loss:0.1290, mix_loss:0.0729, lr: 0.000020
+2025-12-20 02:05:38,904 INFO ==> Iter: 2780/ 8880, Total_Loss:0.2339, iou_loss:0.1642, mix_loss:0.0696, lr: 0.000020
+2025-12-20 02:06:02,541 INFO ==> Iter: 2800/ 8880, Total_Loss:0.1806, iou_loss:0.1123, mix_loss:0.0683, lr: 0.000020
+2025-12-20 02:06:38,693 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 02:06:38,694 INFO ==> Epoch: 18, Miou: 0.6258053183555603, maxMiou: 0.6258053183555603
+2025-12-20 02:06:51,075 INFO ==> Iter: 2820/ 8880, Total_Loss:0.2317, iou_loss:0.1626, mix_loss:0.0691, lr: 0.000020
+2025-12-20 02:07:14,793 INFO ==> Iter: 2840/ 8880, Total_Loss:0.1894, iou_loss:0.1166, mix_loss:0.0728, lr: 0.000020
+2025-12-20 02:07:38,491 INFO ==> Iter: 2860/ 8880, Total_Loss:0.1828, iou_loss:0.1171, mix_loss:0.0657, lr: 0.000020
+2025-12-20 02:08:02,116 INFO ==> Iter: 2880/ 8880, Total_Loss:0.2154, iou_loss:0.1425, mix_loss:0.0729, lr: 0.000020
+2025-12-20 02:08:25,664 INFO ==> Iter: 2900/ 8880, Total_Loss:0.2378, iou_loss:0.1664, mix_loss:0.0714, lr: 0.000020
+2025-12-20 02:08:49,330 INFO ==> Iter: 2920/ 8880, Total_Loss:0.1503, iou_loss:0.0847, mix_loss:0.0656, lr: 0.000020
+2025-12-20 02:09:12,831 INFO ==> Iter: 2940/ 8880, Total_Loss:0.2122, iou_loss:0.1442, mix_loss:0.0681, lr: 0.000020
+2025-12-20 02:09:58,532 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 02:09:58,533 INFO ==> Epoch: 19, Miou: 0.6371633410453796, maxMiou: 0.6371633410453796
+2025-12-20 02:10:01,380 INFO ==> Iter: 2960/ 8880, Total_Loss:0.2085, iou_loss:0.1423, mix_loss:0.0661, lr: 0.000020
+2025-12-20 02:10:25,446 INFO ==> Iter: 2980/ 8880, Total_Loss:0.2315, iou_loss:0.1630, mix_loss:0.0685, lr: 0.000020
+2025-12-20 02:10:48,950 INFO ==> Iter: 3000/ 8880, Total_Loss:0.2123, iou_loss:0.1421, mix_loss:0.0703, lr: 0.000020
+2025-12-20 02:11:12,652 INFO ==> Iter: 3020/ 8880, Total_Loss:0.2400, iou_loss:0.1656, mix_loss:0.0743, lr: 0.000020
+2025-12-20 02:11:36,325 INFO ==> Iter: 3040/ 8880, Total_Loss:0.1789, iou_loss:0.1085, mix_loss:0.0704, lr: 0.000020
+2025-12-20 02:11:59,961 INFO ==> Iter: 3060/ 8880, Total_Loss:0.1898, iou_loss:0.1203, mix_loss:0.0695, lr: 0.000020
+2025-12-20 02:12:23,622 INFO ==> Iter: 3080/ 8880, Total_Loss:0.1596, iou_loss:0.0947, mix_loss:0.0649, lr: 0.000020
+2025-12-20 02:12:47,147 INFO ==> Iter: 3100/ 8880, Total_Loss:0.1523, iou_loss:0.0863, mix_loss:0.0661, lr: 0.000020
+2025-12-20 02:13:17,523 INFO ==> Epoch: 20, Miou: 0.6266393065452576, maxMiou: 0.6371633410453796
+2025-12-20 02:13:34,622 INFO ==> Iter: 3120/ 8880, Total_Loss:0.1782, iou_loss:0.1122, mix_loss:0.0660, lr: 0.000020
+2025-12-20 02:13:58,581 INFO ==> Iter: 3140/ 8880, Total_Loss:0.1907, iou_loss:0.1205, mix_loss:0.0701, lr: 0.000020
+2025-12-20 02:14:22,245 INFO ==> Iter: 3160/ 8880, Total_Loss:0.2241, iou_loss:0.1540, mix_loss:0.0701, lr: 0.000020
+2025-12-20 02:14:45,837 INFO ==> Iter: 3180/ 8880, Total_Loss:0.2010, iou_loss:0.1314, mix_loss:0.0696, lr: 0.000020
+2025-12-20 02:15:09,485 INFO ==> Iter: 3200/ 8880, Total_Loss:0.1932, iou_loss:0.1267, mix_loss:0.0666, lr: 0.000020
+2025-12-20 02:15:33,147 INFO ==> Iter: 3220/ 8880, Total_Loss:0.1708, iou_loss:0.1036, mix_loss:0.0672, lr: 0.000020
+2025-12-20 02:15:56,789 INFO ==> Iter: 3240/ 8880, Total_Loss:0.2197, iou_loss:0.1476, mix_loss:0.0721, lr: 0.000020
+2025-12-20 02:16:36,357 INFO ==> Epoch: 21, Miou: 0.6317052841186523, maxMiou: 0.6371633410453796
+2025-12-20 02:16:43,909 INFO ==> Iter: 3260/ 8880, Total_Loss:0.1934, iou_loss:0.1227, mix_loss:0.0707, lr: 0.000020
+2025-12-20 02:17:07,858 INFO ==> Iter: 3280/ 8880, Total_Loss:0.2420, iou_loss:0.1710, mix_loss:0.0711, lr: 0.000020
+2025-12-20 02:17:31,647 INFO ==> Iter: 3300/ 8880, Total_Loss:0.1821, iou_loss:0.1137, mix_loss:0.0683, lr: 0.000020
+2025-12-20 02:17:55,573 INFO ==> Iter: 3320/ 8880, Total_Loss:0.1928, iou_loss:0.1254, mix_loss:0.0674, lr: 0.000020
+2025-12-20 02:18:19,095 INFO ==> Iter: 3340/ 8880, Total_Loss:0.1950, iou_loss:0.1273, mix_loss:0.0678, lr: 0.000020
+2025-12-20 02:18:42,799 INFO ==> Iter: 3360/ 8880, Total_Loss:0.1570, iou_loss:0.0914, mix_loss:0.0656, lr: 0.000020
+2025-12-20 02:19:06,508 INFO ==> Iter: 3380/ 8880, Total_Loss:0.1605, iou_loss:0.0922, mix_loss:0.0684, lr: 0.000020
+2025-12-20 02:19:30,119 INFO ==> Iter: 3400/ 8880, Total_Loss:0.2493, iou_loss:0.1764, mix_loss:0.0729, lr: 0.000020
+2025-12-20 02:19:55,532 INFO ==> Epoch: 22, Miou: 0.6270880699157715, maxMiou: 0.6371633410453796
+2025-12-20 02:20:17,282 INFO ==> Iter: 3420/ 8880, Total_Loss:0.1638, iou_loss:0.0933, mix_loss:0.0705, lr: 0.000020
+2025-12-20 02:20:41,199 INFO ==> Iter: 3440/ 8880, Total_Loss:0.1566, iou_loss:0.0892, mix_loss:0.0674, lr: 0.000020
+2025-12-20 02:21:04,876 INFO ==> Iter: 3460/ 8880, Total_Loss:0.2119, iou_loss:0.1436, mix_loss:0.0683, lr: 0.000020
+2025-12-20 02:21:28,424 INFO ==> Iter: 3480/ 8880, Total_Loss:0.2228, iou_loss:0.1512, mix_loss:0.0717, lr: 0.000020
+2025-12-20 02:21:52,092 INFO ==> Iter: 3500/ 8880, Total_Loss:0.1353, iou_loss:0.0719, mix_loss:0.0634, lr: 0.000020
+2025-12-20 02:22:15,695 INFO ==> Iter: 3520/ 8880, Total_Loss:0.2101, iou_loss:0.1371, mix_loss:0.0730, lr: 0.000020
+2025-12-20 02:22:39,286 INFO ==> Iter: 3540/ 8880, Total_Loss:0.2297, iou_loss:0.1581, mix_loss:0.0716, lr: 0.000020
+2025-12-20 02:23:15,406 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 02:23:15,407 INFO ==> Epoch: 23, Miou: 0.6410388946533203, maxMiou: 0.6410388946533203
+2025-12-20 02:23:27,853 INFO ==> Iter: 3560/ 8880, Total_Loss:0.1401, iou_loss:0.0742, mix_loss:0.0660, lr: 0.000020
+2025-12-20 02:23:51,565 INFO ==> Iter: 3580/ 8880, Total_Loss:0.1718, iou_loss:0.1057, mix_loss:0.0661, lr: 0.000020
+2025-12-20 02:24:15,282 INFO ==> Iter: 3600/ 8880, Total_Loss:0.2236, iou_loss:0.1541, mix_loss:0.0695, lr: 0.000020
+2025-12-20 02:24:38,831 INFO ==> Iter: 3620/ 8880, Total_Loss:0.1467, iou_loss:0.0775, mix_loss:0.0692, lr: 0.000020
+2025-12-20 02:25:02,535 INFO ==> Iter: 3640/ 8880, Total_Loss:0.1744, iou_loss:0.1055, mix_loss:0.0689, lr: 0.000020
+2025-12-20 02:25:26,189 INFO ==> Iter: 3660/ 8880, Total_Loss:0.1945, iou_loss:0.1240, mix_loss:0.0704, lr: 0.000020
+2025-12-20 02:25:49,821 INFO ==> Iter: 3680/ 8880, Total_Loss:0.1419, iou_loss:0.0725, mix_loss:0.0694, lr: 0.000020
+2025-12-20 02:26:35,487 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 02:26:35,489 INFO ==> Epoch: 24, Miou: 0.6496406197547913, maxMiou: 0.6496406197547913
+2025-12-20 02:26:38,296 INFO ==> Iter: 3700/ 8880, Total_Loss:0.2293, iou_loss:0.1577, mix_loss:0.0716, lr: 0.000020
+2025-12-20 02:27:02,300 INFO ==> Iter: 3720/ 8880, Total_Loss:0.1850, iou_loss:0.1120, mix_loss:0.0729, lr: 0.000020
+2025-12-20 02:27:26,055 INFO ==> Iter: 3740/ 8880, Total_Loss:0.1705, iou_loss:0.1017, mix_loss:0.0688, lr: 0.000020
+2025-12-20 02:27:49,832 INFO ==> Iter: 3760/ 8880, Total_Loss:0.1976, iou_loss:0.1262, mix_loss:0.0714, lr: 0.000020
+2025-12-20 02:28:13,368 INFO ==> Iter: 3780/ 8880, Total_Loss:0.1532, iou_loss:0.0838, mix_loss:0.0695, lr: 0.000020
+2025-12-20 02:28:37,134 INFO ==> Iter: 3800/ 8880, Total_Loss:0.1839, iou_loss:0.1119, mix_loss:0.0720, lr: 0.000020
+2025-12-20 02:29:00,820 INFO ==> Iter: 3820/ 8880, Total_Loss:0.1517, iou_loss:0.0892, mix_loss:0.0625, lr: 0.000020
+2025-12-20 02:29:24,405 INFO ==> Iter: 3840/ 8880, Total_Loss:0.2167, iou_loss:0.1492, mix_loss:0.0675, lr: 0.000020
+2025-12-20 02:29:54,798 INFO ==> Epoch: 25, Miou: 0.6315033435821533, maxMiou: 0.6496406197547913
+2025-12-20 02:30:11,913 INFO ==> Iter: 3860/ 8880, Total_Loss:0.1426, iou_loss:0.0793, mix_loss:0.0634, lr: 0.000020
+2025-12-20 02:30:35,930 INFO ==> Iter: 3880/ 8880, Total_Loss:0.1675, iou_loss:0.0978, mix_loss:0.0696, lr: 0.000020
+2025-12-20 02:30:59,539 INFO ==> Iter: 3900/ 8880, Total_Loss:0.1981, iou_loss:0.1308, mix_loss:0.0673, lr: 0.000020
+2025-12-20 02:31:23,048 INFO ==> Iter: 3920/ 8880, Total_Loss:0.1870, iou_loss:0.1179, mix_loss:0.0691, lr: 0.000020
+2025-12-20 02:31:46,724 INFO ==> Iter: 3940/ 8880, Total_Loss:0.1799, iou_loss:0.1122, mix_loss:0.0677, lr: 0.000020
+2025-12-20 02:32:10,354 INFO ==> Iter: 3960/ 8880, Total_Loss:0.1997, iou_loss:0.1264, mix_loss:0.0733, lr: 0.000020
+2025-12-20 02:32:34,000 INFO ==> Iter: 3980/ 8880, Total_Loss:0.1508, iou_loss:0.0800, mix_loss:0.0708, lr: 0.000020
+2025-12-20 02:33:13,480 INFO ==> Epoch: 26, Miou: 0.6434926390647888, maxMiou: 0.6496406197547913
+2025-12-20 02:33:21,014 INFO ==> Iter: 4000/ 8880, Total_Loss:0.1566, iou_loss:0.0894, mix_loss:0.0672, lr: 0.000020
+2025-12-20 02:33:45,056 INFO ==> Iter: 4020/ 8880, Total_Loss:0.1443, iou_loss:0.0768, mix_loss:0.0676, lr: 0.000020
+2025-12-20 02:34:08,827 INFO ==> Iter: 4040/ 8880, Total_Loss:0.2107, iou_loss:0.1391, mix_loss:0.0716, lr: 0.000020
+2025-12-20 02:34:32,542 INFO ==> Iter: 4060/ 8880, Total_Loss:0.1651, iou_loss:0.0984, mix_loss:0.0666, lr: 0.000020
+2025-12-20 02:34:56,051 INFO ==> Iter: 4080/ 8880, Total_Loss:0.2063, iou_loss:0.1355, mix_loss:0.0708, lr: 0.000020
+2025-12-20 02:35:19,721 INFO ==> Iter: 4100/ 8880, Total_Loss:0.1837, iou_loss:0.1137, mix_loss:0.0700, lr: 0.000020
+2025-12-20 02:35:43,379 INFO ==> Iter: 4120/ 8880, Total_Loss:0.1842, iou_loss:0.1174, mix_loss:0.0668, lr: 0.000020
+2025-12-20 02:36:07,182 INFO ==> Iter: 4140/ 8880, Total_Loss:0.1326, iou_loss:0.0670, mix_loss:0.0656, lr: 0.000020
+2025-12-20 02:36:32,785 INFO ==> Epoch: 27, Miou: 0.6312301158905029, maxMiou: 0.6496406197547913
+2025-12-20 02:36:54,744 INFO ==> Iter: 4160/ 8880, Total_Loss:0.1533, iou_loss:0.0853, mix_loss:0.0680, lr: 0.000020
+2025-12-20 02:37:18,589 INFO ==> Iter: 4180/ 8880, Total_Loss:0.1872, iou_loss:0.1213, mix_loss:0.0659, lr: 0.000020
+2025-12-20 02:37:42,111 INFO ==> Iter: 4200/ 8880, Total_Loss:0.1656, iou_loss:0.0957, mix_loss:0.0700, lr: 0.000020
+2025-12-20 02:38:05,841 INFO ==> Iter: 4220/ 8880, Total_Loss:0.1959, iou_loss:0.1283, mix_loss:0.0676, lr: 0.000020
+2025-12-20 02:38:29,504 INFO ==> Iter: 4240/ 8880, Total_Loss:0.1594, iou_loss:0.0933, mix_loss:0.0660, lr: 0.000020
+2025-12-20 02:38:53,185 INFO ==> Iter: 4260/ 8880, Total_Loss:0.2119, iou_loss:0.1429, mix_loss:0.0690, lr: 0.000020
+2025-12-20 02:39:16,865 INFO ==> Iter: 4280/ 8880, Total_Loss:0.1786, iou_loss:0.1056, mix_loss:0.0731, lr: 0.000020
+2025-12-20 02:39:53,123 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 02:39:53,125 INFO ==> Epoch: 28, Miou: 0.6511602997779846, maxMiou: 0.6511602997779846
+2025-12-20 02:40:05,650 INFO ==> Iter: 4300/ 8880, Total_Loss:0.2103, iou_loss:0.1374, mix_loss:0.0729, lr: 0.000020
+2025-12-20 02:40:29,476 INFO ==> Iter: 4320/ 8880, Total_Loss:0.1824, iou_loss:0.1122, mix_loss:0.0702, lr: 0.000020
+2025-12-20 02:40:53,240 INFO ==> Iter: 4340/ 8880, Total_Loss:0.2177, iou_loss:0.1447, mix_loss:0.0729, lr: 0.000020
+2025-12-20 02:41:16,876 INFO ==> Iter: 4360/ 8880, Total_Loss:0.2468, iou_loss:0.1780, mix_loss:0.0687, lr: 0.000020
+2025-12-20 02:41:40,650 INFO ==> Iter: 4380/ 8880, Total_Loss:0.1486, iou_loss:0.0834, mix_loss:0.0652, lr: 0.000020
+2025-12-20 02:42:04,244 INFO ==> Iter: 4400/ 8880, Total_Loss:0.1585, iou_loss:0.0887, mix_loss:0.0698, lr: 0.000020
+2025-12-20 02:42:28,103 INFO ==> Iter: 4420/ 8880, Total_Loss:0.1454, iou_loss:0.0804, mix_loss:0.0650, lr: 0.000020
+2025-12-20 02:43:13,914 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 02:43:13,916 INFO ==> Epoch: 29, Miou: 0.6544345617294312, maxMiou: 0.6544345617294312
+2025-12-20 02:43:16,776 INFO ==> Iter: 4440/ 8880, Total_Loss:0.1901, iou_loss:0.1197, mix_loss:0.0704, lr: 0.000020
+2025-12-20 02:43:40,751 INFO ==> Iter: 4460/ 8880, Total_Loss:0.2092, iou_loss:0.1437, mix_loss:0.0655, lr: 0.000020
+2025-12-20 02:44:04,597 INFO ==> Iter: 4480/ 8880, Total_Loss:0.1416, iou_loss:0.0716, mix_loss:0.0700, lr: 0.000020
+2025-12-20 02:44:28,373 INFO ==> Iter: 4500/ 8880, Total_Loss:0.2093, iou_loss:0.1401, mix_loss:0.0692, lr: 0.000020
+2025-12-20 02:44:52,101 INFO ==> Iter: 4520/ 8880, Total_Loss:0.1395, iou_loss:0.0694, mix_loss:0.0701, lr: 0.000020
+2025-12-20 02:45:15,914 INFO ==> Iter: 4540/ 8880, Total_Loss:0.1647, iou_loss:0.0975, mix_loss:0.0672, lr: 0.000020
+2025-12-20 02:45:39,471 INFO ==> Iter: 4560/ 8880, Total_Loss:0.1892, iou_loss:0.1187, mix_loss:0.0705, lr: 0.000020
+2025-12-20 02:46:03,294 INFO ==> Iter: 4580/ 8880, Total_Loss:0.1667, iou_loss:0.0986, mix_loss:0.0681, lr: 0.000020
+2025-12-20 02:46:33,577 INFO ==> Epoch: 30, Miou: 0.6332743167877197, maxMiou: 0.6544345617294312
+2025-12-20 02:46:50,767 INFO ==> Iter: 4600/ 8880, Total_Loss:0.1394, iou_loss:0.0760, mix_loss:0.0634, lr: 0.000020
+2025-12-20 02:47:14,725 INFO ==> Iter: 4620/ 8880, Total_Loss:0.1728, iou_loss:0.1018, mix_loss:0.0709, lr: 0.000020
+2025-12-20 02:47:38,608 INFO ==> Iter: 4640/ 8880, Total_Loss:0.1318, iou_loss:0.0636, mix_loss:0.0682, lr: 0.000020
+2025-12-20 02:48:02,248 INFO ==> Iter: 4660/ 8880, Total_Loss:0.1767, iou_loss:0.1045, mix_loss:0.0721, lr: 0.000020
+2025-12-20 02:48:26,014 INFO ==> Iter: 4680/ 8880, Total_Loss:0.2007, iou_loss:0.1330, mix_loss:0.0677, lr: 0.000020
+2025-12-20 02:48:49,590 INFO ==> Iter: 4700/ 8880, Total_Loss:0.2232, iou_loss:0.1518, mix_loss:0.0714, lr: 0.000020
+2025-12-20 02:49:13,440 INFO ==> Iter: 4720/ 8880, Total_Loss:0.1430, iou_loss:0.0734, mix_loss:0.0696, lr: 0.000020
+2025-12-20 02:49:53,019 INFO ==> Epoch: 31, Miou: 0.6296757459640503, maxMiou: 0.6544345617294312
+2025-12-20 02:50:00,516 INFO ==> Iter: 4740/ 8880, Total_Loss:0.2382, iou_loss:0.1730, mix_loss:0.0651, lr: 0.000020
+2025-12-20 02:50:24,527 INFO ==> Iter: 4760/ 8880, Total_Loss:0.1308, iou_loss:0.0581, mix_loss:0.0726, lr: 0.000020
+2025-12-20 02:50:48,181 INFO ==> Iter: 4780/ 8880, Total_Loss:0.1641, iou_loss:0.0964, mix_loss:0.0677, lr: 0.000020
+2025-12-20 02:51:12,047 INFO ==> Iter: 4800/ 8880, Total_Loss:0.1307, iou_loss:0.0606, mix_loss:0.0701, lr: 0.000020
+2025-12-20 02:51:35,698 INFO ==> Iter: 4820/ 8880, Total_Loss:0.1708, iou_loss:0.1059, mix_loss:0.0649, lr: 0.000020
+2025-12-20 02:51:59,519 INFO ==> Iter: 4840/ 8880, Total_Loss:0.1559, iou_loss:0.0830, mix_loss:0.0729, lr: 0.000020
+2025-12-20 02:52:23,228 INFO ==> Iter: 4860/ 8880, Total_Loss:0.2149, iou_loss:0.1482, mix_loss:0.0667, lr: 0.000020
+2025-12-20 02:52:46,806 INFO ==> Iter: 4880/ 8880, Total_Loss:0.2080, iou_loss:0.1429, mix_loss:0.0650, lr: 0.000020
+2025-12-20 02:53:12,231 INFO ==> Epoch: 32, Miou: 0.6376221179962158, maxMiou: 0.6544345617294312
+2025-12-20 02:53:33,978 INFO ==> Iter: 4900/ 8880, Total_Loss:0.1410, iou_loss:0.0714, mix_loss:0.0696, lr: 0.000020
+2025-12-20 02:53:58,076 INFO ==> Iter: 4920/ 8880, Total_Loss:0.2632, iou_loss:0.1912, mix_loss:0.0720, lr: 0.000020
+2025-12-20 02:54:21,884 INFO ==> Iter: 4940/ 8880, Total_Loss:0.1539, iou_loss:0.0844, mix_loss:0.0695, lr: 0.000020
+2025-12-20 02:54:45,644 INFO ==> Iter: 4960/ 8880, Total_Loss:0.1486, iou_loss:0.0821, mix_loss:0.0665, lr: 0.000020
+2025-12-20 02:55:09,400 INFO ==> Iter: 4980/ 8880, Total_Loss:0.1646, iou_loss:0.0966, mix_loss:0.0681, lr: 0.000020
+2025-12-20 02:55:33,054 INFO ==> Iter: 5000/ 8880, Total_Loss:0.1679, iou_loss:0.1009, mix_loss:0.0670, lr: 0.000020
+2025-12-20 02:55:56,771 INFO ==> Iter: 5020/ 8880, Total_Loss:0.1361, iou_loss:0.0688, mix_loss:0.0673, lr: 0.000020
+2025-12-20 02:56:32,898 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 02:56:32,900 INFO ==> Epoch: 33, Miou: 0.6594535708427429, maxMiou: 0.6594535708427429
+2025-12-20 02:56:45,304 INFO ==> Iter: 5040/ 8880, Total_Loss:0.2143, iou_loss:0.1440, mix_loss:0.0702, lr: 0.000020
+2025-12-20 02:57:09,066 INFO ==> Iter: 5060/ 8880, Total_Loss:0.1278, iou_loss:0.0641, mix_loss:0.0637, lr: 0.000020
+2025-12-20 02:57:32,932 INFO ==> Iter: 5080/ 8880, Total_Loss:0.1724, iou_loss:0.1009, mix_loss:0.0715, lr: 0.000020
+2025-12-20 02:57:56,616 INFO ==> Iter: 5100/ 8880, Total_Loss:0.1588, iou_loss:0.0901, mix_loss:0.0687, lr: 0.000020
+2025-12-20 02:58:20,379 INFO ==> Iter: 5120/ 8880, Total_Loss:0.2180, iou_loss:0.1523, mix_loss:0.0657, lr: 0.000020
+2025-12-20 02:58:44,143 INFO ==> Iter: 5140/ 8880, Total_Loss:0.1557, iou_loss:0.0883, mix_loss:0.0674, lr: 0.000020
+2025-12-20 02:59:07,713 INFO ==> Iter: 5160/ 8880, Total_Loss:0.1745, iou_loss:0.1046, mix_loss:0.0699, lr: 0.000020
+2025-12-20 02:59:52,281 INFO ==> Epoch: 34, Miou: 0.645270586013794, maxMiou: 0.6594535708427429
+2025-12-20 02:59:55,062 INFO ==> Iter: 5180/ 8880, Total_Loss:0.2053, iou_loss:0.1323, mix_loss:0.0731, lr: 0.000020
+2025-12-20 03:00:18,992 INFO ==> Iter: 5200/ 8880, Total_Loss:0.1126, iou_loss:0.0525, mix_loss:0.0601, lr: 0.000020
+2025-12-20 03:00:42,914 INFO ==> Iter: 5220/ 8880, Total_Loss:0.1438, iou_loss:0.0763, mix_loss:0.0675, lr: 0.000020
+2025-12-20 03:01:06,552 INFO ==> Iter: 5240/ 8880, Total_Loss:0.2148, iou_loss:0.1443, mix_loss:0.0705, lr: 0.000020
+2025-12-20 03:01:30,364 INFO ==> Iter: 5260/ 8880, Total_Loss:0.1779, iou_loss:0.1065, mix_loss:0.0714, lr: 0.000020
+2025-12-20 03:01:54,029 INFO ==> Iter: 5280/ 8880, Total_Loss:0.1521, iou_loss:0.0865, mix_loss:0.0656, lr: 0.000020
+2025-12-20 03:02:17,862 INFO ==> Iter: 5300/ 8880, Total_Loss:0.2014, iou_loss:0.1293, mix_loss:0.0720, lr: 0.000020
+2025-12-20 03:02:41,493 INFO ==> Iter: 5320/ 8880, Total_Loss:0.1856, iou_loss:0.1149, mix_loss:0.0707, lr: 0.000020
+2025-12-20 03:03:11,923 INFO ==> Epoch: 35, Miou: 0.6465573906898499, maxMiou: 0.6594535708427429
+2025-12-20 03:03:29,114 INFO ==> Iter: 5340/ 8880, Total_Loss:0.1838, iou_loss:0.1157, mix_loss:0.0681, lr: 0.000020
+2025-12-20 03:03:53,081 INFO ==> Iter: 5360/ 8880, Total_Loss:0.1207, iou_loss:0.0540, mix_loss:0.0667, lr: 0.000020
+2025-12-20 03:04:16,878 INFO ==> Iter: 5380/ 8880, Total_Loss:0.2030, iou_loss:0.1327, mix_loss:0.0702, lr: 0.000020
+2025-12-20 03:04:40,640 INFO ==> Iter: 5400/ 8880, Total_Loss:0.1601, iou_loss:0.0933, mix_loss:0.0668, lr: 0.000020
+2025-12-20 03:05:04,439 INFO ==> Iter: 5420/ 8880, Total_Loss:0.1499, iou_loss:0.0828, mix_loss:0.0671, lr: 0.000020
+2025-12-20 03:05:28,107 INFO ==> Iter: 5440/ 8880, Total_Loss:0.1952, iou_loss:0.1242, mix_loss:0.0710, lr: 0.000020
+2025-12-20 03:05:51,883 INFO ==> Iter: 5460/ 8880, Total_Loss:0.1766, iou_loss:0.1045, mix_loss:0.0721, lr: 0.000020
+2025-12-20 03:06:31,675 INFO ==> Epoch: 36, Miou: 0.6517929434776306, maxMiou: 0.6594535708427429
+2025-12-20 03:06:39,296 INFO ==> Iter: 5480/ 8880, Total_Loss:0.1448, iou_loss:0.0764, mix_loss:0.0685, lr: 0.000020
+2025-12-20 03:07:03,337 INFO ==> Iter: 5500/ 8880, Total_Loss:0.1415, iou_loss:0.0700, mix_loss:0.0715, lr: 0.000020
+2025-12-20 03:07:27,062 INFO ==> Iter: 5520/ 8880, Total_Loss:0.1216, iou_loss:0.0561, mix_loss:0.0655, lr: 0.000020
+2025-12-20 03:07:50,993 INFO ==> Iter: 5540/ 8880, Total_Loss:0.2469, iou_loss:0.1786, mix_loss:0.0684, lr: 0.000020
+2025-12-20 03:08:14,697 INFO ==> Iter: 5560/ 8880, Total_Loss:0.2160, iou_loss:0.1472, mix_loss:0.0688, lr: 0.000020
+2025-12-20 03:08:38,348 INFO ==> Iter: 5580/ 8880, Total_Loss:0.1686, iou_loss:0.0979, mix_loss:0.0707, lr: 0.000020
+2025-12-20 03:09:02,103 INFO ==> Iter: 5600/ 8880, Total_Loss:0.1953, iou_loss:0.1305, mix_loss:0.0648, lr: 0.000020
+2025-12-20 03:09:25,560 INFO ==> Iter: 5620/ 8880, Total_Loss:0.1548, iou_loss:0.0886, mix_loss:0.0662, lr: 0.000020
+2025-12-20 03:09:51,136 INFO ==> Epoch: 37, Miou: 0.6339792013168335, maxMiou: 0.6594535708427429
+2025-12-20 03:10:13,153 INFO ==> Iter: 5640/ 8880, Total_Loss:0.1526, iou_loss:0.0891, mix_loss:0.0635, lr: 0.000020
+2025-12-20 03:10:36,975 INFO ==> Iter: 5660/ 8880, Total_Loss:0.1499, iou_loss:0.0826, mix_loss:0.0672, lr: 0.000020
+2025-12-20 03:11:00,791 INFO ==> Iter: 5680/ 8880, Total_Loss:0.1651, iou_loss:0.0958, mix_loss:0.0693, lr: 0.000020
+2025-12-20 03:11:24,543 INFO ==> Iter: 5700/ 8880, Total_Loss:0.1983, iou_loss:0.1252, mix_loss:0.0731, lr: 0.000020
+2025-12-20 03:11:48,336 INFO ==> Iter: 5720/ 8880, Total_Loss:0.1804, iou_loss:0.1108, mix_loss:0.0696, lr: 0.000020
+2025-12-20 03:12:12,026 INFO ==> Iter: 5740/ 8880, Total_Loss:0.1496, iou_loss:0.0844, mix_loss:0.0652, lr: 0.000020
+2025-12-20 03:12:35,907 INFO ==> Iter: 5760/ 8880, Total_Loss:0.1745, iou_loss:0.1061, mix_loss:0.0683, lr: 0.000020
+2025-12-20 03:13:11,063 INFO ==> Epoch: 38, Miou: 0.645391583442688, maxMiou: 0.6594535708427429
+2025-12-20 03:13:23,466 INFO ==> Iter: 5780/ 8880, Total_Loss:0.2103, iou_loss:0.1373, mix_loss:0.0729, lr: 0.000020
+2025-12-20 03:13:47,505 INFO ==> Iter: 5800/ 8880, Total_Loss:0.2066, iou_loss:0.1334, mix_loss:0.0732, lr: 0.000020
+2025-12-20 03:14:11,056 INFO ==> Iter: 5820/ 8880, Total_Loss:0.1776, iou_loss:0.1112, mix_loss:0.0664, lr: 0.000020
+2025-12-20 03:14:34,860 INFO ==> Iter: 5840/ 8880, Total_Loss:0.1803, iou_loss:0.1130, mix_loss:0.0673, lr: 0.000020
+2025-12-20 03:14:58,541 INFO ==> Iter: 5860/ 8880, Total_Loss:0.1656, iou_loss:0.0987, mix_loss:0.0669, lr: 0.000020
+2025-12-20 03:15:22,334 INFO ==> Iter: 5880/ 8880, Total_Loss:0.1489, iou_loss:0.0827, mix_loss:0.0663, lr: 0.000020
+2025-12-20 03:15:46,093 INFO ==> Iter: 5900/ 8880, Total_Loss:0.1282, iou_loss:0.0582, mix_loss:0.0700, lr: 0.000020
+2025-12-20 03:16:30,473 INFO ==> Epoch: 39, Miou: 0.6562260985374451, maxMiou: 0.6594535708427429
+2025-12-20 03:16:33,291 INFO ==> Iter: 5920/ 8880, Total_Loss:0.1163, iou_loss:0.0496, mix_loss:0.0668, lr: 0.000020
+2025-12-20 03:16:57,126 INFO ==> Iter: 5940/ 8880, Total_Loss:0.1519, iou_loss:0.0855, mix_loss:0.0664, lr: 0.000020
+2025-12-20 03:17:21,185 INFO ==> Iter: 5960/ 8880, Total_Loss:0.1146, iou_loss:0.0496, mix_loss:0.0650, lr: 0.000020
+2025-12-20 03:17:45,066 INFO ==> Iter: 5980/ 8880, Total_Loss:0.1930, iou_loss:0.1180, mix_loss:0.0750, lr: 0.000020
+2025-12-20 03:18:08,815 INFO ==> Iter: 6000/ 8880, Total_Loss:0.1870, iou_loss:0.1221, mix_loss:0.0649, lr: 0.000020
+2025-12-20 03:18:32,510 INFO ==> Iter: 6020/ 8880, Total_Loss:0.1779, iou_loss:0.1056, mix_loss:0.0723, lr: 0.000020
+2025-12-20 03:18:56,184 INFO ==> Iter: 6040/ 8880, Total_Loss:0.1221, iou_loss:0.0578, mix_loss:0.0643, lr: 0.000020
+2025-12-20 03:19:19,794 INFO ==> Iter: 6060/ 8880, Total_Loss:0.1538, iou_loss:0.0836, mix_loss:0.0702, lr: 0.000020
+2025-12-20 03:19:50,103 INFO ==> Epoch: 40, Miou: 0.6421988010406494, maxMiou: 0.6594535708427429
+2025-12-20 03:20:07,319 INFO ==> Iter: 6080/ 8880, Total_Loss:0.1418, iou_loss:0.0736, mix_loss:0.0682, lr: 0.000020
+2025-12-20 03:20:31,367 INFO ==> Iter: 6100/ 8880, Total_Loss:0.1493, iou_loss:0.0857, mix_loss:0.0637, lr: 0.000020
+2025-12-20 03:20:55,205 INFO ==> Iter: 6120/ 8880, Total_Loss:0.1859, iou_loss:0.1137, mix_loss:0.0721, lr: 0.000020
+2025-12-20 03:21:19,135 INFO ==> Iter: 6140/ 8880, Total_Loss:0.1538, iou_loss:0.0884, mix_loss:0.0654, lr: 0.000020
+2025-12-20 03:21:42,815 INFO ==> Iter: 6160/ 8880, Total_Loss:0.1691, iou_loss:0.1029, mix_loss:0.0662, lr: 0.000020
+2025-12-20 03:22:06,644 INFO ==> Iter: 6180/ 8880, Total_Loss:0.1359, iou_loss:0.0681, mix_loss:0.0678, lr: 0.000020
+2025-12-20 03:22:30,304 INFO ==> Iter: 6200/ 8880, Total_Loss:0.1762, iou_loss:0.1044, mix_loss:0.0718, lr: 0.000020
+2025-12-20 03:23:10,319 INFO ==> Epoch: 41, Miou: 0.6428114771842957, maxMiou: 0.6594535708427429
+2025-12-20 03:23:17,921 INFO ==> Iter: 6220/ 8880, Total_Loss:0.1383, iou_loss:0.0720, mix_loss:0.0663, lr: 0.000020
+2025-12-20 03:23:41,721 INFO ==> Iter: 6240/ 8880, Total_Loss:0.1905, iou_loss:0.1224, mix_loss:0.0681, lr: 0.000020
+2025-12-20 03:24:05,557 INFO ==> Iter: 6260/ 8880, Total_Loss:0.1507, iou_loss:0.0833, mix_loss:0.0674, lr: 0.000020
+2025-12-20 03:24:29,391 INFO ==> Iter: 6280/ 8880, Total_Loss:0.1306, iou_loss:0.0616, mix_loss:0.0690, lr: 0.000020
+2025-12-20 03:24:53,170 INFO ==> Iter: 6300/ 8880, Total_Loss:0.1578, iou_loss:0.0869, mix_loss:0.0709, lr: 0.000020
+2025-12-20 03:25:16,929 INFO ==> Iter: 6320/ 8880, Total_Loss:0.2045, iou_loss:0.1347, mix_loss:0.0698, lr: 0.000020
+2025-12-20 03:25:40,664 INFO ==> Iter: 6340/ 8880, Total_Loss:0.1397, iou_loss:0.0758, mix_loss:0.0638, lr: 0.000020
+2025-12-20 03:26:04,449 INFO ==> Iter: 6360/ 8880, Total_Loss:0.1207, iou_loss:0.0525, mix_loss:0.0681, lr: 0.000020
+2025-12-20 03:26:30,065 INFO ==> Epoch: 42, Miou: 0.6533745527267456, maxMiou: 0.6594535708427429
+2025-12-20 03:26:52,125 INFO ==> Iter: 6380/ 8880, Total_Loss:0.1508, iou_loss:0.0866, mix_loss:0.0642, lr: 0.000020
+2025-12-20 03:27:16,248 INFO ==> Iter: 6400/ 8880, Total_Loss:0.1274, iou_loss:0.0599, mix_loss:0.0675, lr: 0.000020
+2025-12-20 03:27:40,160 INFO ==> Iter: 6420/ 8880, Total_Loss:0.1875, iou_loss:0.1168, mix_loss:0.0707, lr: 0.000020
+2025-12-20 03:28:04,006 INFO ==> Iter: 6440/ 8880, Total_Loss:0.1214, iou_loss:0.0570, mix_loss:0.0644, lr: 0.000020
+2025-12-20 03:28:27,659 INFO ==> Iter: 6460/ 8880, Total_Loss:0.1719, iou_loss:0.1007, mix_loss:0.0713, lr: 0.000020
+2025-12-20 03:28:51,463 INFO ==> Iter: 6480/ 8880, Total_Loss:0.1777, iou_loss:0.1081, mix_loss:0.0696, lr: 0.000020
+2025-12-20 03:29:15,123 INFO ==> Iter: 6500/ 8880, Total_Loss:0.1547, iou_loss:0.0893, mix_loss:0.0655, lr: 0.000020
+2025-12-20 03:29:50,351 INFO ==> Epoch: 43, Miou: 0.6553919911384583, maxMiou: 0.6594535708427429
+2025-12-20 03:30:02,801 INFO ==> Iter: 6520/ 8880, Total_Loss:0.1269, iou_loss:0.0596, mix_loss:0.0673, lr: 0.000020
+2025-12-20 03:30:26,824 INFO ==> Iter: 6540/ 8880, Total_Loss:0.1638, iou_loss:0.0969, mix_loss:0.0669, lr: 0.000020
+2025-12-20 03:30:50,777 INFO ==> Iter: 6560/ 8880, Total_Loss:0.2083, iou_loss:0.1382, mix_loss:0.0701, lr: 0.000020
+2025-12-20 03:31:14,548 INFO ==> Iter: 6580/ 8880, Total_Loss:0.1332, iou_loss:0.0659, mix_loss:0.0674, lr: 0.000020
+2025-12-20 03:31:38,376 INFO ==> Iter: 6600/ 8880, Total_Loss:0.1532, iou_loss:0.0885, mix_loss:0.0647, lr: 0.000020
+2025-12-20 03:32:02,128 INFO ==> Iter: 6620/ 8880, Total_Loss:0.1156, iou_loss:0.0510, mix_loss:0.0646, lr: 0.000020
+2025-12-20 03:32:26,040 INFO ==> Iter: 6640/ 8880, Total_Loss:0.1851, iou_loss:0.1159, mix_loss:0.0693, lr: 0.000020
+2025-12-20 03:33:10,917 INFO ==> Epoch: 44, Miou: 0.6561901569366455, maxMiou: 0.6594535708427429
+2025-12-20 03:33:13,736 INFO ==> Iter: 6660/ 8880, Total_Loss:0.1601, iou_loss:0.0887, mix_loss:0.0714, lr: 0.000020
+2025-12-20 03:33:37,967 INFO ==> Iter: 6680/ 8880, Total_Loss:0.1235, iou_loss:0.0561, mix_loss:0.0674, lr: 0.000020
+2025-12-20 03:34:01,957 INFO ==> Iter: 6700/ 8880, Total_Loss:0.1818, iou_loss:0.1116, mix_loss:0.0702, lr: 0.000020
+2025-12-20 03:34:25,859 INFO ==> Iter: 6720/ 8880, Total_Loss:0.2028, iou_loss:0.1328, mix_loss:0.0699, lr: 0.000020
+2025-12-20 03:34:49,756 INFO ==> Iter: 6740/ 8880, Total_Loss:0.1234, iou_loss:0.0588, mix_loss:0.0645, lr: 0.000020
+2025-12-20 03:35:13,513 INFO ==> Iter: 6760/ 8880, Total_Loss:0.1727, iou_loss:0.1076, mix_loss:0.0651, lr: 0.000020
+2025-12-20 03:35:37,292 INFO ==> Iter: 6780/ 8880, Total_Loss:0.1485, iou_loss:0.0820, mix_loss:0.0665, lr: 0.000020
+2025-12-20 03:36:01,085 INFO ==> Iter: 6800/ 8880, Total_Loss:0.1949, iou_loss:0.1258, mix_loss:0.0691, lr: 0.000020
+2025-12-20 03:36:31,472 INFO ==> Epoch: 45, Miou: 0.6456748843193054, maxMiou: 0.6594535708427429
+2025-12-20 03:36:48,760 INFO ==> Iter: 6820/ 8880, Total_Loss:0.1994, iou_loss:0.1352, mix_loss:0.0642, lr: 0.000020
+2025-12-20 03:37:12,656 INFO ==> Iter: 6840/ 8880, Total_Loss:0.1719, iou_loss:0.1015, mix_loss:0.0703, lr: 0.000020
+2025-12-20 03:37:36,526 INFO ==> Iter: 6860/ 8880, Total_Loss:0.1490, iou_loss:0.0791, mix_loss:0.0699, lr: 0.000020
+2025-12-20 03:38:00,438 INFO ==> Iter: 6880/ 8880, Total_Loss:0.1786, iou_loss:0.1092, mix_loss:0.0694, lr: 0.000020
+2025-12-20 03:38:24,360 INFO ==> Iter: 6900/ 8880, Total_Loss:0.1430, iou_loss:0.0756, mix_loss:0.0674, lr: 0.000020
+2025-12-20 03:38:47,988 INFO ==> Iter: 6920/ 8880, Total_Loss:0.2107, iou_loss:0.1439, mix_loss:0.0667, lr: 0.000020
+2025-12-20 03:39:11,848 INFO ==> Iter: 6940/ 8880, Total_Loss:0.1984, iou_loss:0.1311, mix_loss:0.0673, lr: 0.000020
+2025-12-20 03:39:51,667 INFO ==> Epoch: 46, Miou: 0.6258944272994995, maxMiou: 0.6594535708427429
+2025-12-20 03:39:59,279 INFO ==> Iter: 6960/ 8880, Total_Loss:0.1399, iou_loss:0.0739, mix_loss:0.0660, lr: 0.000020
+2025-12-20 03:40:23,408 INFO ==> Iter: 6980/ 8880, Total_Loss:0.2521, iou_loss:0.1810, mix_loss:0.0710, lr: 0.000020
+2025-12-20 03:40:47,092 INFO ==> Iter: 7000/ 8880, Total_Loss:0.1443, iou_loss:0.0817, mix_loss:0.0626, lr: 0.000020
+2025-12-20 03:41:11,105 INFO ==> Iter: 7020/ 8880, Total_Loss:0.1194, iou_loss:0.0531, mix_loss:0.0663, lr: 0.000020
+2025-12-20 03:41:34,848 INFO ==> Iter: 7040/ 8880, Total_Loss:0.1387, iou_loss:0.0743, mix_loss:0.0645, lr: 0.000020
+2025-12-20 03:41:58,772 INFO ==> Iter: 7060/ 8880, Total_Loss:0.2081, iou_loss:0.1405, mix_loss:0.0676, lr: 0.000020
+2025-12-20 03:42:22,540 INFO ==> Iter: 7080/ 8880, Total_Loss:0.1686, iou_loss:0.0953, mix_loss:0.0733, lr: 0.000020
+2025-12-20 03:42:46,283 INFO ==> Iter: 7100/ 8880, Total_Loss:0.1367, iou_loss:0.0666, mix_loss:0.0702, lr: 0.000020
+2025-12-20 03:43:11,841 INFO ==> Epoch: 47, Miou: 0.6552903652191162, maxMiou: 0.6594535708427429
+2025-12-20 03:43:33,822 INFO ==> Iter: 7120/ 8880, Total_Loss:0.1488, iou_loss:0.0843, mix_loss:0.0645, lr: 0.000020
+2025-12-20 03:43:57,834 INFO ==> Iter: 7140/ 8880, Total_Loss:0.1706, iou_loss:0.0963, mix_loss:0.0743, lr: 0.000020
+2025-12-20 03:44:21,777 INFO ==> Iter: 7160/ 8880, Total_Loss:0.1579, iou_loss:0.0907, mix_loss:0.0672, lr: 0.000020
+2025-12-20 03:44:45,577 INFO ==> Iter: 7180/ 8880, Total_Loss:0.1298, iou_loss:0.0641, mix_loss:0.0657, lr: 0.000020
+2025-12-20 03:45:09,489 INFO ==> Iter: 7200/ 8880, Total_Loss:0.1273, iou_loss:0.0611, mix_loss:0.0662, lr: 0.000020
+2025-12-20 03:45:33,291 INFO ==> Iter: 7220/ 8880, Total_Loss:0.2593, iou_loss:0.1919, mix_loss:0.0674, lr: 0.000020
+2025-12-20 03:45:57,196 INFO ==> Iter: 7240/ 8880, Total_Loss:0.1505, iou_loss:0.0861, mix_loss:0.0645, lr: 0.000020
+2025-12-20 03:46:32,308 INFO ==> Epoch: 48, Miou: 0.6332460045814514, maxMiou: 0.6594535708427429
+2025-12-20 03:46:44,759 INFO ==> Iter: 7260/ 8880, Total_Loss:0.1951, iou_loss:0.1291, mix_loss:0.0660, lr: 0.000020
+2025-12-20 03:47:08,901 INFO ==> Iter: 7280/ 8880, Total_Loss:0.1490, iou_loss:0.0770, mix_loss:0.0720, lr: 0.000020
+2025-12-20 03:47:32,813 INFO ==> Iter: 7300/ 8880, Total_Loss:0.1717, iou_loss:0.1015, mix_loss:0.0702, lr: 0.000020
+2025-12-20 03:47:56,775 INFO ==> Iter: 7320/ 8880, Total_Loss:0.1831, iou_loss:0.1139, mix_loss:0.0693, lr: 0.000020
+2025-12-20 03:48:20,438 INFO ==> Iter: 7340/ 8880, Total_Loss:0.1755, iou_loss:0.1106, mix_loss:0.0650, lr: 0.000020
+2025-12-20 03:48:44,388 INFO ==> Iter: 7360/ 8880, Total_Loss:0.2106, iou_loss:0.1427, mix_loss:0.0679, lr: 0.000020
+2025-12-20 03:49:08,112 INFO ==> Iter: 7380/ 8880, Total_Loss:0.1439, iou_loss:0.0777, mix_loss:0.0662, lr: 0.000020
+2025-12-20 03:49:52,921 INFO ==> Epoch: 49, Miou: 0.6393179297447205, maxMiou: 0.6594535708427429
+2025-12-20 03:49:55,814 INFO ==> Iter: 7400/ 8880, Total_Loss:0.1193, iou_loss:0.0559, mix_loss:0.0634, lr: 0.000020
+2025-12-20 03:50:19,840 INFO ==> Iter: 7420/ 8880, Total_Loss:0.1015, iou_loss:0.0366, mix_loss:0.0649, lr: 0.000020
+2025-12-20 03:50:43,989 INFO ==> Iter: 7440/ 8880, Total_Loss:0.2225, iou_loss:0.1500, mix_loss:0.0725, lr: 0.000020
+2025-12-20 03:51:07,802 INFO ==> Iter: 7460/ 8880, Total_Loss:0.1872, iou_loss:0.1214, mix_loss:0.0658, lr: 0.000020
+2025-12-20 03:51:31,804 INFO ==> Iter: 7480/ 8880, Total_Loss:0.1419, iou_loss:0.0734, mix_loss:0.0685, lr: 0.000020
+2025-12-20 03:51:55,652 INFO ==> Iter: 7500/ 8880, Total_Loss:0.1481, iou_loss:0.0814, mix_loss:0.0667, lr: 0.000020
+2025-12-20 03:52:19,532 INFO ==> Iter: 7520/ 8880, Total_Loss:0.1464, iou_loss:0.0784, mix_loss:0.0680, lr: 0.000020
+2025-12-20 03:52:43,336 INFO ==> Iter: 7540/ 8880, Total_Loss:0.1410, iou_loss:0.0761, mix_loss:0.0648, lr: 0.000020
+2025-12-20 03:53:13,530 INFO ==> Epoch: 50, Miou: 0.6323401927947998, maxMiou: 0.6594535708427429
+2025-12-20 03:53:30,931 INFO ==> Iter: 7560/ 8880, Total_Loss:0.2065, iou_loss:0.1378, mix_loss:0.0687, lr: 0.000020
+2025-12-20 03:53:54,923 INFO ==> Iter: 7580/ 8880, Total_Loss:0.1309, iou_loss:0.0651, mix_loss:0.0658, lr: 0.000020
+2025-12-20 03:54:18,628 INFO ==> Iter: 7600/ 8880, Total_Loss:0.1748, iou_loss:0.1045, mix_loss:0.0704, lr: 0.000020
+2025-12-20 03:54:42,524 INFO ==> Iter: 7620/ 8880, Total_Loss:0.1532, iou_loss:0.0855, mix_loss:0.0677, lr: 0.000020
+2025-12-20 03:55:06,281 INFO ==> Iter: 7640/ 8880, Total_Loss:0.1667, iou_loss:0.1000, mix_loss:0.0668, lr: 0.000020
+2025-12-20 03:55:30,108 INFO ==> Iter: 7660/ 8880, Total_Loss:0.1534, iou_loss:0.0832, mix_loss:0.0702, lr: 0.000020
+2025-12-20 03:55:53,839 INFO ==> Iter: 7680/ 8880, Total_Loss:0.1481, iou_loss:0.0850, mix_loss:0.0632, lr: 0.000020
+2025-12-20 03:56:34,993 INFO ==> save best model to work_dir/AVSegFormer_pvt2_ms3/MS3_best.pth
+2025-12-20 03:56:34,995 INFO ==> Epoch: 51, Miou: 0.6610814929008484, maxMiou: 0.6610814929008484
+2025-12-20 03:56:42,514 INFO ==> Iter: 7700/ 8880, Total_Loss:0.1355, iou_loss:0.0718, mix_loss:0.0636, lr: 0.000020
+2025-12-20 03:57:06,644 INFO ==> Iter: 7720/ 8880, Total_Loss:0.1248, iou_loss:0.0605, mix_loss:0.0643, lr: 0.000020
+2025-12-20 03:57:30,493 INFO ==> Iter: 7740/ 8880, Total_Loss:0.1341, iou_loss:0.0672, mix_loss:0.0670, lr: 0.000020
+2025-12-20 03:57:54,382 INFO ==> Iter: 7760/ 8880, Total_Loss:0.1394, iou_loss:0.0712, mix_loss:0.0683, lr: 0.000020
+2025-12-20 03:58:18,364 INFO ==> Iter: 7780/ 8880, Total_Loss:0.1782, iou_loss:0.1083, mix_loss:0.0699, lr: 0.000020
+2025-12-20 03:58:42,171 INFO ==> Iter: 7800/ 8880, Total_Loss:0.1970, iou_loss:0.1284, mix_loss:0.0687, lr: 0.000020
+2025-12-20 03:59:06,110 INFO ==> Iter: 7820/ 8880, Total_Loss:0.1442, iou_loss:0.0755, mix_loss:0.0687, lr: 0.000020
+2025-12-20 03:59:29,691 INFO ==> Iter: 7840/ 8880, Total_Loss:0.1454, iou_loss:0.0816, mix_loss:0.0639, lr: 0.000020
+2025-12-20 03:59:55,277 INFO ==> Epoch: 52, Miou: 0.6539204120635986, maxMiou: 0.6610814929008484
+2025-12-20 04:00:17,254 INFO ==> Iter: 7860/ 8880, Total_Loss:0.1798, iou_loss:0.1126, mix_loss:0.0672, lr: 0.000020
+2025-12-20 04:00:41,194 INFO ==> Iter: 7880/ 8880, Total_Loss:0.1802, iou_loss:0.1120, mix_loss:0.0682, lr: 0.000020
+2025-12-20 04:01:05,112 INFO ==> Iter: 7900/ 8880, Total_Loss:0.1056, iou_loss:0.0433, mix_loss:0.0623, lr: 0.000020
+2025-12-20 04:01:28,919 INFO ==> Iter: 7920/ 8880, Total_Loss:0.1692, iou_loss:0.1060, mix_loss:0.0633, lr: 0.000020
+2025-12-20 04:01:52,709 INFO ==> Iter: 7940/ 8880, Total_Loss:0.1475, iou_loss:0.0725, mix_loss:0.0751, lr: 0.000020
+2025-12-20 04:02:16,524 INFO ==> Iter: 7960/ 8880, Total_Loss:0.1445, iou_loss:0.0785, mix_loss:0.0660, lr: 0.000020
+2025-12-20 04:02:40,364 INFO ==> Iter: 7980/ 8880, Total_Loss:0.1354, iou_loss:0.0731, mix_loss:0.0623, lr: 0.000020
+2025-12-20 04:03:15,522 INFO ==> Epoch: 53, Miou: 0.6518149375915527, maxMiou: 0.6610814929008484
+2025-12-20 04:03:27,891 INFO ==> Iter: 8000/ 8880, Total_Loss:0.1384, iou_loss:0.0713, mix_loss:0.0671, lr: 0.000020
+2025-12-20 04:03:51,973 INFO ==> Iter: 8020/ 8880, Total_Loss:0.1439, iou_loss:0.0760, mix_loss:0.0680, lr: 0.000020
+2025-12-20 04:04:15,764 INFO ==> Iter: 8040/ 8880, Total_Loss:0.1858, iou_loss:0.1185, mix_loss:0.0674, lr: 0.000020
+2025-12-20 04:04:39,688 INFO ==> Iter: 8060/ 8880, Total_Loss:0.1761, iou_loss:0.1090, mix_loss:0.0671, lr: 0.000020
+2025-12-20 04:05:03,344 INFO ==> Iter: 8080/ 8880, Total_Loss:0.1307, iou_loss:0.0669, mix_loss:0.0638, lr: 0.000020
+2025-12-20 04:05:27,258 INFO ==> Iter: 8100/ 8880, Total_Loss:0.1065, iou_loss:0.0412, mix_loss:0.0653, lr: 0.000020
+2025-12-20 04:05:51,129 INFO ==> Iter: 8120/ 8880, Total_Loss:0.1642, iou_loss:0.0980, mix_loss:0.0663, lr: 0.000020
+2025-12-20 04:06:35,734 INFO ==> Epoch: 54, Miou: 0.6419692635536194, maxMiou: 0.6610814929008484
+2025-12-20 04:06:38,504 INFO ==> Iter: 8140/ 8880, Total_Loss:0.1138, iou_loss:0.0467, mix_loss:0.0672, lr: 0.000020
+2025-12-20 04:07:02,705 INFO ==> Iter: 8160/ 8880, Total_Loss:0.1730, iou_loss:0.1076, mix_loss:0.0654, lr: 0.000020
+2025-12-20 04:07:26,613 INFO ==> Iter: 8180/ 8880, Total_Loss:0.1570, iou_loss:0.0931, mix_loss:0.0639, lr: 0.000020
+2025-12-20 04:07:50,582 INFO ==> Iter: 8200/ 8880, Total_Loss:0.1730, iou_loss:0.1006, mix_loss:0.0723, lr: 0.000020
+2025-12-20 04:08:14,435 INFO ==> Iter: 8220/ 8880, Total_Loss:0.1343, iou_loss:0.0726, mix_loss:0.0616, lr: 0.000020
+2025-12-20 04:08:38,363 INFO ==> Iter: 8240/ 8880, Total_Loss:0.1591, iou_loss:0.0930, mix_loss:0.0662, lr: 0.000020
+2025-12-20 04:09:02,094 INFO ==> Iter: 8260/ 8880, Total_Loss:0.1035, iou_loss:0.0361, mix_loss:0.0674, lr: 0.000020
+2025-12-20 04:09:25,940 INFO ==> Iter: 8280/ 8880, Total_Loss:0.1172, iou_loss:0.0521, mix_loss:0.0652, lr: 0.000020
+2025-12-20 04:09:56,484 INFO ==> Epoch: 55, Miou: 0.6546881794929504, maxMiou: 0.6610814929008484
+2025-12-20 04:10:13,673 INFO ==> Iter: 8300/ 8880, Total_Loss:0.1596, iou_loss:0.0967, mix_loss:0.0629, lr: 0.000020
+2025-12-20 04:10:37,777 INFO ==> Iter: 8320/ 8880, Total_Loss:0.1142, iou_loss:0.0508, mix_loss:0.0634, lr: 0.000020
+2025-12-20 04:11:01,557 INFO ==> Iter: 8340/ 8880, Total_Loss:0.1701, iou_loss:0.1035, mix_loss:0.0665, lr: 0.000020
+2025-12-20 04:11:25,522 INFO ==> Iter: 8360/ 8880, Total_Loss:0.1748, iou_loss:0.1078, mix_loss:0.0670, lr: 0.000020
+2025-12-20 04:11:49,228 INFO ==> Iter: 8380/ 8880, Total_Loss:0.1091, iou_loss:0.0423, mix_loss:0.0668, lr: 0.000020
+2025-12-20 04:12:13,215 INFO ==> Iter: 8400/ 8880, Total_Loss:0.1469, iou_loss:0.0784, mix_loss:0.0686, lr: 0.000020
+2025-12-20 04:12:37,030 INFO ==> Iter: 8420/ 8880, Total_Loss:0.1407, iou_loss:0.0795, mix_loss:0.0612, lr: 0.000020
+2025-12-20 04:13:16,960 INFO ==> Epoch: 56, Miou: 0.6517806053161621, maxMiou: 0.6610814929008484
+2025-12-20 04:13:24,505 INFO ==> Iter: 8440/ 8880, Total_Loss:0.1913, iou_loss:0.1204, mix_loss:0.0710, lr: 0.000020
+2025-12-20 04:13:48,570 INFO ==> Iter: 8460/ 8880, Total_Loss:0.1499, iou_loss:0.0829, mix_loss:0.0669, lr: 0.000020
+2025-12-20 04:14:12,627 INFO ==> Iter: 8480/ 8880, Total_Loss:0.1107, iou_loss:0.0431, mix_loss:0.0675, lr: 0.000020
+2025-12-20 04:14:36,515 INFO ==> Iter: 8500/ 8880, Total_Loss:0.2022, iou_loss:0.1365, mix_loss:0.0657, lr: 0.000020
+2025-12-20 04:15:00,300 INFO ==> Iter: 8520/ 8880, Total_Loss:0.1157, iou_loss:0.0538, mix_loss:0.0619, lr: 0.000020
+2025-12-20 04:15:24,209 INFO ==> Iter: 8540/ 8880, Total_Loss:0.1235, iou_loss:0.0619, mix_loss:0.0616, lr: 0.000020
+2025-12-20 04:15:47,998 INFO ==> Iter: 8560/ 8880, Total_Loss:0.1568, iou_loss:0.0911, mix_loss:0.0657, lr: 0.000020
+2025-12-20 04:16:11,892 INFO ==> Iter: 8580/ 8880, Total_Loss:0.1448, iou_loss:0.0771, mix_loss:0.0676, lr: 0.000020
+2025-12-20 04:16:37,465 INFO ==> Epoch: 57, Miou: 0.6494123339653015, maxMiou: 0.6610814929008484
+2025-12-20 04:16:59,660 INFO ==> Iter: 8600/ 8880, Total_Loss:0.1692, iou_loss:0.1072, mix_loss:0.0621, lr: 0.000020
+2025-12-20 04:17:23,786 INFO ==> Iter: 8620/ 8880, Total_Loss:0.1294, iou_loss:0.0630, mix_loss:0.0664, lr: 0.000020
+2025-12-20 04:17:47,666 INFO ==> Iter: 8640/ 8880, Total_Loss:0.1646, iou_loss:0.0992, mix_loss:0.0654, lr: 0.000020
+2025-12-20 04:18:11,682 INFO ==> Iter: 8660/ 8880, Total_Loss:0.1170, iou_loss:0.0495, mix_loss:0.0675, lr: 0.000020
+2025-12-20 04:18:35,403 INFO ==> Iter: 8680/ 8880, Total_Loss:0.1178, iou_loss:0.0542, mix_loss:0.0635, lr: 0.000020
+2025-12-20 04:18:59,355 INFO ==> Iter: 8700/ 8880, Total_Loss:0.1582, iou_loss:0.0941, mix_loss:0.0640, lr: 0.000020
+2025-12-20 04:19:23,134 INFO ==> Iter: 8720/ 8880, Total_Loss:0.1815, iou_loss:0.1166, mix_loss:0.0649, lr: 0.000020
+2025-12-20 04:19:58,349 INFO ==> Epoch: 58, Miou: 0.6542901396751404, maxMiou: 0.6610814929008484
+2025-12-20 04:20:10,784 INFO ==> Iter: 8740/ 8880, Total_Loss:0.1000, iou_loss:0.0368, mix_loss:0.0632, lr: 0.000020
+2025-12-20 04:20:34,772 INFO ==> Iter: 8760/ 8880, Total_Loss:0.1598, iou_loss:0.0921, mix_loss:0.0677, lr: 0.000020
+2025-12-20 04:20:58,724 INFO ==> Iter: 8780/ 8880, Total_Loss:0.1100, iou_loss:0.0462, mix_loss:0.0638, lr: 0.000020
+2025-12-20 04:21:22,607 INFO ==> Iter: 8800/ 8880, Total_Loss:0.2016, iou_loss:0.1330, mix_loss:0.0686, lr: 0.000020
+2025-12-20 04:21:46,529 INFO ==> Iter: 8820/ 8880, Total_Loss:0.1544, iou_loss:0.0904, mix_loss:0.0639, lr: 0.000020
+2025-12-20 04:22:10,408 INFO ==> Iter: 8840/ 8880, Total_Loss:0.1457, iou_loss:0.0849, mix_loss:0.0608, lr: 0.000020
+2025-12-20 04:22:34,189 INFO ==> Iter: 8860/ 8880, Total_Loss:0.1208, iou_loss:0.0546, mix_loss:0.0662, lr: 0.000020
+2025-12-20 04:23:18,941 INFO ==> Epoch: 59, Miou: 0.6468939185142517, maxMiou: 0.6610814929008484
+2025-12-20 04:23:18,946 INFO ==> best val Miou 0.6610814929008484 at peoch: 51

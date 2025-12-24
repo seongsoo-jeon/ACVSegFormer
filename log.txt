@@ -44,7 +44,9 @@ ms3_pvt2_1212_0903 : 0.7408 0.6272
 - Query generator(No self-attention), with learnable_query, 3 layers
 ms3_res50_1214-0127 : 0.6545 0.5375
 ms3_pvt2_1215-2012 : 0.7362 0.6342
-Verification-1220-1541 : 0.7470 0.6408
+Verification
+pvt_ms3-1220-1541 : 0.7470 0.6408
+pvt_s4_1220-1934 : 0.9161 0.8438
 
 
 - with self-attention, No learnable_query, 3 layers

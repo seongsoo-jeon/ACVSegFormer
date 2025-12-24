@@ -599,3 +599,1241 @@ process = dict(num_works=8, train_epochs=60, freeze_epochs=10)
 2025-12-20 04:22:34,189 INFO ==> Iter: 8860/ 8880, Total_Loss:0.1208, iou_loss:0.0546, mix_loss:0.0662, lr: 0.000020
 2025-12-20 04:23:18,941 INFO ==> Epoch: 59, Miou: 0.6468939185142517, maxMiou: 0.6610814929008484
 2025-12-20 04:23:18,946 INFO ==> best val Miou 0.6610814929008484 at peoch: 51
+/usr/local/lib/python3.8/dist-packages/mmcv/__init__.py:20: UserWarning: On January 1, 2023, MMCV will release v2.0.0, in which it will remove components related to the training process and add a data transformation module. In addition, it will rename the package names mmcv to mmcv-lite and mmcv-full to mmcv. See https://github.com/open-mmlab/mmcv/blob/master/docs/en/compatibility.md for more details.
+  warnings.warn(
+/usr/local/lib/python3.8/dist-packages/timm/models/layers/__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+/usr/local/lib/python3.8/dist-packages/timm/models/registry.py:4: FutureWarning: Importing from timm.models.registry is deprecated, please import via timm.models
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.models", FutureWarning)
+/app/AVSegFormer/model/backbone/pvt.py:351: UserWarning: Overwriting pvt_v2_b5 in registry with model.backbone.pvt.pvt_v2_b5. This is because the name being registered conflicts with an existing name. Please check if this is not expected.
+  def pvt_v2_b5(init_weights_path=False, **kwargs):
+2025-12-21 15:09:28,134 INFO ==> Load config from config/s4/AVSegFormer_res50_s4.py
+2025-12-21 15:09:28,224 INFO ==> model = dict(
+    type='AVSegFormer',
+    neck=None,
+    backbone=dict(
+        type='res50', init_weights_path='pretrained/resnet50-19c8e357.pth'),
+    vggish=dict(
+        freeze_audio_extractor=True,
+        pretrained_vggish_model_path='pretrained/vggish-10086976.pth',
+        preprocess_audio_to_log_mel=False,
+        postprocess_log_mel_with_pca=False,
+        pretrained_pca_params_path=None),
+    head=dict(
+        type='AVSegHead',
+        in_channels=[256, 512, 1024, 2048],
+        num_classes=1,
+        query_num=300,
+        fusion_block=dict(type='CrossModalMixer'),
+        positional_encoding=dict(type='SinePositionalEncoding', num_feats=128),
+        query_generator=dict(
+            type='QueryGenerator', num_layers=3, query_num=300),
+        transformer=dict(
+            type='AVSTransformer',
+            encoder=dict(
+                num_layers=6, layer=dict(dim=256, ffn_dim=2048, dropout=0.1)),
+            decoder=dict(
+                num_layers=6, layer=dict(dim=256, ffn_dim=2048,
+                                         dropout=0.1)))),
+    audio_dim=128,
+    embed_dim=256,
+    freeze_audio_backbone=True,
+    T=5)
+dataset = dict(
+    train=dict(
+        type='S4Dataset',
+        split='train',
+        anno_csv='data/Single-source/s4_meta_data.csv',
+        dir_img='data/Single-source/s4_data/visual_frames',
+        dir_audio_log_mel='data/Single-source/s4_data/audio_log_mel',
+        dir_mask='data/Single-source/s4_data/gt_masks',
+        img_size=(224, 224),
+        batch_size=1),
+    val=dict(
+        type='S4Dataset',
+        split='val',
+        anno_csv='data/Single-source/s4_meta_data.csv',
+        dir_img='data/Single-source/s4_data/visual_frames',
+        dir_audio_log_mel='data/Single-source/s4_data/audio_log_mel',
+        dir_mask='data/Single-source/s4_data/gt_masks',
+        img_size=(224, 224),
+        batch_size=1),
+    test=dict(
+        type='S4Dataset',
+        split='test',
+        anno_csv='data/Single-source/s4_meta_data.csv',
+        dir_img='data/Single-source/s4_data/visual_frames',
+        dir_audio_log_mel='data/Single-source/s4_data/audio_log_mel',
+        dir_mask='data/Single-source/s4_data/gt_masks',
+        img_size=(224, 224),
+        batch_size=1))
+optimizer = dict(type='AdamW', lr=2e-05)
+loss = dict(weight_dict=dict(iou_loss=1.0, mix_loss=0.1), loss_type='dice')
+process = dict(num_works=16, train_epochs=30, freeze_epochs=5)
+
+2025-12-21 15:09:33,102 INFO ==> Total params: 146.88M
+/app/AVSegFormer/model/utils/positional_encoding.py:75: UserWarning: __floordiv__ is deprecated, and its behavior will change in a future version of pytorch. It currently rounds toward 0 (like the 'trunc' function NOT 'floor'). This results in incorrect rounding for negative values. To keep the current behavior, use torch.div(a, b, rounding_mode='trunc'), or for actual floor division, use torch.div(a, b, rounding_mode='floor').
+  dim_t = self.temperature**(2 * (dim_t // 2) / self.num_feats)
+/usr/local/lib/python3.8/dist-packages/torch/functional.py:445: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at  ../aten/src/ATen/native/TensorShape.cpp:2157.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+2025-12-21 15:09:40,448 INFO ==> Iter:    0/103560, Total_Loss:0.3275, iou_loss:0.2953, mix_loss:0.0323, lr: 0.000020
+2025-12-21 15:10:04,201 INFO ==> Iter:   50/103560, Total_Loss:0.7407, iou_loss:0.6771, mix_loss:0.0635, lr: 0.000020
+/usr/local/lib/python3.8/dist-packages/mmcv/__init__.py:20: UserWarning: On January 1, 2023, MMCV will release v2.0.0, in which it will remove components related to the training process and add a data transformation module. In addition, it will rename the package names mmcv to mmcv-lite and mmcv-full to mmcv. See https://github.com/open-mmlab/mmcv/blob/master/docs/en/compatibility.md for more details.
+  warnings.warn(
+/usr/local/lib/python3.8/dist-packages/timm/models/layers/__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+/usr/local/lib/python3.8/dist-packages/timm/models/registry.py:4: FutureWarning: Importing from timm.models.registry is deprecated, please import via timm.models
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.models", FutureWarning)
+/app/AVSegFormer/model/backbone/pvt.py:351: UserWarning: Overwriting pvt_v2_b5 in registry with model.backbone.pvt.pvt_v2_b5. This is because the name being registered conflicts with an existing name. Please check if this is not expected.
+  def pvt_v2_b5(init_weights_path=False, **kwargs):
+2025-12-21 15:10:52,959 INFO ==> Load config from config/s4/AVSegFormer_res50_s4.py
+2025-12-21 15:10:53,045 INFO ==> model = dict(
+    type='AVSegFormer',
+    neck=None,
+    backbone=dict(
+        type='res50', init_weights_path='pretrained/resnet50-19c8e357.pth'),
+    vggish=dict(
+        freeze_audio_extractor=True,
+        pretrained_vggish_model_path='pretrained/vggish-10086976.pth',
+        preprocess_audio_to_log_mel=False,
+        postprocess_log_mel_with_pca=False,
+        pretrained_pca_params_path=None),
+    head=dict(
+        type='AVSegHead',
+        in_channels=[256, 512, 1024, 2048],
+        num_classes=1,
+        query_num=300,
+        fusion_block=dict(type='CrossModalMixer'),
+        positional_encoding=dict(type='SinePositionalEncoding', num_feats=128),
+        query_generator=dict(
+            type='QueryGenerator', num_layers=3, query_num=300),
+        transformer=dict(
+            type='AVSTransformer',
+            encoder=dict(
+                num_layers=6, layer=dict(dim=256, ffn_dim=2048, dropout=0.1)),
+            decoder=dict(
+                num_layers=6, layer=dict(dim=256, ffn_dim=2048,
+                                         dropout=0.1)))),
+    audio_dim=128,
+    embed_dim=256,
+    freeze_audio_backbone=True,
+    T=5)
+dataset = dict(
+    train=dict(
+        type='S4Dataset',
+        split='train',
+        anno_csv='data/Single-source/s4_meta_data.csv',
+        dir_img='data/Single-source/s4_data/visual_frames',
+        dir_audio_log_mel='data/Single-source/s4_data/audio_log_mel',
+        dir_mask='data/Single-source/s4_data/gt_masks',
+        img_size=(224, 224),
+        batch_size=2),
+    val=dict(
+        type='S4Dataset',
+        split='val',
+        anno_csv='data/Single-source/s4_meta_data.csv',
+        dir_img='data/Single-source/s4_data/visual_frames',
+        dir_audio_log_mel='data/Single-source/s4_data/audio_log_mel',
+        dir_mask='data/Single-source/s4_data/gt_masks',
+        img_size=(224, 224),
+        batch_size=2),
+    test=dict(
+        type='S4Dataset',
+        split='test',
+        anno_csv='data/Single-source/s4_meta_data.csv',
+        dir_img='data/Single-source/s4_data/visual_frames',
+        dir_audio_log_mel='data/Single-source/s4_data/audio_log_mel',
+        dir_mask='data/Single-source/s4_data/gt_masks',
+        img_size=(224, 224),
+        batch_size=2))
+optimizer = dict(type='AdamW', lr=2e-05)
+loss = dict(weight_dict=dict(iou_loss=1.0, mix_loss=0.1), loss_type='dice')
+process = dict(num_works=16, train_epochs=30, freeze_epochs=5)
+
+2025-12-21 15:10:57,774 INFO ==> Total params: 146.88M
+/app/AVSegFormer/model/utils/positional_encoding.py:75: UserWarning: __floordiv__ is deprecated, and its behavior will change in a future version of pytorch. It currently rounds toward 0 (like the 'trunc' function NOT 'floor'). This results in incorrect rounding for negative values. To keep the current behavior, use torch.div(a, b, rounding_mode='trunc'), or for actual floor division, use torch.div(a, b, rounding_mode='floor').
+  dim_t = self.temperature**(2 * (dim_t // 2) / self.num_feats)
+/usr/local/lib/python3.8/dist-packages/torch/functional.py:445: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at  ../aten/src/ATen/native/TensorShape.cpp:2157.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+2025-12-21 15:11:07,793 INFO ==> Iter:    0/51780, Total_Loss:0.5989, iou_loss:0.5453, mix_loss:0.0536, lr: 0.000020
+2025-12-21 15:11:44,740 INFO ==> Iter:   50/51780, Total_Loss:0.6664, iou_loss:0.6027, mix_loss:0.0637, lr: 0.000020
+2025-12-21 15:12:21,793 INFO ==> Iter:  100/51780, Total_Loss:0.5777, iou_loss:0.5149, mix_loss:0.0629, lr: 0.000020
+2025-12-21 15:12:58,751 INFO ==> Iter:  150/51780, Total_Loss:0.5984, iou_loss:0.5282, mix_loss:0.0701, lr: 0.000020
+2025-12-21 15:13:35,700 INFO ==> Iter:  200/51780, Total_Loss:0.4709, iou_loss:0.4100, mix_loss:0.0608, lr: 0.000020
+2025-12-21 15:14:12,720 INFO ==> Iter:  250/51780, Total_Loss:0.5438, iou_loss:0.4779, mix_loss:0.0659, lr: 0.000020
+2025-12-21 15:14:49,695 INFO ==> Iter:  300/51780, Total_Loss:0.4819, iou_loss:0.4192, mix_loss:0.0627, lr: 0.000020
+2025-12-21 15:15:26,672 INFO ==> Iter:  350/51780, Total_Loss:0.4596, iou_loss:0.3961, mix_loss:0.0635, lr: 0.000020
+2025-12-21 15:16:03,657 INFO ==> Iter:  400/51780, Total_Loss:0.4807, iou_loss:0.4166, mix_loss:0.0640, lr: 0.000020
+2025-12-21 15:16:40,616 INFO ==> Iter:  450/51780, Total_Loss:0.4468, iou_loss:0.3844, mix_loss:0.0624, lr: 0.000020
+2025-12-21 15:17:17,619 INFO ==> Iter:  500/51780, Total_Loss:0.4399, iou_loss:0.3789, mix_loss:0.0610, lr: 0.000020
+2025-12-21 15:17:54,583 INFO ==> Iter:  550/51780, Total_Loss:0.4581, iou_loss:0.3942, mix_loss:0.0638, lr: 0.000020
+2025-12-21 15:18:31,615 INFO ==> Iter:  600/51780, Total_Loss:0.4780, iou_loss:0.4121, mix_loss:0.0659, lr: 0.000020
+2025-12-21 15:19:08,599 INFO ==> Iter:  650/51780, Total_Loss:0.4385, iou_loss:0.3757, mix_loss:0.0628, lr: 0.000020
+2025-12-21 15:19:45,607 INFO ==> Iter:  700/51780, Total_Loss:0.4550, iou_loss:0.3884, mix_loss:0.0666, lr: 0.000020
+2025-12-21 15:20:22,547 INFO ==> Iter:  750/51780, Total_Loss:0.4371, iou_loss:0.3728, mix_loss:0.0643, lr: 0.000020
+2025-12-21 15:20:59,514 INFO ==> Iter:  800/51780, Total_Loss:0.4086, iou_loss:0.3467, mix_loss:0.0619, lr: 0.000020
+2025-12-21 15:21:36,473 INFO ==> Iter:  850/51780, Total_Loss:0.4269, iou_loss:0.3598, mix_loss:0.0671, lr: 0.000020
+2025-12-21 15:22:13,404 INFO ==> Iter:  900/51780, Total_Loss:0.4373, iou_loss:0.3716, mix_loss:0.0657, lr: 0.000020
+2025-12-21 15:22:50,390 INFO ==> Iter:  950/51780, Total_Loss:0.4588, iou_loss:0.3909, mix_loss:0.0679, lr: 0.000020
+2025-12-21 15:23:27,384 INFO ==> Iter: 1000/51780, Total_Loss:0.4031, iou_loss:0.3382, mix_loss:0.0649, lr: 0.000020
+2025-12-21 15:24:04,395 INFO ==> Iter: 1050/51780, Total_Loss:0.4196, iou_loss:0.3537, mix_loss:0.0659, lr: 0.000020
+2025-12-21 15:24:41,348 INFO ==> Iter: 1100/51780, Total_Loss:0.4166, iou_loss:0.3527, mix_loss:0.0639, lr: 0.000020
+2025-12-21 15:25:18,322 INFO ==> Iter: 1150/51780, Total_Loss:0.4146, iou_loss:0.3513, mix_loss:0.0634, lr: 0.000020
+2025-12-21 15:25:55,317 INFO ==> Iter: 1200/51780, Total_Loss:0.4030, iou_loss:0.3395, mix_loss:0.0635, lr: 0.000020
+2025-12-21 15:26:32,305 INFO ==> Iter: 1250/51780, Total_Loss:0.3801, iou_loss:0.3170, mix_loss:0.0631, lr: 0.000020
+2025-12-21 15:27:09,262 INFO ==> Iter: 1300/51780, Total_Loss:0.3912, iou_loss:0.3252, mix_loss:0.0661, lr: 0.000020
+2025-12-21 15:27:46,263 INFO ==> Iter: 1350/51780, Total_Loss:0.4037, iou_loss:0.3398, mix_loss:0.0638, lr: 0.000020
+2025-12-21 15:28:23,256 INFO ==> Iter: 1400/51780, Total_Loss:0.3837, iou_loss:0.3203, mix_loss:0.0634, lr: 0.000020
+2025-12-21 15:29:00,250 INFO ==> Iter: 1450/51780, Total_Loss:0.4167, iou_loss:0.3504, mix_loss:0.0663, lr: 0.000020
+2025-12-21 15:29:37,214 INFO ==> Iter: 1500/51780, Total_Loss:0.3983, iou_loss:0.3314, mix_loss:0.0669, lr: 0.000020
+2025-12-21 15:30:14,204 INFO ==> Iter: 1550/51780, Total_Loss:0.3886, iou_loss:0.3205, mix_loss:0.0681, lr: 0.000020
+2025-12-21 15:30:51,227 INFO ==> Iter: 1600/51780, Total_Loss:0.3811, iou_loss:0.3150, mix_loss:0.0660, lr: 0.000020
+2025-12-21 15:31:28,227 INFO ==> Iter: 1650/51780, Total_Loss:0.4081, iou_loss:0.3435, mix_loss:0.0647, lr: 0.000020
+2025-12-21 15:32:05,237 INFO ==> Iter: 1700/51780, Total_Loss:0.3975, iou_loss:0.3328, mix_loss:0.0647, lr: 0.000020
+2025-12-21 15:35:10,196 INFO ==> save best model to work_dir/AVSegFormer_res50_s4/S4_best.pth
+2025-12-21 15:35:10,196 INFO ==> Epoch: 0, Miou: 0.5259186625480652, maxMiou: 0.5259186625480652
+2025-12-21 15:35:31,154 INFO ==> Iter: 1750/51780, Total_Loss:0.3452, iou_loss:0.2844, mix_loss:0.0608, lr: 0.000020
+2025-12-21 15:36:08,177 INFO ==> Iter: 1800/51780, Total_Loss:0.3366, iou_loss:0.2717, mix_loss:0.0649, lr: 0.000020
+2025-12-21 15:36:45,147 INFO ==> Iter: 1850/51780, Total_Loss:0.3478, iou_loss:0.2819, mix_loss:0.0659, lr: 0.000020
+2025-12-21 15:37:22,145 INFO ==> Iter: 1900/51780, Total_Loss:0.3623, iou_loss:0.2975, mix_loss:0.0649, lr: 0.000020
+2025-12-21 15:37:59,134 INFO ==> Iter: 1950/51780, Total_Loss:0.3492, iou_loss:0.2814, mix_loss:0.0678, lr: 0.000020
+2025-12-21 15:38:36,095 INFO ==> Iter: 2000/51780, Total_Loss:0.3466, iou_loss:0.2812, mix_loss:0.0653, lr: 0.000020
+2025-12-21 15:39:13,101 INFO ==> Iter: 2050/51780, Total_Loss:0.3567, iou_loss:0.2921, mix_loss:0.0647, lr: 0.000020
+2025-12-21 15:39:50,153 INFO ==> Iter: 2100/51780, Total_Loss:0.3563, iou_loss:0.2906, mix_loss:0.0657, lr: 0.000020
+2025-12-21 15:40:27,170 INFO ==> Iter: 2150/51780, Total_Loss:0.3469, iou_loss:0.2799, mix_loss:0.0670, lr: 0.000020
+2025-12-21 15:41:04,139 INFO ==> Iter: 2200/51780, Total_Loss:0.3427, iou_loss:0.2770, mix_loss:0.0656, lr: 0.000020
+2025-12-21 15:41:41,127 INFO ==> Iter: 2250/51780, Total_Loss:0.3558, iou_loss:0.2943, mix_loss:0.0615, lr: 0.000020
+2025-12-21 15:42:18,164 INFO ==> Iter: 2300/51780, Total_Loss:0.3064, iou_loss:0.2455, mix_loss:0.0609, lr: 0.000020
+2025-12-21 15:42:55,148 INFO ==> Iter: 2350/51780, Total_Loss:0.3471, iou_loss:0.2861, mix_loss:0.0610, lr: 0.000020
+2025-12-21 15:43:32,161 INFO ==> Iter: 2400/51780, Total_Loss:0.3099, iou_loss:0.2465, mix_loss:0.0634, lr: 0.000020
+2025-12-21 15:44:09,202 INFO ==> Iter: 2450/51780, Total_Loss:0.3006, iou_loss:0.2383, mix_loss:0.0623, lr: 0.000020
+2025-12-21 15:44:46,160 INFO ==> Iter: 2500/51780, Total_Loss:0.3511, iou_loss:0.2859, mix_loss:0.0652, lr: 0.000020
+2025-12-21 15:45:23,255 INFO ==> Iter: 2550/51780, Total_Loss:0.3247, iou_loss:0.2601, mix_loss:0.0646, lr: 0.000020
+2025-12-21 15:46:00,275 INFO ==> Iter: 2600/51780, Total_Loss:0.3422, iou_loss:0.2788, mix_loss:0.0634, lr: 0.000020
+2025-12-21 15:46:37,332 INFO ==> Iter: 2650/51780, Total_Loss:0.3471, iou_loss:0.2813, mix_loss:0.0658, lr: 0.000020
+2025-12-21 15:47:14,326 INFO ==> Iter: 2700/51780, Total_Loss:0.3253, iou_loss:0.2626, mix_loss:0.0628, lr: 0.000020
+2025-12-21 15:47:51,293 INFO ==> Iter: 2750/51780, Total_Loss:0.3083, iou_loss:0.2431, mix_loss:0.0652, lr: 0.000020
+2025-12-21 15:48:28,303 INFO ==> Iter: 2800/51780, Total_Loss:0.3155, iou_loss:0.2515, mix_loss:0.0639, lr: 0.000020
+2025-12-21 15:49:05,310 INFO ==> Iter: 2850/51780, Total_Loss:0.3126, iou_loss:0.2500, mix_loss:0.0626, lr: 0.000020
+2025-12-21 15:49:42,304 INFO ==> Iter: 2900/51780, Total_Loss:0.3112, iou_loss:0.2521, mix_loss:0.0591, lr: 0.000020
+2025-12-21 15:50:19,320 INFO ==> Iter: 2950/51780, Total_Loss:0.3278, iou_loss:0.2620, mix_loss:0.0659, lr: 0.000020
+2025-12-21 15:50:56,317 INFO ==> Iter: 3000/51780, Total_Loss:0.3616, iou_loss:0.2957, mix_loss:0.0660, lr: 0.000020
+2025-12-21 15:51:33,297 INFO ==> Iter: 3050/51780, Total_Loss:0.3427, iou_loss:0.2779, mix_loss:0.0648, lr: 0.000020
+2025-12-21 15:52:10,303 INFO ==> Iter: 3100/51780, Total_Loss:0.2886, iou_loss:0.2235, mix_loss:0.0652, lr: 0.000020
+2025-12-21 15:52:47,298 INFO ==> Iter: 3150/51780, Total_Loss:0.3123, iou_loss:0.2486, mix_loss:0.0637, lr: 0.000020
+2025-12-21 15:53:24,356 INFO ==> Iter: 3200/51780, Total_Loss:0.3252, iou_loss:0.2604, mix_loss:0.0648, lr: 0.000020
+2025-12-21 15:54:01,354 INFO ==> Iter: 3250/51780, Total_Loss:0.3141, iou_loss:0.2512, mix_loss:0.0629, lr: 0.000020
+2025-12-21 15:54:38,348 INFO ==> Iter: 3300/51780, Total_Loss:0.3245, iou_loss:0.2566, mix_loss:0.0680, lr: 0.000020
+2025-12-21 15:55:15,344 INFO ==> Iter: 3350/51780, Total_Loss:0.3247, iou_loss:0.2588, mix_loss:0.0659, lr: 0.000020
+2025-12-21 15:55:52,344 INFO ==> Iter: 3400/51780, Total_Loss:0.3114, iou_loss:0.2457, mix_loss:0.0657, lr: 0.000020
+2025-12-21 15:56:29,270 INFO ==> Iter: 3450/51780, Total_Loss:0.3206, iou_loss:0.2566, mix_loss:0.0640, lr: 0.000020
+2025-12-21 15:59:16,499 INFO ==> save best model to work_dir/AVSegFormer_res50_s4/S4_best.pth
+2025-12-21 15:59:16,499 INFO ==> Epoch: 1, Miou: 0.6181488037109375, maxMiou: 0.6181488037109375
+2025-12-21 15:59:55,131 INFO ==> Iter: 3500/51780, Total_Loss:0.2797, iou_loss:0.2158, mix_loss:0.0639, lr: 0.000020
+2025-12-21 16:00:32,126 INFO ==> Iter: 3550/51780, Total_Loss:0.2882, iou_loss:0.2249, mix_loss:0.0633, lr: 0.000020
+2025-12-21 16:01:09,128 INFO ==> Iter: 3600/51780, Total_Loss:0.2869, iou_loss:0.2236, mix_loss:0.0633, lr: 0.000020
+2025-12-21 16:01:46,084 INFO ==> Iter: 3650/51780, Total_Loss:0.3178, iou_loss:0.2517, mix_loss:0.0661, lr: 0.000020
+2025-12-21 16:02:23,078 INFO ==> Iter: 3700/51780, Total_Loss:0.3137, iou_loss:0.2468, mix_loss:0.0669, lr: 0.000020
+2025-12-21 16:03:00,143 INFO ==> Iter: 3750/51780, Total_Loss:0.2593, iou_loss:0.1944, mix_loss:0.0649, lr: 0.000020
+2025-12-21 16:03:37,125 INFO ==> Iter: 3800/51780, Total_Loss:0.2940, iou_loss:0.2299, mix_loss:0.0640, lr: 0.000020
+2025-12-21 16:04:14,144 INFO ==> Iter: 3850/51780, Total_Loss:0.2878, iou_loss:0.2225, mix_loss:0.0653, lr: 0.000020
+2025-12-21 16:04:51,198 INFO ==> Iter: 3900/51780, Total_Loss:0.3015, iou_loss:0.2384, mix_loss:0.0631, lr: 0.000020
+2025-12-21 16:05:28,153 INFO ==> Iter: 3950/51780, Total_Loss:0.2617, iou_loss:0.2017, mix_loss:0.0600, lr: 0.000020
+2025-12-21 16:06:05,176 INFO ==> Iter: 4000/51780, Total_Loss:0.3232, iou_loss:0.2615, mix_loss:0.0618, lr: 0.000020
+2025-12-21 16:06:42,187 INFO ==> Iter: 4050/51780, Total_Loss:0.3255, iou_loss:0.2608, mix_loss:0.0647, lr: 0.000020
+2025-12-21 16:07:19,267 INFO ==> Iter: 4100/51780, Total_Loss:0.3125, iou_loss:0.2464, mix_loss:0.0661, lr: 0.000020
+2025-12-21 16:07:56,295 INFO ==> Iter: 4150/51780, Total_Loss:0.2905, iou_loss:0.2262, mix_loss:0.0644, lr: 0.000020
+2025-12-21 16:08:33,349 INFO ==> Iter: 4200/51780, Total_Loss:0.2671, iou_loss:0.2044, mix_loss:0.0628, lr: 0.000020
+2025-12-21 16:09:10,353 INFO ==> Iter: 4250/51780, Total_Loss:0.3170, iou_loss:0.2530, mix_loss:0.0640, lr: 0.000020
+2025-12-21 16:09:47,361 INFO ==> Iter: 4300/51780, Total_Loss:0.3050, iou_loss:0.2361, mix_loss:0.0689, lr: 0.000020
+2025-12-21 16:10:24,380 INFO ==> Iter: 4350/51780, Total_Loss:0.2896, iou_loss:0.2256, mix_loss:0.0640, lr: 0.000020
+2025-12-21 16:11:01,376 INFO ==> Iter: 4400/51780, Total_Loss:0.2710, iou_loss:0.2073, mix_loss:0.0637, lr: 0.000020
+2025-12-21 16:11:38,378 INFO ==> Iter: 4450/51780, Total_Loss:0.2849, iou_loss:0.2206, mix_loss:0.0643, lr: 0.000020
+2025-12-21 16:12:15,358 INFO ==> Iter: 4500/51780, Total_Loss:0.2807, iou_loss:0.2167, mix_loss:0.0640, lr: 0.000020
+2025-12-21 16:12:52,375 INFO ==> Iter: 4550/51780, Total_Loss:0.2971, iou_loss:0.2345, mix_loss:0.0625, lr: 0.000020
+2025-12-21 16:13:29,396 INFO ==> Iter: 4600/51780, Total_Loss:0.2386, iou_loss:0.1763, mix_loss:0.0624, lr: 0.000020
+2025-12-21 16:14:06,440 INFO ==> Iter: 4650/51780, Total_Loss:0.2715, iou_loss:0.2068, mix_loss:0.0647, lr: 0.000020
+2025-12-21 16:14:43,490 INFO ==> Iter: 4700/51780, Total_Loss:0.2804, iou_loss:0.2148, mix_loss:0.0656, lr: 0.000020
+2025-12-21 16:15:20,529 INFO ==> Iter: 4750/51780, Total_Loss:0.2684, iou_loss:0.2046, mix_loss:0.0638, lr: 0.000020
+2025-12-21 16:15:57,500 INFO ==> Iter: 4800/51780, Total_Loss:0.2949, iou_loss:0.2291, mix_loss:0.0658, lr: 0.000020
+2025-12-21 16:16:34,557 INFO ==> Iter: 4850/51780, Total_Loss:0.2789, iou_loss:0.2146, mix_loss:0.0643, lr: 0.000020
+2025-12-21 16:17:11,598 INFO ==> Iter: 4900/51780, Total_Loss:0.2781, iou_loss:0.2141, mix_loss:0.0640, lr: 0.000020
+2025-12-21 16:17:48,653 INFO ==> Iter: 4950/51780, Total_Loss:0.3289, iou_loss:0.2635, mix_loss:0.0653, lr: 0.000020
+2025-12-21 16:18:25,705 INFO ==> Iter: 5000/51780, Total_Loss:0.2867, iou_loss:0.2237, mix_loss:0.0630, lr: 0.000020
+2025-12-21 16:19:02,733 INFO ==> Iter: 5050/51780, Total_Loss:0.2993, iou_loss:0.2332, mix_loss:0.0661, lr: 0.000020
+2025-12-21 16:19:39,790 INFO ==> Iter: 5100/51780, Total_Loss:0.2869, iou_loss:0.2260, mix_loss:0.0609, lr: 0.000020
+2025-12-21 16:20:16,774 INFO ==> Iter: 5150/51780, Total_Loss:0.2544, iou_loss:0.1921, mix_loss:0.0623, lr: 0.000020
+2025-12-21 16:23:23,426 INFO ==> save best model to work_dir/AVSegFormer_res50_s4/S4_best.pth
+2025-12-21 16:23:23,427 INFO ==> Epoch: 2, Miou: 0.6213975548744202, maxMiou: 0.6213975548744202
+2025-12-21 16:23:43,028 INFO ==> Iter: 5200/51780, Total_Loss:0.2756, iou_loss:0.2112, mix_loss:0.0644, lr: 0.000020
+2025-12-21 16:24:19,983 INFO ==> Iter: 5250/51780, Total_Loss:0.2782, iou_loss:0.2119, mix_loss:0.0663, lr: 0.000020
+2025-12-21 16:24:57,033 INFO ==> Iter: 5300/51780, Total_Loss:0.2706, iou_loss:0.2063, mix_loss:0.0643, lr: 0.000020
+2025-12-21 16:25:34,094 INFO ==> Iter: 5350/51780, Total_Loss:0.2662, iou_loss:0.2013, mix_loss:0.0649, lr: 0.000020
+2025-12-21 16:26:11,140 INFO ==> Iter: 5400/51780, Total_Loss:0.2203, iou_loss:0.1589, mix_loss:0.0614, lr: 0.000020
+2025-12-21 16:26:48,111 INFO ==> Iter: 5450/51780, Total_Loss:0.2830, iou_loss:0.2178, mix_loss:0.0652, lr: 0.000020
+2025-12-21 16:27:25,179 INFO ==> Iter: 5500/51780, Total_Loss:0.2481, iou_loss:0.1841, mix_loss:0.0639, lr: 0.000020
+2025-12-21 16:28:02,213 INFO ==> Iter: 5550/51780, Total_Loss:0.2435, iou_loss:0.1810, mix_loss:0.0625, lr: 0.000020
+2025-12-21 16:28:39,261 INFO ==> Iter: 5600/51780, Total_Loss:0.2620, iou_loss:0.1992, mix_loss:0.0628, lr: 0.000020
+2025-12-21 16:29:16,363 INFO ==> Iter: 5650/51780, Total_Loss:0.2838, iou_loss:0.2179, mix_loss:0.0659, lr: 0.000020
+2025-12-21 16:29:53,427 INFO ==> Iter: 5700/51780, Total_Loss:0.2778, iou_loss:0.2129, mix_loss:0.0650, lr: 0.000020
+2025-12-21 16:30:30,438 INFO ==> Iter: 5750/51780, Total_Loss:0.2597, iou_loss:0.1999, mix_loss:0.0598, lr: 0.000020
+2025-12-21 16:31:07,513 INFO ==> Iter: 5800/51780, Total_Loss:0.2947, iou_loss:0.2280, mix_loss:0.0667, lr: 0.000020
+2025-12-21 16:31:44,516 INFO ==> Iter: 5850/51780, Total_Loss:0.2657, iou_loss:0.2023, mix_loss:0.0634, lr: 0.000020
+2025-12-21 16:32:21,533 INFO ==> Iter: 5900/51780, Total_Loss:0.2620, iou_loss:0.1982, mix_loss:0.0638, lr: 0.000020
+2025-12-21 16:32:58,534 INFO ==> Iter: 5950/51780, Total_Loss:0.2608, iou_loss:0.1993, mix_loss:0.0615, lr: 0.000020
+2025-12-21 16:33:35,602 INFO ==> Iter: 6000/51780, Total_Loss:0.2635, iou_loss:0.1996, mix_loss:0.0639, lr: 0.000020
+2025-12-21 16:34:12,569 INFO ==> Iter: 6050/51780, Total_Loss:0.2750, iou_loss:0.2125, mix_loss:0.0625, lr: 0.000020
+2025-12-21 16:34:49,652 INFO ==> Iter: 6100/51780, Total_Loss:0.2442, iou_loss:0.1815, mix_loss:0.0626, lr: 0.000020
+2025-12-21 16:35:26,720 INFO ==> Iter: 6150/51780, Total_Loss:0.2905, iou_loss:0.2268, mix_loss:0.0637, lr: 0.000020
+2025-12-21 16:36:03,696 INFO ==> Iter: 6200/51780, Total_Loss:0.2476, iou_loss:0.1840, mix_loss:0.0637, lr: 0.000020
+2025-12-21 16:36:40,727 INFO ==> Iter: 6250/51780, Total_Loss:0.2750, iou_loss:0.2100, mix_loss:0.0651, lr: 0.000020
+2025-12-21 16:37:17,805 INFO ==> Iter: 6300/51780, Total_Loss:0.2521, iou_loss:0.1888, mix_loss:0.0633, lr: 0.000020
+2025-12-21 16:37:54,869 INFO ==> Iter: 6350/51780, Total_Loss:0.2840, iou_loss:0.2182, mix_loss:0.0658, lr: 0.000020
+2025-12-21 16:38:31,890 INFO ==> Iter: 6400/51780, Total_Loss:0.2456, iou_loss:0.1840, mix_loss:0.0616, lr: 0.000020
+2025-12-21 16:39:08,920 INFO ==> Iter: 6450/51780, Total_Loss:0.2760, iou_loss:0.2123, mix_loss:0.0637, lr: 0.000020
+2025-12-21 16:39:45,933 INFO ==> Iter: 6500/51780, Total_Loss:0.2456, iou_loss:0.1826, mix_loss:0.0629, lr: 0.000020
+2025-12-21 16:40:22,938 INFO ==> Iter: 6550/51780, Total_Loss:0.2575, iou_loss:0.1919, mix_loss:0.0656, lr: 0.000020
+2025-12-21 16:40:59,933 INFO ==> Iter: 6600/51780, Total_Loss:0.2659, iou_loss:0.2013, mix_loss:0.0646, lr: 0.000020
+2025-12-21 16:41:36,943 INFO ==> Iter: 6650/51780, Total_Loss:0.2566, iou_loss:0.1918, mix_loss:0.0649, lr: 0.000020
+2025-12-21 16:42:14,034 INFO ==> Iter: 6700/51780, Total_Loss:0.2777, iou_loss:0.2149, mix_loss:0.0628, lr: 0.000020
+2025-12-21 16:42:51,073 INFO ==> Iter: 6750/51780, Total_Loss:0.2689, iou_loss:0.2023, mix_loss:0.0666, lr: 0.000020
+2025-12-21 16:43:28,108 INFO ==> Iter: 6800/51780, Total_Loss:0.2664, iou_loss:0.2034, mix_loss:0.0629, lr: 0.000020
+2025-12-21 16:44:05,131 INFO ==> Iter: 6850/51780, Total_Loss:0.2754, iou_loss:0.2123, mix_loss:0.0632, lr: 0.000020
+2025-12-21 16:44:42,105 INFO ==> Iter: 6900/51780, Total_Loss:0.2377, iou_loss:0.1736, mix_loss:0.0641, lr: 0.000020
+2025-12-21 16:47:31,067 INFO ==> save best model to work_dir/AVSegFormer_res50_s4/S4_best.pth
+2025-12-21 16:47:31,068 INFO ==> Epoch: 3, Miou: 0.6538297533988953, maxMiou: 0.6538297533988953
+2025-12-21 16:48:08,304 INFO ==> Iter: 6950/51780, Total_Loss:0.2674, iou_loss:0.2040, mix_loss:0.0634, lr: 0.000020
+2025-12-21 16:48:45,314 INFO ==> Iter: 7000/51780, Total_Loss:0.2259, iou_loss:0.1653, mix_loss:0.0606, lr: 0.000020
+2025-12-21 16:49:22,376 INFO ==> Iter: 7050/51780, Total_Loss:0.2296, iou_loss:0.1651, mix_loss:0.0645, lr: 0.000020
+2025-12-21 16:49:59,436 INFO ==> Iter: 7100/51780, Total_Loss:0.2268, iou_loss:0.1622, mix_loss:0.0646, lr: 0.000020
+2025-12-21 16:50:36,516 INFO ==> Iter: 7150/51780, Total_Loss:0.2459, iou_loss:0.1859, mix_loss:0.0600, lr: 0.000020
+2025-12-21 16:51:13,501 INFO ==> Iter: 7200/51780, Total_Loss:0.2293, iou_loss:0.1678, mix_loss:0.0615, lr: 0.000020
+2025-12-21 16:51:50,567 INFO ==> Iter: 7250/51780, Total_Loss:0.2378, iou_loss:0.1722, mix_loss:0.0655, lr: 0.000020
+2025-12-21 16:52:27,601 INFO ==> Iter: 7300/51780, Total_Loss:0.2459, iou_loss:0.1835, mix_loss:0.0624, lr: 0.000020
+2025-12-21 16:53:04,651 INFO ==> Iter: 7350/51780, Total_Loss:0.2675, iou_loss:0.2028, mix_loss:0.0647, lr: 0.000020
+2025-12-21 16:53:41,651 INFO ==> Iter: 7400/51780, Total_Loss:0.2545, iou_loss:0.1891, mix_loss:0.0654, lr: 0.000020
+2025-12-21 16:54:18,699 INFO ==> Iter: 7450/51780, Total_Loss:0.2435, iou_loss:0.1802, mix_loss:0.0633, lr: 0.000020
+2025-12-21 16:54:55,752 INFO ==> Iter: 7500/51780, Total_Loss:0.2541, iou_loss:0.1888, mix_loss:0.0653, lr: 0.000020
+2025-12-21 16:55:32,853 INFO ==> Iter: 7550/51780, Total_Loss:0.2404, iou_loss:0.1778, mix_loss:0.0626, lr: 0.000020
+2025-12-21 16:56:09,927 INFO ==> Iter: 7600/51780, Total_Loss:0.2219, iou_loss:0.1638, mix_loss:0.0581, lr: 0.000020
+2025-12-21 16:56:46,994 INFO ==> Iter: 7650/51780, Total_Loss:0.2482, iou_loss:0.1823, mix_loss:0.0659, lr: 0.000020
+2025-12-21 16:57:24,030 INFO ==> Iter: 7700/51780, Total_Loss:0.2592, iou_loss:0.1935, mix_loss:0.0657, lr: 0.000020
+2025-12-21 16:58:01,025 INFO ==> Iter: 7750/51780, Total_Loss:0.2520, iou_loss:0.1883, mix_loss:0.0638, lr: 0.000020
+2025-12-21 16:58:38,019 INFO ==> Iter: 7800/51780, Total_Loss:0.2539, iou_loss:0.1907, mix_loss:0.0632, lr: 0.000020
+2025-12-21 16:59:15,043 INFO ==> Iter: 7850/51780, Total_Loss:0.2482, iou_loss:0.1812, mix_loss:0.0669, lr: 0.000020
+2025-12-21 16:59:52,109 INFO ==> Iter: 7900/51780, Total_Loss:0.2270, iou_loss:0.1656, mix_loss:0.0615, lr: 0.000020
+2025-12-21 17:00:29,164 INFO ==> Iter: 7950/51780, Total_Loss:0.2312, iou_loss:0.1674, mix_loss:0.0638, lr: 0.000020
+2025-12-21 17:01:06,211 INFO ==> Iter: 8000/51780, Total_Loss:0.2420, iou_loss:0.1785, mix_loss:0.0636, lr: 0.000020
+2025-12-21 17:01:43,217 INFO ==> Iter: 8050/51780, Total_Loss:0.2183, iou_loss:0.1568, mix_loss:0.0615, lr: 0.000020
+2025-12-21 17:02:20,216 INFO ==> Iter: 8100/51780, Total_Loss:0.2529, iou_loss:0.1916, mix_loss:0.0614, lr: 0.000020
+2025-12-21 17:02:57,216 INFO ==> Iter: 8150/51780, Total_Loss:0.2372, iou_loss:0.1724, mix_loss:0.0648, lr: 0.000020
+2025-12-21 17:03:34,225 INFO ==> Iter: 8200/51780, Total_Loss:0.2534, iou_loss:0.1908, mix_loss:0.0626, lr: 0.000020
+2025-12-21 17:04:11,242 INFO ==> Iter: 8250/51780, Total_Loss:0.2317, iou_loss:0.1681, mix_loss:0.0636, lr: 0.000020
+2025-12-21 17:04:48,284 INFO ==> Iter: 8300/51780, Total_Loss:0.2700, iou_loss:0.2026, mix_loss:0.0675, lr: 0.000020
+2025-12-21 17:05:25,376 INFO ==> Iter: 8350/51780, Total_Loss:0.2304, iou_loss:0.1666, mix_loss:0.0638, lr: 0.000020
+2025-12-21 17:06:02,443 INFO ==> Iter: 8400/51780, Total_Loss:0.2500, iou_loss:0.1868, mix_loss:0.0632, lr: 0.000020
+2025-12-21 17:06:39,511 INFO ==> Iter: 8450/51780, Total_Loss:0.2539, iou_loss:0.1892, mix_loss:0.0647, lr: 0.000020
+2025-12-21 17:07:16,509 INFO ==> Iter: 8500/51780, Total_Loss:0.2968, iou_loss:0.2313, mix_loss:0.0655, lr: 0.000020
+2025-12-21 17:07:53,497 INFO ==> Iter: 8550/51780, Total_Loss:0.2670, iou_loss:0.2012, mix_loss:0.0658, lr: 0.000020
+2025-12-21 17:08:30,492 INFO ==> Iter: 8600/51780, Total_Loss:0.2360, iou_loss:0.1706, mix_loss:0.0654, lr: 0.000020
+2025-12-21 17:11:38,477 INFO ==> save best model to work_dir/AVSegFormer_res50_s4/S4_best.pth
+2025-12-21 17:11:38,478 INFO ==> Epoch: 4, Miou: 0.6687137484550476, maxMiou: 0.6687137484550476
+2025-12-21 17:11:57,390 INFO ==> Iter: 8650/51780, Total_Loss:0.2365, iou_loss:0.1747, mix_loss:0.0619, lr: 0.000020
+2025-12-21 17:12:36,605 INFO ==> Iter: 8700/51780, Total_Loss:0.2355, iou_loss:0.1704, mix_loss:0.0651, lr: 0.000020
+2025-12-21 17:13:15,804 INFO ==> Iter: 8750/51780, Total_Loss:0.2378, iou_loss:0.1749, mix_loss:0.0629, lr: 0.000020
+2025-12-21 17:13:54,984 INFO ==> Iter: 8800/51780, Total_Loss:0.2286, iou_loss:0.1675, mix_loss:0.0611, lr: 0.000020
+2025-12-21 17:14:34,177 INFO ==> Iter: 8850/51780, Total_Loss:0.2142, iou_loss:0.1508, mix_loss:0.0634, lr: 0.000020
+2025-12-21 17:15:13,378 INFO ==> Iter: 8900/51780, Total_Loss:0.2150, iou_loss:0.1517, mix_loss:0.0633, lr: 0.000020
+2025-12-21 17:15:52,598 INFO ==> Iter: 8950/51780, Total_Loss:0.2255, iou_loss:0.1650, mix_loss:0.0604, lr: 0.000020
+2025-12-21 17:16:31,784 INFO ==> Iter: 9000/51780, Total_Loss:0.2294, iou_loss:0.1671, mix_loss:0.0623, lr: 0.000020
+2025-12-21 17:17:11,096 INFO ==> Iter: 9050/51780, Total_Loss:0.2251, iou_loss:0.1628, mix_loss:0.0623, lr: 0.000020
+2025-12-21 17:17:50,294 INFO ==> Iter: 9100/51780, Total_Loss:0.2696, iou_loss:0.2001, mix_loss:0.0695, lr: 0.000020
+2025-12-21 17:18:29,447 INFO ==> Iter: 9150/51780, Total_Loss:0.2058, iou_loss:0.1460, mix_loss:0.0598, lr: 0.000020
+2025-12-21 17:19:08,651 INFO ==> Iter: 9200/51780, Total_Loss:0.2983, iou_loss:0.2305, mix_loss:0.0678, lr: 0.000020
+2025-12-21 17:19:47,995 INFO ==> Iter: 9250/51780, Total_Loss:0.2514, iou_loss:0.1880, mix_loss:0.0634, lr: 0.000020
+2025-12-21 17:20:27,226 INFO ==> Iter: 9300/51780, Total_Loss:0.2196, iou_loss:0.1582, mix_loss:0.0614, lr: 0.000020
+2025-12-21 17:21:06,416 INFO ==> Iter: 9350/51780, Total_Loss:0.2150, iou_loss:0.1510, mix_loss:0.0639, lr: 0.000020
+2025-12-21 17:21:45,680 INFO ==> Iter: 9400/51780, Total_Loss:0.2889, iou_loss:0.2215, mix_loss:0.0673, lr: 0.000020
+2025-12-21 17:22:24,879 INFO ==> Iter: 9450/51780, Total_Loss:0.2823, iou_loss:0.2162, mix_loss:0.0661, lr: 0.000020
+2025-12-21 17:23:04,129 INFO ==> Iter: 9500/51780, Total_Loss:0.2172, iou_loss:0.1544, mix_loss:0.0629, lr: 0.000020
+2025-12-21 17:23:43,348 INFO ==> Iter: 9550/51780, Total_Loss:0.2293, iou_loss:0.1656, mix_loss:0.0637, lr: 0.000020
+2025-12-21 17:24:22,601 INFO ==> Iter: 9600/51780, Total_Loss:0.2346, iou_loss:0.1723, mix_loss:0.0623, lr: 0.000020
+2025-12-21 17:25:01,916 INFO ==> Iter: 9650/51780, Total_Loss:0.2564, iou_loss:0.1935, mix_loss:0.0629, lr: 0.000020
+2025-12-21 17:25:41,103 INFO ==> Iter: 9700/51780, Total_Loss:0.2211, iou_loss:0.1549, mix_loss:0.0663, lr: 0.000020
+2025-12-21 17:26:20,372 INFO ==> Iter: 9750/51780, Total_Loss:0.2511, iou_loss:0.1838, mix_loss:0.0672, lr: 0.000020
+2025-12-21 17:26:59,676 INFO ==> Iter: 9800/51780, Total_Loss:0.2684, iou_loss:0.2004, mix_loss:0.0681, lr: 0.000020
+2025-12-21 17:27:38,985 INFO ==> Iter: 9850/51780, Total_Loss:0.2672, iou_loss:0.2022, mix_loss:0.0650, lr: 0.000020
+2025-12-21 17:28:18,289 INFO ==> Iter: 9900/51780, Total_Loss:0.2270, iou_loss:0.1654, mix_loss:0.0616, lr: 0.000020
+2025-12-21 17:28:57,584 INFO ==> Iter: 9950/51780, Total_Loss:0.2351, iou_loss:0.1728, mix_loss:0.0624, lr: 0.000020
+2025-12-21 17:29:36,920 INFO ==> Iter:10000/51780, Total_Loss:0.2237, iou_loss:0.1616, mix_loss:0.0620, lr: 0.000020
+2025-12-21 17:30:16,141 INFO ==> Iter:10050/51780, Total_Loss:0.2518, iou_loss:0.1888, mix_loss:0.0630, lr: 0.000020
+2025-12-21 17:30:55,376 INFO ==> Iter:10100/51780, Total_Loss:0.2455, iou_loss:0.1830, mix_loss:0.0625, lr: 0.000020
+2025-12-21 17:31:34,736 INFO ==> Iter:10150/51780, Total_Loss:0.2320, iou_loss:0.1688, mix_loss:0.0632, lr: 0.000020
+2025-12-21 17:32:13,997 INFO ==> Iter:10200/51780, Total_Loss:0.2238, iou_loss:0.1621, mix_loss:0.0617, lr: 0.000020
+2025-12-21 17:32:53,291 INFO ==> Iter:10250/51780, Total_Loss:0.2529, iou_loss:0.1932, mix_loss:0.0598, lr: 0.000020
+2025-12-21 17:33:32,528 INFO ==> Iter:10300/51780, Total_Loss:0.2265, iou_loss:0.1667, mix_loss:0.0597, lr: 0.000020
+2025-12-21 17:34:11,806 INFO ==> Iter:10350/51780, Total_Loss:0.2505, iou_loss:0.1861, mix_loss:0.0644, lr: 0.000020
+2025-12-21 17:37:01,520 INFO ==> Epoch: 5, Miou: 0.667284369468689, maxMiou: 0.6687137484550476
+2025-12-21 17:37:39,288 INFO ==> Iter:10400/51780, Total_Loss:0.2338, iou_loss:0.1709, mix_loss:0.0628, lr: 0.000020
+2025-12-21 17:38:18,506 INFO ==> Iter:10450/51780, Total_Loss:0.2100, iou_loss:0.1456, mix_loss:0.0645, lr: 0.000020
+2025-12-21 17:38:57,734 INFO ==> Iter:10500/51780, Total_Loss:0.1880, iou_loss:0.1267, mix_loss:0.0613, lr: 0.000020
+2025-12-21 17:39:37,033 INFO ==> Iter:10550/51780, Total_Loss:0.2241, iou_loss:0.1614, mix_loss:0.0626, lr: 0.000020
+2025-12-21 17:40:16,337 INFO ==> Iter:10600/51780, Total_Loss:0.1931, iou_loss:0.1310, mix_loss:0.0620, lr: 0.000020
+2025-12-21 17:40:55,554 INFO ==> Iter:10650/51780, Total_Loss:0.2146, iou_loss:0.1503, mix_loss:0.0644, lr: 0.000020
+2025-12-21 17:41:34,838 INFO ==> Iter:10700/51780, Total_Loss:0.1966, iou_loss:0.1377, mix_loss:0.0589, lr: 0.000020
+2025-12-21 17:42:14,162 INFO ==> Iter:10750/51780, Total_Loss:0.2032, iou_loss:0.1439, mix_loss:0.0593, lr: 0.000020
+2025-12-21 17:42:53,436 INFO ==> Iter:10800/51780, Total_Loss:0.2292, iou_loss:0.1634, mix_loss:0.0658, lr: 0.000020
+2025-12-21 17:43:32,673 INFO ==> Iter:10850/51780, Total_Loss:0.2260, iou_loss:0.1636, mix_loss:0.0624, lr: 0.000020
+2025-12-21 17:44:12,002 INFO ==> Iter:10900/51780, Total_Loss:0.1861, iou_loss:0.1216, mix_loss:0.0644, lr: 0.000020
+2025-12-21 17:44:51,263 INFO ==> Iter:10950/51780, Total_Loss:0.2175, iou_loss:0.1504, mix_loss:0.0671, lr: 0.000020
+2025-12-21 17:45:30,473 INFO ==> Iter:11000/51780, Total_Loss:0.2154, iou_loss:0.1529, mix_loss:0.0625, lr: 0.000020
+2025-12-21 17:46:09,777 INFO ==> Iter:11050/51780, Total_Loss:0.1973, iou_loss:0.1323, mix_loss:0.0650, lr: 0.000020
+2025-12-21 17:46:48,969 INFO ==> Iter:11100/51780, Total_Loss:0.2278, iou_loss:0.1654, mix_loss:0.0625, lr: 0.000020
+2025-12-21 17:47:28,317 INFO ==> Iter:11150/51780, Total_Loss:0.1928, iou_loss:0.1329, mix_loss:0.0599, lr: 0.000020
+2025-12-21 17:48:07,570 INFO ==> Iter:11200/51780, Total_Loss:0.2036, iou_loss:0.1429, mix_loss:0.0607, lr: 0.000020
+2025-12-21 17:48:46,894 INFO ==> Iter:11250/51780, Total_Loss:0.2270, iou_loss:0.1613, mix_loss:0.0656, lr: 0.000020
+2025-12-21 17:49:26,136 INFO ==> Iter:11300/51780, Total_Loss:0.1986, iou_loss:0.1365, mix_loss:0.0621, lr: 0.000020
+2025-12-21 17:50:05,467 INFO ==> Iter:11350/51780, Total_Loss:0.2213, iou_loss:0.1588, mix_loss:0.0626, lr: 0.000020
+2025-12-21 17:50:44,788 INFO ==> Iter:11400/51780, Total_Loss:0.2301, iou_loss:0.1665, mix_loss:0.0636, lr: 0.000020
+2025-12-21 17:51:24,091 INFO ==> Iter:11450/51780, Total_Loss:0.2141, iou_loss:0.1498, mix_loss:0.0643, lr: 0.000020
+2025-12-21 17:52:03,357 INFO ==> Iter:11500/51780, Total_Loss:0.1761, iou_loss:0.1123, mix_loss:0.0638, lr: 0.000020
+2025-12-21 17:52:42,661 INFO ==> Iter:11550/51780, Total_Loss:0.2064, iou_loss:0.1439, mix_loss:0.0625, lr: 0.000020
+2025-12-21 17:53:21,980 INFO ==> Iter:11600/51780, Total_Loss:0.1819, iou_loss:0.1200, mix_loss:0.0619, lr: 0.000020
+2025-12-21 17:54:01,296 INFO ==> Iter:11650/51780, Total_Loss:0.2006, iou_loss:0.1372, mix_loss:0.0634, lr: 0.000020
+2025-12-21 17:54:40,553 INFO ==> Iter:11700/51780, Total_Loss:0.1945, iou_loss:0.1315, mix_loss:0.0630, lr: 0.000020
+2025-12-21 17:55:19,765 INFO ==> Iter:11750/51780, Total_Loss:0.2174, iou_loss:0.1517, mix_loss:0.0658, lr: 0.000020
+2025-12-21 17:55:59,060 INFO ==> Iter:11800/51780, Total_Loss:0.2018, iou_loss:0.1389, mix_loss:0.0629, lr: 0.000020
+2025-12-21 17:56:38,394 INFO ==> Iter:11850/51780, Total_Loss:0.2074, iou_loss:0.1438, mix_loss:0.0636, lr: 0.000020
+2025-12-21 17:57:17,599 INFO ==> Iter:11900/51780, Total_Loss:0.1770, iou_loss:0.1130, mix_loss:0.0639, lr: 0.000020
+2025-12-21 17:57:56,933 INFO ==> Iter:11950/51780, Total_Loss:0.2052, iou_loss:0.1410, mix_loss:0.0641, lr: 0.000020
+2025-12-21 17:58:36,103 INFO ==> Iter:12000/51780, Total_Loss:0.2512, iou_loss:0.1874, mix_loss:0.0637, lr: 0.000020
+2025-12-21 17:59:15,396 INFO ==> Iter:12050/51780, Total_Loss:0.2491, iou_loss:0.1843, mix_loss:0.0648, lr: 0.000020
+2025-12-21 18:02:26,627 INFO ==> save best model to work_dir/AVSegFormer_res50_s4/S4_best.pth
+2025-12-21 18:02:26,628 INFO ==> Epoch: 6, Miou: 0.6918819546699524, maxMiou: 0.6918819546699524
+2025-12-21 18:02:43,831 INFO ==> Iter:12100/51780, Total_Loss:0.2130, iou_loss:0.1505, mix_loss:0.0624, lr: 0.000020
+2025-12-21 18:03:22,986 INFO ==> Iter:12150/51780, Total_Loss:0.1810, iou_loss:0.1223, mix_loss:0.0587, lr: 0.000020
+2025-12-21 18:04:02,239 INFO ==> Iter:12200/51780, Total_Loss:0.1738, iou_loss:0.1086, mix_loss:0.0651, lr: 0.000020
+2025-12-21 18:04:41,401 INFO ==> Iter:12250/51780, Total_Loss:0.1500, iou_loss:0.0886, mix_loss:0.0615, lr: 0.000020
+2025-12-21 18:05:20,648 INFO ==> Iter:12300/51780, Total_Loss:0.1769, iou_loss:0.1146, mix_loss:0.0623, lr: 0.000020
+2025-12-21 18:05:59,875 INFO ==> Iter:12350/51780, Total_Loss:0.1790, iou_loss:0.1162, mix_loss:0.0627, lr: 0.000020
+2025-12-21 18:06:39,178 INFO ==> Iter:12400/51780, Total_Loss:0.1773, iou_loss:0.1112, mix_loss:0.0661, lr: 0.000020
+2025-12-21 18:07:18,423 INFO ==> Iter:12450/51780, Total_Loss:0.1963, iou_loss:0.1357, mix_loss:0.0607, lr: 0.000020
+2025-12-21 18:07:57,650 INFO ==> Iter:12500/51780, Total_Loss:0.1808, iou_loss:0.1201, mix_loss:0.0608, lr: 0.000020
+2025-12-21 18:08:36,988 INFO ==> Iter:12550/51780, Total_Loss:0.1761, iou_loss:0.1148, mix_loss:0.0612, lr: 0.000020
+2025-12-21 18:09:16,183 INFO ==> Iter:12600/51780, Total_Loss:0.1734, iou_loss:0.1124, mix_loss:0.0610, lr: 0.000020
+2025-12-21 18:09:55,410 INFO ==> Iter:12650/51780, Total_Loss:0.1762, iou_loss:0.1131, mix_loss:0.0630, lr: 0.000020
+2025-12-21 18:10:34,574 INFO ==> Iter:12700/51780, Total_Loss:0.1737, iou_loss:0.1142, mix_loss:0.0594, lr: 0.000020
+2025-12-21 18:11:13,853 INFO ==> Iter:12750/51780, Total_Loss:0.1851, iou_loss:0.1183, mix_loss:0.0668, lr: 0.000020
+2025-12-21 18:11:53,048 INFO ==> Iter:12800/51780, Total_Loss:0.2030, iou_loss:0.1383, mix_loss:0.0646, lr: 0.000020
+2025-12-21 18:12:32,348 INFO ==> Iter:12850/51780, Total_Loss:0.1788, iou_loss:0.1178, mix_loss:0.0610, lr: 0.000020
+2025-12-21 18:13:11,600 INFO ==> Iter:12900/51780, Total_Loss:0.2031, iou_loss:0.1399, mix_loss:0.0632, lr: 0.000020
+2025-12-21 18:13:50,878 INFO ==> Iter:12950/51780, Total_Loss:0.1822, iou_loss:0.1190, mix_loss:0.0632, lr: 0.000020
+2025-12-21 18:14:30,133 INFO ==> Iter:13000/51780, Total_Loss:0.1909, iou_loss:0.1268, mix_loss:0.0642, lr: 0.000020
+2025-12-21 18:15:09,429 INFO ==> Iter:13050/51780, Total_Loss:0.2074, iou_loss:0.1429, mix_loss:0.0645, lr: 0.000020
+2025-12-21 18:15:48,714 INFO ==> Iter:13100/51780, Total_Loss:0.1726, iou_loss:0.1081, mix_loss:0.0644, lr: 0.000020
+2025-12-21 18:16:28,017 INFO ==> Iter:13150/51780, Total_Loss:0.2021, iou_loss:0.1423, mix_loss:0.0598, lr: 0.000020
+2025-12-21 18:17:07,272 INFO ==> Iter:13200/51780, Total_Loss:0.1680, iou_loss:0.1045, mix_loss:0.0635, lr: 0.000020
+2025-12-21 18:17:46,505 INFO ==> Iter:13250/51780, Total_Loss:0.2017, iou_loss:0.1392, mix_loss:0.0625, lr: 0.000020
+2025-12-21 18:18:25,740 INFO ==> Iter:13300/51780, Total_Loss:0.1737, iou_loss:0.1116, mix_loss:0.0621, lr: 0.000020
+2025-12-21 18:19:05,014 INFO ==> Iter:13350/51780, Total_Loss:0.2050, iou_loss:0.1410, mix_loss:0.0640, lr: 0.000020
+2025-12-21 18:19:44,308 INFO ==> Iter:13400/51780, Total_Loss:0.2162, iou_loss:0.1518, mix_loss:0.0644, lr: 0.000020
+2025-12-21 18:20:23,513 INFO ==> Iter:13450/51780, Total_Loss:0.1807, iou_loss:0.1152, mix_loss:0.0655, lr: 0.000020
+2025-12-21 18:21:02,758 INFO ==> Iter:13500/51780, Total_Loss:0.1719, iou_loss:0.1119, mix_loss:0.0600, lr: 0.000020
+2025-12-21 18:21:42,017 INFO ==> Iter:13550/51780, Total_Loss:0.2117, iou_loss:0.1458, mix_loss:0.0659, lr: 0.000020
+2025-12-21 18:22:21,220 INFO ==> Iter:13600/51780, Total_Loss:0.1797, iou_loss:0.1184, mix_loss:0.0614, lr: 0.000020
+2025-12-21 18:23:00,474 INFO ==> Iter:13650/51780, Total_Loss:0.2106, iou_loss:0.1483, mix_loss:0.0623, lr: 0.000020
+2025-12-21 18:23:39,733 INFO ==> Iter:13700/51780, Total_Loss:0.1727, iou_loss:0.1074, mix_loss:0.0652, lr: 0.000020
+2025-12-21 18:24:18,996 INFO ==> Iter:13750/51780, Total_Loss:0.2213, iou_loss:0.1598, mix_loss:0.0615, lr: 0.000020
+2025-12-21 18:24:58,186 INFO ==> Iter:13800/51780, Total_Loss:0.1984, iou_loss:0.1350, mix_loss:0.0634, lr: 0.000020
+2025-12-21 18:27:50,270 INFO ==> save best model to work_dir/AVSegFormer_res50_s4/S4_best.pth
+2025-12-21 18:27:50,271 INFO ==> Epoch: 7, Miou: 0.7064562439918518, maxMiou: 0.7064562439918518
+2025-12-21 18:28:26,326 INFO ==> Iter:13850/51780, Total_Loss:0.1873, iou_loss:0.1229, mix_loss:0.0644, lr: 0.000020
+2025-12-21 18:29:05,526 INFO ==> Iter:13900/51780, Total_Loss:0.1697, iou_loss:0.1070, mix_loss:0.0627, lr: 0.000020
+2025-12-21 18:29:44,668 INFO ==> Iter:13950/51780, Total_Loss:0.1628, iou_loss:0.0992, mix_loss:0.0636, lr: 0.000020
+2025-12-21 18:30:23,872 INFO ==> Iter:14000/51780, Total_Loss:0.1584, iou_loss:0.0970, mix_loss:0.0614, lr: 0.000020
+2025-12-21 18:31:03,062 INFO ==> Iter:14050/51780, Total_Loss:0.1719, iou_loss:0.1093, mix_loss:0.0626, lr: 0.000020
+2025-12-21 18:31:42,192 INFO ==> Iter:14100/51780, Total_Loss:0.1566, iou_loss:0.0937, mix_loss:0.0629, lr: 0.000020
+2025-12-21 18:32:21,420 INFO ==> Iter:14150/51780, Total_Loss:0.1679, iou_loss:0.1039, mix_loss:0.0640, lr: 0.000020
+2025-12-21 18:33:00,639 INFO ==> Iter:14200/51780, Total_Loss:0.1650, iou_loss:0.1035, mix_loss:0.0616, lr: 0.000020
+2025-12-21 18:33:39,870 INFO ==> Iter:14250/51780, Total_Loss:0.1682, iou_loss:0.1078, mix_loss:0.0605, lr: 0.000020
+2025-12-21 18:34:19,050 INFO ==> Iter:14300/51780, Total_Loss:0.1969, iou_loss:0.1338, mix_loss:0.0631, lr: 0.000020
+2025-12-21 18:34:58,279 INFO ==> Iter:14350/51780, Total_Loss:0.1928, iou_loss:0.1287, mix_loss:0.0641, lr: 0.000020
+2025-12-21 18:35:37,488 INFO ==> Iter:14400/51780, Total_Loss:0.1649, iou_loss:0.1057, mix_loss:0.0592, lr: 0.000020
+2025-12-21 18:36:16,687 INFO ==> Iter:14450/51780, Total_Loss:0.1717, iou_loss:0.1096, mix_loss:0.0621, lr: 0.000020
+2025-12-21 18:36:55,886 INFO ==> Iter:14500/51780, Total_Loss:0.1806, iou_loss:0.1195, mix_loss:0.0611, lr: 0.000020
+2025-12-21 18:37:35,075 INFO ==> Iter:14550/51780, Total_Loss:0.1753, iou_loss:0.1147, mix_loss:0.0606, lr: 0.000020
+2025-12-21 18:38:14,334 INFO ==> Iter:14600/51780, Total_Loss:0.1683, iou_loss:0.1045, mix_loss:0.0637, lr: 0.000020
+2025-12-21 18:38:53,557 INFO ==> Iter:14650/51780, Total_Loss:0.1789, iou_loss:0.1148, mix_loss:0.0640, lr: 0.000020
+2025-12-21 18:39:32,773 INFO ==> Iter:14700/51780, Total_Loss:0.1727, iou_loss:0.1059, mix_loss:0.0669, lr: 0.000020
+2025-12-21 18:40:11,964 INFO ==> Iter:14750/51780, Total_Loss:0.1744, iou_loss:0.1110, mix_loss:0.0634, lr: 0.000020
+2025-12-21 18:40:51,166 INFO ==> Iter:14800/51780, Total_Loss:0.1681, iou_loss:0.1095, mix_loss:0.0586, lr: 0.000020
+2025-12-21 18:41:30,337 INFO ==> Iter:14850/51780, Total_Loss:0.1499, iou_loss:0.0897, mix_loss:0.0602, lr: 0.000020
+2025-12-21 18:42:09,543 INFO ==> Iter:14900/51780, Total_Loss:0.1448, iou_loss:0.0838, mix_loss:0.0609, lr: 0.000020
+2025-12-21 18:42:48,758 INFO ==> Iter:14950/51780, Total_Loss:0.1777, iou_loss:0.1122, mix_loss:0.0654, lr: 0.000020
+2025-12-21 18:43:27,928 INFO ==> Iter:15000/51780, Total_Loss:0.1787, iou_loss:0.1168, mix_loss:0.0619, lr: 0.000020
+2025-12-21 18:44:07,156 INFO ==> Iter:15050/51780, Total_Loss:0.1568, iou_loss:0.0962, mix_loss:0.0606, lr: 0.000020
+2025-12-21 18:44:46,388 INFO ==> Iter:15100/51780, Total_Loss:0.1747, iou_loss:0.1101, mix_loss:0.0647, lr: 0.000020
+2025-12-21 18:45:25,600 INFO ==> Iter:15150/51780, Total_Loss:0.1792, iou_loss:0.1195, mix_loss:0.0597, lr: 0.000020
+2025-12-21 18:46:04,835 INFO ==> Iter:15200/51780, Total_Loss:0.1693, iou_loss:0.1073, mix_loss:0.0620, lr: 0.000020
+2025-12-21 18:46:44,086 INFO ==> Iter:15250/51780, Total_Loss:0.1563, iou_loss:0.0955, mix_loss:0.0608, lr: 0.000020
+2025-12-21 18:47:23,291 INFO ==> Iter:15300/51780, Total_Loss:0.1567, iou_loss:0.0950, mix_loss:0.0617, lr: 0.000020
+2025-12-21 18:48:02,515 INFO ==> Iter:15350/51780, Total_Loss:0.1550, iou_loss:0.0918, mix_loss:0.0632, lr: 0.000020
+2025-12-21 18:48:41,685 INFO ==> Iter:15400/51780, Total_Loss:0.1835, iou_loss:0.1177, mix_loss:0.0659, lr: 0.000020
+2025-12-21 18:49:20,974 INFO ==> Iter:15450/51780, Total_Loss:0.1686, iou_loss:0.1050, mix_loss:0.0636, lr: 0.000020
+2025-12-21 18:50:00,198 INFO ==> Iter:15500/51780, Total_Loss:0.1773, iou_loss:0.1173, mix_loss:0.0600, lr: 0.000020
+2025-12-21 18:53:12,750 INFO ==> save best model to work_dir/AVSegFormer_res50_s4/S4_best.pth
+2025-12-21 18:53:12,750 INFO ==> Epoch: 8, Miou: 0.7235745787620544, maxMiou: 0.7235745787620544
+2025-12-21 18:53:28,502 INFO ==> Iter:15550/51780, Total_Loss:0.1694, iou_loss:0.1036, mix_loss:0.0658, lr: 0.000020
+2025-12-21 18:54:07,601 INFO ==> Iter:15600/51780, Total_Loss:0.1618, iou_loss:0.0988, mix_loss:0.0630, lr: 0.000020
+2025-12-21 18:54:46,844 INFO ==> Iter:15650/51780, Total_Loss:0.1515, iou_loss:0.0894, mix_loss:0.0621, lr: 0.000020
+2025-12-21 18:55:25,983 INFO ==> Iter:15700/51780, Total_Loss:0.1477, iou_loss:0.0856, mix_loss:0.0622, lr: 0.000020
+2025-12-21 18:56:05,163 INFO ==> Iter:15750/51780, Total_Loss:0.1411, iou_loss:0.0787, mix_loss:0.0624, lr: 0.000020
+2025-12-21 18:56:44,405 INFO ==> Iter:15800/51780, Total_Loss:0.1731, iou_loss:0.1049, mix_loss:0.0682, lr: 0.000020
+2025-12-21 18:57:23,658 INFO ==> Iter:15850/51780, Total_Loss:0.1617, iou_loss:0.0988, mix_loss:0.0629, lr: 0.000020
+2025-12-21 18:58:02,854 INFO ==> Iter:15900/51780, Total_Loss:0.1498, iou_loss:0.0886, mix_loss:0.0612, lr: 0.000020
+2025-12-21 18:58:42,030 INFO ==> Iter:15950/51780, Total_Loss:0.1547, iou_loss:0.0932, mix_loss:0.0616, lr: 0.000020
+2025-12-21 18:59:21,222 INFO ==> Iter:16000/51780, Total_Loss:0.1425, iou_loss:0.0826, mix_loss:0.0599, lr: 0.000020
+2025-12-21 19:00:00,477 INFO ==> Iter:16050/51780, Total_Loss:0.1587, iou_loss:0.0980, mix_loss:0.0607, lr: 0.000020
+2025-12-21 19:00:39,846 INFO ==> Iter:16100/51780, Total_Loss:0.1560, iou_loss:0.0945, mix_loss:0.0614, lr: 0.000020
+2025-12-21 19:01:19,022 INFO ==> Iter:16150/51780, Total_Loss:0.1761, iou_loss:0.1142, mix_loss:0.0618, lr: 0.000020
+2025-12-21 19:01:58,200 INFO ==> Iter:16200/51780, Total_Loss:0.1497, iou_loss:0.0873, mix_loss:0.0624, lr: 0.000020
+2025-12-21 19:02:37,384 INFO ==> Iter:16250/51780, Total_Loss:0.1544, iou_loss:0.0947, mix_loss:0.0598, lr: 0.000020
+2025-12-21 19:03:16,585 INFO ==> Iter:16300/51780, Total_Loss:0.1572, iou_loss:0.0988, mix_loss:0.0585, lr: 0.000020
+2025-12-21 19:03:55,818 INFO ==> Iter:16350/51780, Total_Loss:0.1724, iou_loss:0.1143, mix_loss:0.0581, lr: 0.000020
+2025-12-21 19:04:34,968 INFO ==> Iter:16400/51780, Total_Loss:0.1760, iou_loss:0.1117, mix_loss:0.0643, lr: 0.000020
+2025-12-21 19:05:14,159 INFO ==> Iter:16450/51780, Total_Loss:0.1718, iou_loss:0.1100, mix_loss:0.0618, lr: 0.000020
+2025-12-21 19:05:53,412 INFO ==> Iter:16500/51780, Total_Loss:0.1721, iou_loss:0.1104, mix_loss:0.0616, lr: 0.000020
+2025-12-21 19:06:32,538 INFO ==> Iter:16550/51780, Total_Loss:0.1904, iou_loss:0.1289, mix_loss:0.0616, lr: 0.000020
+2025-12-21 19:07:11,777 INFO ==> Iter:16600/51780, Total_Loss:0.1706, iou_loss:0.1066, mix_loss:0.0640, lr: 0.000020
+2025-12-21 19:07:50,984 INFO ==> Iter:16650/51780, Total_Loss:0.1681, iou_loss:0.1084, mix_loss:0.0597, lr: 0.000020
+2025-12-21 19:08:30,236 INFO ==> Iter:16700/51780, Total_Loss:0.1560, iou_loss:0.0961, mix_loss:0.0600, lr: 0.000020
+2025-12-21 19:09:09,369 INFO ==> Iter:16750/51780, Total_Loss:0.1537, iou_loss:0.0923, mix_loss:0.0614, lr: 0.000020
+2025-12-21 19:09:48,536 INFO ==> Iter:16800/51780, Total_Loss:0.1663, iou_loss:0.1022, mix_loss:0.0640, lr: 0.000020
+2025-12-21 19:10:27,679 INFO ==> Iter:16850/51780, Total_Loss:0.1580, iou_loss:0.0950, mix_loss:0.0630, lr: 0.000020
+2025-12-21 19:11:06,822 INFO ==> Iter:16900/51780, Total_Loss:0.1787, iou_loss:0.1159, mix_loss:0.0629, lr: 0.000020
+2025-12-21 19:11:46,071 INFO ==> Iter:16950/51780, Total_Loss:0.1716, iou_loss:0.1113, mix_loss:0.0602, lr: 0.000020
+2025-12-21 19:12:25,272 INFO ==> Iter:17000/51780, Total_Loss:0.1622, iou_loss:0.1010, mix_loss:0.0612, lr: 0.000020
+2025-12-21 19:13:04,426 INFO ==> Iter:17050/51780, Total_Loss:0.1502, iou_loss:0.0884, mix_loss:0.0618, lr: 0.000020
+2025-12-21 19:13:43,603 INFO ==> Iter:17100/51780, Total_Loss:0.1661, iou_loss:0.1006, mix_loss:0.0655, lr: 0.000020
+2025-12-21 19:14:22,761 INFO ==> Iter:17150/51780, Total_Loss:0.1588, iou_loss:0.0952, mix_loss:0.0636, lr: 0.000020
+2025-12-21 19:15:01,985 INFO ==> Iter:17200/51780, Total_Loss:0.1632, iou_loss:0.1018, mix_loss:0.0615, lr: 0.000020
+2025-12-21 19:15:41,066 INFO ==> Iter:17250/51780, Total_Loss:0.1502, iou_loss:0.0918, mix_loss:0.0583, lr: 0.000020
+2025-12-21 19:18:34,758 INFO ==> save best model to work_dir/AVSegFormer_res50_s4/S4_best.pth
+2025-12-21 19:18:34,759 INFO ==> Epoch: 9, Miou: 0.7313889861106873, maxMiou: 0.7313889861106873
+2025-12-21 19:19:09,162 INFO ==> Iter:17300/51780, Total_Loss:0.1410, iou_loss:0.0802, mix_loss:0.0609, lr: 0.000020
+2025-12-21 19:19:48,393 INFO ==> Iter:17350/51780, Total_Loss:0.1424, iou_loss:0.0805, mix_loss:0.0619, lr: 0.000020
+2025-12-21 19:20:27,579 INFO ==> Iter:17400/51780, Total_Loss:0.1409, iou_loss:0.0804, mix_loss:0.0604, lr: 0.000020
+2025-12-21 19:21:06,759 INFO ==> Iter:17450/51780, Total_Loss:0.1474, iou_loss:0.0845, mix_loss:0.0629, lr: 0.000020
+2025-12-21 19:21:45,906 INFO ==> Iter:17500/51780, Total_Loss:0.1241, iou_loss:0.0651, mix_loss:0.0590, lr: 0.000020
+2025-12-21 19:22:25,054 INFO ==> Iter:17550/51780, Total_Loss:0.1459, iou_loss:0.0845, mix_loss:0.0614, lr: 0.000020
+2025-12-21 19:23:04,252 INFO ==> Iter:17600/51780, Total_Loss:0.1555, iou_loss:0.0939, mix_loss:0.0617, lr: 0.000020
+2025-12-21 19:23:43,380 INFO ==> Iter:17650/51780, Total_Loss:0.1405, iou_loss:0.0781, mix_loss:0.0625, lr: 0.000020
+2025-12-21 19:24:22,622 INFO ==> Iter:17700/51780, Total_Loss:0.1372, iou_loss:0.0796, mix_loss:0.0576, lr: 0.000020
+2025-12-21 19:25:01,768 INFO ==> Iter:17750/51780, Total_Loss:0.1907, iou_loss:0.1329, mix_loss:0.0578, lr: 0.000020
+2025-12-21 19:25:40,953 INFO ==> Iter:17800/51780, Total_Loss:0.1524, iou_loss:0.0905, mix_loss:0.0619, lr: 0.000020
+2025-12-21 19:26:20,213 INFO ==> Iter:17850/51780, Total_Loss:0.1444, iou_loss:0.0823, mix_loss:0.0621, lr: 0.000020
+2025-12-21 19:26:59,462 INFO ==> Iter:17900/51780, Total_Loss:0.1477, iou_loss:0.0851, mix_loss:0.0627, lr: 0.000020
+2025-12-21 19:27:38,627 INFO ==> Iter:17950/51780, Total_Loss:0.1325, iou_loss:0.0751, mix_loss:0.0574, lr: 0.000020
+2025-12-21 19:28:17,806 INFO ==> Iter:18000/51780, Total_Loss:0.1667, iou_loss:0.1044, mix_loss:0.0623, lr: 0.000020
+2025-12-21 19:28:57,087 INFO ==> Iter:18050/51780, Total_Loss:0.1449, iou_loss:0.0880, mix_loss:0.0570, lr: 0.000020
+2025-12-21 19:29:36,267 INFO ==> Iter:18100/51780, Total_Loss:0.1709, iou_loss:0.1083, mix_loss:0.0626, lr: 0.000020
+2025-12-21 19:30:15,383 INFO ==> Iter:18150/51780, Total_Loss:0.1620, iou_loss:0.0983, mix_loss:0.0638, lr: 0.000020
+2025-12-21 19:30:54,614 INFO ==> Iter:18200/51780, Total_Loss:0.1642, iou_loss:0.1033, mix_loss:0.0610, lr: 0.000020
+2025-12-21 19:31:33,819 INFO ==> Iter:18250/51780, Total_Loss:0.1656, iou_loss:0.1009, mix_loss:0.0647, lr: 0.000020
+2025-12-21 19:32:12,967 INFO ==> Iter:18300/51780, Total_Loss:0.1439, iou_loss:0.0847, mix_loss:0.0593, lr: 0.000020
+2025-12-21 19:32:52,224 INFO ==> Iter:18350/51780, Total_Loss:0.1577, iou_loss:0.0943, mix_loss:0.0634, lr: 0.000020
+2025-12-21 19:33:31,419 INFO ==> Iter:18400/51780, Total_Loss:0.1502, iou_loss:0.0869, mix_loss:0.0634, lr: 0.000020
+2025-12-21 19:34:10,630 INFO ==> Iter:18450/51780, Total_Loss:0.1571, iou_loss:0.0963, mix_loss:0.0608, lr: 0.000020
+2025-12-21 19:34:49,782 INFO ==> Iter:18500/51780, Total_Loss:0.1738, iou_loss:0.1140, mix_loss:0.0599, lr: 0.000020
+2025-12-21 19:35:29,004 INFO ==> Iter:18550/51780, Total_Loss:0.1770, iou_loss:0.1145, mix_loss:0.0624, lr: 0.000020
+2025-12-21 19:36:08,205 INFO ==> Iter:18600/51780, Total_Loss:0.1709, iou_loss:0.1110, mix_loss:0.0598, lr: 0.000020
+2025-12-21 19:36:47,377 INFO ==> Iter:18650/51780, Total_Loss:0.1521, iou_loss:0.0893, mix_loss:0.0629, lr: 0.000020
+2025-12-21 19:37:26,591 INFO ==> Iter:18700/51780, Total_Loss:0.1772, iou_loss:0.1132, mix_loss:0.0640, lr: 0.000020
+2025-12-21 19:38:05,773 INFO ==> Iter:18750/51780, Total_Loss:0.1685, iou_loss:0.1071, mix_loss:0.0614, lr: 0.000020
+2025-12-21 19:38:44,978 INFO ==> Iter:18800/51780, Total_Loss:0.1544, iou_loss:0.0932, mix_loss:0.0612, lr: 0.000020
+2025-12-21 19:39:24,157 INFO ==> Iter:18850/51780, Total_Loss:0.1538, iou_loss:0.0908, mix_loss:0.0630, lr: 0.000020
+2025-12-21 19:40:03,369 INFO ==> Iter:18900/51780, Total_Loss:0.1725, iou_loss:0.1086, mix_loss:0.0639, lr: 0.000020
+2025-12-21 19:40:42,498 INFO ==> Iter:18950/51780, Total_Loss:0.2033, iou_loss:0.1413, mix_loss:0.0620, lr: 0.000020
+2025-12-21 19:43:55,560 INFO ==> Epoch: 10, Miou: 0.711784839630127, maxMiou: 0.7313889861106873
+2025-12-21 19:44:09,661 INFO ==> Iter:19000/51780, Total_Loss:0.1550, iou_loss:0.0953, mix_loss:0.0597, lr: 0.000020
+2025-12-21 19:44:48,818 INFO ==> Iter:19050/51780, Total_Loss:0.1649, iou_loss:0.1009, mix_loss:0.0639, lr: 0.000020
+2025-12-21 19:45:28,024 INFO ==> Iter:19100/51780, Total_Loss:0.1342, iou_loss:0.0739, mix_loss:0.0602, lr: 0.000020
+2025-12-21 19:46:07,278 INFO ==> Iter:19150/51780, Total_Loss:0.1431, iou_loss:0.0812, mix_loss:0.0619, lr: 0.000020
+2025-12-21 19:46:46,575 INFO ==> Iter:19200/51780, Total_Loss:0.1415, iou_loss:0.0817, mix_loss:0.0598, lr: 0.000020
+2025-12-21 19:47:25,816 INFO ==> Iter:19250/51780, Total_Loss:0.1330, iou_loss:0.0695, mix_loss:0.0635, lr: 0.000020
+2025-12-21 19:48:05,041 INFO ==> Iter:19300/51780, Total_Loss:0.1407, iou_loss:0.0805, mix_loss:0.0602, lr: 0.000020
+2025-12-21 19:48:44,202 INFO ==> Iter:19350/51780, Total_Loss:0.1459, iou_loss:0.0835, mix_loss:0.0624, lr: 0.000020
+2025-12-21 19:49:23,401 INFO ==> Iter:19400/51780, Total_Loss:0.1441, iou_loss:0.0843, mix_loss:0.0598, lr: 0.000020
+2025-12-21 19:50:02,589 INFO ==> Iter:19450/51780, Total_Loss:0.1504, iou_loss:0.0852, mix_loss:0.0652, lr: 0.000020
+2025-12-21 19:50:41,817 INFO ==> Iter:19500/51780, Total_Loss:0.1292, iou_loss:0.0726, mix_loss:0.0566, lr: 0.000020
+2025-12-21 19:51:21,084 INFO ==> Iter:19550/51780, Total_Loss:0.1507, iou_loss:0.0859, mix_loss:0.0648, lr: 0.000020
+2025-12-21 19:52:00,293 INFO ==> Iter:19600/51780, Total_Loss:0.1453, iou_loss:0.0843, mix_loss:0.0610, lr: 0.000020
+2025-12-21 19:52:39,518 INFO ==> Iter:19650/51780, Total_Loss:0.1302, iou_loss:0.0712, mix_loss:0.0590, lr: 0.000020
+2025-12-21 19:53:18,775 INFO ==> Iter:19700/51780, Total_Loss:0.1608, iou_loss:0.0984, mix_loss:0.0625, lr: 0.000020
+2025-12-21 19:53:58,038 INFO ==> Iter:19750/51780, Total_Loss:0.1412, iou_loss:0.0818, mix_loss:0.0594, lr: 0.000020
+2025-12-21 19:54:37,315 INFO ==> Iter:19800/51780, Total_Loss:0.1417, iou_loss:0.0792, mix_loss:0.0625, lr: 0.000020
+2025-12-21 19:55:16,489 INFO ==> Iter:19850/51780, Total_Loss:0.1382, iou_loss:0.0808, mix_loss:0.0574, lr: 0.000020
+2025-12-21 19:55:55,715 INFO ==> Iter:19900/51780, Total_Loss:0.1544, iou_loss:0.0912, mix_loss:0.0632, lr: 0.000020
+2025-12-21 19:56:35,028 INFO ==> Iter:19950/51780, Total_Loss:0.1394, iou_loss:0.0812, mix_loss:0.0581, lr: 0.000020
+2025-12-21 19:57:14,228 INFO ==> Iter:20000/51780, Total_Loss:0.1440, iou_loss:0.0820, mix_loss:0.0621, lr: 0.000020
+2025-12-21 19:57:53,424 INFO ==> Iter:20050/51780, Total_Loss:0.1529, iou_loss:0.0923, mix_loss:0.0606, lr: 0.000020
+2025-12-21 19:58:32,659 INFO ==> Iter:20100/51780, Total_Loss:0.1411, iou_loss:0.0811, mix_loss:0.0600, lr: 0.000020
+2025-12-21 19:59:11,910 INFO ==> Iter:20150/51780, Total_Loss:0.1367, iou_loss:0.0772, mix_loss:0.0595, lr: 0.000020
+2025-12-21 19:59:51,188 INFO ==> Iter:20200/51780, Total_Loss:0.1491, iou_loss:0.0905, mix_loss:0.0586, lr: 0.000020
+2025-12-21 20:00:30,402 INFO ==> Iter:20250/51780, Total_Loss:0.1578, iou_loss:0.0946, mix_loss:0.0632, lr: 0.000020
+2025-12-21 20:01:09,685 INFO ==> Iter:20300/51780, Total_Loss:0.1454, iou_loss:0.0864, mix_loss:0.0590, lr: 0.000020
+2025-12-21 20:01:48,967 INFO ==> Iter:20350/51780, Total_Loss:0.1737, iou_loss:0.1100, mix_loss:0.0637, lr: 0.000020
+2025-12-21 20:02:28,181 INFO ==> Iter:20400/51780, Total_Loss:0.1681, iou_loss:0.1039, mix_loss:0.0641, lr: 0.000020
+2025-12-21 20:03:07,449 INFO ==> Iter:20450/51780, Total_Loss:0.1411, iou_loss:0.0836, mix_loss:0.0575, lr: 0.000020
+2025-12-21 20:03:46,735 INFO ==> Iter:20500/51780, Total_Loss:0.1417, iou_loss:0.0807, mix_loss:0.0610, lr: 0.000020
+2025-12-21 20:04:26,025 INFO ==> Iter:20550/51780, Total_Loss:0.1772, iou_loss:0.1153, mix_loss:0.0619, lr: 0.000020
+2025-12-21 20:05:05,287 INFO ==> Iter:20600/51780, Total_Loss:0.1535, iou_loss:0.0917, mix_loss:0.0618, lr: 0.000020
+2025-12-21 20:05:44,500 INFO ==> Iter:20650/51780, Total_Loss:0.1384, iou_loss:0.0803, mix_loss:0.0581, lr: 0.000020
+2025-12-21 20:06:23,705 INFO ==> Iter:20700/51780, Total_Loss:0.1423, iou_loss:0.0811, mix_loss:0.0612, lr: 0.000020
+2025-12-21 20:09:19,148 INFO ==> save best model to work_dir/AVSegFormer_res50_s4/S4_best.pth
+2025-12-21 20:09:19,149 INFO ==> Epoch: 11, Miou: 0.7404212355613708, maxMiou: 0.7404212355613708
+2025-12-21 20:09:52,099 INFO ==> Iter:20750/51780, Total_Loss:0.1342, iou_loss:0.0752, mix_loss:0.0590, lr: 0.000020
+2025-12-21 20:10:31,350 INFO ==> Iter:20800/51780, Total_Loss:0.1266, iou_loss:0.0669, mix_loss:0.0597, lr: 0.000020
+2025-12-21 20:11:10,474 INFO ==> Iter:20850/51780, Total_Loss:0.1282, iou_loss:0.0699, mix_loss:0.0583, lr: 0.000020
+2025-12-21 20:11:49,665 INFO ==> Iter:20900/51780, Total_Loss:0.1378, iou_loss:0.0742, mix_loss:0.0636, lr: 0.000020
+2025-12-21 20:12:28,843 INFO ==> Iter:20950/51780, Total_Loss:0.1321, iou_loss:0.0722, mix_loss:0.0598, lr: 0.000020
+2025-12-21 20:13:07,980 INFO ==> Iter:21000/51780, Total_Loss:0.1265, iou_loss:0.0682, mix_loss:0.0583, lr: 0.000020
+2025-12-21 20:13:47,239 INFO ==> Iter:21050/51780, Total_Loss:0.1253, iou_loss:0.0666, mix_loss:0.0586, lr: 0.000020
+2025-12-21 20:14:26,507 INFO ==> Iter:21100/51780, Total_Loss:0.1286, iou_loss:0.0683, mix_loss:0.0603, lr: 0.000020
+2025-12-21 20:15:05,726 INFO ==> Iter:21150/51780, Total_Loss:0.1372, iou_loss:0.0787, mix_loss:0.0585, lr: 0.000020
+2025-12-21 20:15:44,909 INFO ==> Iter:21200/51780, Total_Loss:0.1291, iou_loss:0.0711, mix_loss:0.0580, lr: 0.000020
+2025-12-21 20:16:24,117 INFO ==> Iter:21250/51780, Total_Loss:0.1414, iou_loss:0.0815, mix_loss:0.0599, lr: 0.000020
+2025-12-21 20:17:03,358 INFO ==> Iter:21300/51780, Total_Loss:0.1338, iou_loss:0.0709, mix_loss:0.0628, lr: 0.000020
+2025-12-21 20:17:42,508 INFO ==> Iter:21350/51780, Total_Loss:0.1345, iou_loss:0.0732, mix_loss:0.0613, lr: 0.000020
+2025-12-21 20:18:21,739 INFO ==> Iter:21400/51780, Total_Loss:0.1363, iou_loss:0.0782, mix_loss:0.0581, lr: 0.000020
+2025-12-21 20:19:00,896 INFO ==> Iter:21450/51780, Total_Loss:0.1281, iou_loss:0.0671, mix_loss:0.0610, lr: 0.000020
+2025-12-21 20:19:40,257 INFO ==> Iter:21500/51780, Total_Loss:0.1261, iou_loss:0.0672, mix_loss:0.0589, lr: 0.000020
+2025-12-21 20:20:19,497 INFO ==> Iter:21550/51780, Total_Loss:0.1462, iou_loss:0.0876, mix_loss:0.0586, lr: 0.000020
+2025-12-21 20:20:58,736 INFO ==> Iter:21600/51780, Total_Loss:0.1458, iou_loss:0.0821, mix_loss:0.0637, lr: 0.000020
+2025-12-21 20:21:37,920 INFO ==> Iter:21650/51780, Total_Loss:0.1358, iou_loss:0.0780, mix_loss:0.0578, lr: 0.000020
+2025-12-21 20:22:17,132 INFO ==> Iter:21700/51780, Total_Loss:0.1281, iou_loss:0.0698, mix_loss:0.0584, lr: 0.000020
+2025-12-21 20:22:56,420 INFO ==> Iter:21750/51780, Total_Loss:0.1287, iou_loss:0.0664, mix_loss:0.0623, lr: 0.000020
+2025-12-21 20:23:35,632 INFO ==> Iter:21800/51780, Total_Loss:0.1249, iou_loss:0.0643, mix_loss:0.0606, lr: 0.000020
+2025-12-21 20:24:14,867 INFO ==> Iter:21850/51780, Total_Loss:0.1265, iou_loss:0.0655, mix_loss:0.0609, lr: 0.000020
+2025-12-21 20:24:54,081 INFO ==> Iter:21900/51780, Total_Loss:0.1292, iou_loss:0.0702, mix_loss:0.0590, lr: 0.000020
+2025-12-21 20:25:33,270 INFO ==> Iter:21950/51780, Total_Loss:0.1482, iou_loss:0.0873, mix_loss:0.0608, lr: 0.000020
+2025-12-21 20:26:12,498 INFO ==> Iter:22000/51780, Total_Loss:0.1432, iou_loss:0.0825, mix_loss:0.0608, lr: 0.000020
+2025-12-21 20:26:51,711 INFO ==> Iter:22050/51780, Total_Loss:0.1257, iou_loss:0.0672, mix_loss:0.0585, lr: 0.000020
+2025-12-21 20:27:30,984 INFO ==> Iter:22100/51780, Total_Loss:0.1425, iou_loss:0.0818, mix_loss:0.0607, lr: 0.000020
+2025-12-21 20:28:10,168 INFO ==> Iter:22150/51780, Total_Loss:0.1475, iou_loss:0.0864, mix_loss:0.0611, lr: 0.000020
+2025-12-21 20:28:49,459 INFO ==> Iter:22200/51780, Total_Loss:0.1659, iou_loss:0.1057, mix_loss:0.0602, lr: 0.000020
+2025-12-21 20:29:28,681 INFO ==> Iter:22250/51780, Total_Loss:0.1623, iou_loss:0.1015, mix_loss:0.0608, lr: 0.000020
+2025-12-21 20:30:07,892 INFO ==> Iter:22300/51780, Total_Loss:0.1614, iou_loss:0.0977, mix_loss:0.0636, lr: 0.000020
+2025-12-21 20:30:47,158 INFO ==> Iter:22350/51780, Total_Loss:0.1486, iou_loss:0.0883, mix_loss:0.0603, lr: 0.000020
+2025-12-21 20:31:26,415 INFO ==> Iter:22400/51780, Total_Loss:0.1526, iou_loss:0.0898, mix_loss:0.0629, lr: 0.000020
+2025-12-21 20:34:41,169 INFO ==> Epoch: 12, Miou: 0.7128426432609558, maxMiou: 0.7404212355613708
+2025-12-21 20:34:53,703 INFO ==> Iter:22450/51780, Total_Loss:0.1329, iou_loss:0.0750, mix_loss:0.0579, lr: 0.000020
+2025-12-21 20:35:32,824 INFO ==> Iter:22500/51780, Total_Loss:0.1332, iou_loss:0.0723, mix_loss:0.0609, lr: 0.000020
+2025-12-21 20:36:11,960 INFO ==> Iter:22550/51780, Total_Loss:0.1395, iou_loss:0.0821, mix_loss:0.0575, lr: 0.000020
+2025-12-21 20:36:51,185 INFO ==> Iter:22600/51780, Total_Loss:0.1423, iou_loss:0.0808, mix_loss:0.0615, lr: 0.000020
+2025-12-21 20:37:30,346 INFO ==> Iter:22650/51780, Total_Loss:0.1697, iou_loss:0.1096, mix_loss:0.0601, lr: 0.000020
+2025-12-21 20:38:09,636 INFO ==> Iter:22700/51780, Total_Loss:0.1384, iou_loss:0.0819, mix_loss:0.0565, lr: 0.000020
+2025-12-21 20:38:48,843 INFO ==> Iter:22750/51780, Total_Loss:0.1330, iou_loss:0.0696, mix_loss:0.0634, lr: 0.000020
+2025-12-21 20:39:28,030 INFO ==> Iter:22800/51780, Total_Loss:0.1335, iou_loss:0.0728, mix_loss:0.0607, lr: 0.000020
+2025-12-21 20:40:07,199 INFO ==> Iter:22850/51780, Total_Loss:0.1463, iou_loss:0.0876, mix_loss:0.0587, lr: 0.000020
+2025-12-21 20:40:46,398 INFO ==> Iter:22900/51780, Total_Loss:0.1378, iou_loss:0.0806, mix_loss:0.0572, lr: 0.000020
+2025-12-21 20:41:25,602 INFO ==> Iter:22950/51780, Total_Loss:0.1568, iou_loss:0.0932, mix_loss:0.0636, lr: 0.000020
+2025-12-21 20:42:04,881 INFO ==> Iter:23000/51780, Total_Loss:0.1442, iou_loss:0.0836, mix_loss:0.0606, lr: 0.000020
+2025-12-21 20:42:44,131 INFO ==> Iter:23050/51780, Total_Loss:0.1443, iou_loss:0.0813, mix_loss:0.0630, lr: 0.000020
+2025-12-21 20:43:23,383 INFO ==> Iter:23100/51780, Total_Loss:0.1489, iou_loss:0.0895, mix_loss:0.0593, lr: 0.000020
+2025-12-21 20:44:02,655 INFO ==> Iter:23150/51780, Total_Loss:0.1444, iou_loss:0.0819, mix_loss:0.0625, lr: 0.000020
+2025-12-21 20:44:41,816 INFO ==> Iter:23200/51780, Total_Loss:0.1350, iou_loss:0.0794, mix_loss:0.0556, lr: 0.000020
+2025-12-21 20:45:21,065 INFO ==> Iter:23250/51780, Total_Loss:0.1413, iou_loss:0.0829, mix_loss:0.0584, lr: 0.000020
+2025-12-21 20:46:00,320 INFO ==> Iter:23300/51780, Total_Loss:0.1385, iou_loss:0.0771, mix_loss:0.0614, lr: 0.000020
+2025-12-21 20:46:39,558 INFO ==> Iter:23350/51780, Total_Loss:0.1387, iou_loss:0.0789, mix_loss:0.0598, lr: 0.000020
+2025-12-21 20:47:18,833 INFO ==> Iter:23400/51780, Total_Loss:0.1431, iou_loss:0.0811, mix_loss:0.0621, lr: 0.000020
+2025-12-21 20:47:58,047 INFO ==> Iter:23450/51780, Total_Loss:0.1449, iou_loss:0.0808, mix_loss:0.0641, lr: 0.000020
+2025-12-21 20:48:37,369 INFO ==> Iter:23500/51780, Total_Loss:0.1326, iou_loss:0.0712, mix_loss:0.0614, lr: 0.000020
+2025-12-21 20:49:16,619 INFO ==> Iter:23550/51780, Total_Loss:0.1252, iou_loss:0.0661, mix_loss:0.0591, lr: 0.000020
+2025-12-21 20:49:55,912 INFO ==> Iter:23600/51780, Total_Loss:0.1412, iou_loss:0.0816, mix_loss:0.0595, lr: 0.000020
+2025-12-21 20:50:35,082 INFO ==> Iter:23650/51780, Total_Loss:0.1445, iou_loss:0.0829, mix_loss:0.0616, lr: 0.000020
+2025-12-21 20:51:14,224 INFO ==> Iter:23700/51780, Total_Loss:0.1337, iou_loss:0.0731, mix_loss:0.0606, lr: 0.000020
+2025-12-21 20:51:53,451 INFO ==> Iter:23750/51780, Total_Loss:0.1238, iou_loss:0.0631, mix_loss:0.0607, lr: 0.000020
+2025-12-21 20:52:32,647 INFO ==> Iter:23800/51780, Total_Loss:0.1190, iou_loss:0.0615, mix_loss:0.0575, lr: 0.000020
+2025-12-21 20:53:11,888 INFO ==> Iter:23850/51780, Total_Loss:0.1217, iou_loss:0.0625, mix_loss:0.0592, lr: 0.000020
+2025-12-21 20:53:51,179 INFO ==> Iter:23900/51780, Total_Loss:0.1279, iou_loss:0.0690, mix_loss:0.0589, lr: 0.000020
+2025-12-21 20:54:30,415 INFO ==> Iter:23950/51780, Total_Loss:0.1498, iou_loss:0.0897, mix_loss:0.0601, lr: 0.000020
+2025-12-21 20:55:09,597 INFO ==> Iter:24000/51780, Total_Loss:0.1235, iou_loss:0.0651, mix_loss:0.0584, lr: 0.000020
+2025-12-21 20:55:48,837 INFO ==> Iter:24050/51780, Total_Loss:0.1181, iou_loss:0.0618, mix_loss:0.0563, lr: 0.000020
+2025-12-21 20:56:28,141 INFO ==> Iter:24100/51780, Total_Loss:0.1215, iou_loss:0.0627, mix_loss:0.0588, lr: 0.000020
+2025-12-21 20:57:07,286 INFO ==> Iter:24150/51780, Total_Loss:0.1165, iou_loss:0.0606, mix_loss:0.0560, lr: 0.000020
+2025-12-21 21:00:04,271 INFO ==> save best model to work_dir/AVSegFormer_res50_s4/S4_best.pth
+2025-12-21 21:00:04,272 INFO ==> Epoch: 13, Miou: 0.7470009922981262, maxMiou: 0.7470009922981262
+2025-12-21 21:00:35,612 INFO ==> Iter:24200/51780, Total_Loss:0.1259, iou_loss:0.0665, mix_loss:0.0594, lr: 0.000020
+2025-12-21 21:01:14,753 INFO ==> Iter:24250/51780, Total_Loss:0.1190, iou_loss:0.0592, mix_loss:0.0598, lr: 0.000020
+2025-12-21 21:01:54,015 INFO ==> Iter:24300/51780, Total_Loss:0.1278, iou_loss:0.0663, mix_loss:0.0615, lr: 0.000020
+2025-12-21 21:02:33,293 INFO ==> Iter:24350/51780, Total_Loss:0.1545, iou_loss:0.0943, mix_loss:0.0601, lr: 0.000020
+2025-12-21 21:03:12,469 INFO ==> Iter:24400/51780, Total_Loss:0.1296, iou_loss:0.0703, mix_loss:0.0593, lr: 0.000020
+2025-12-21 21:03:51,621 INFO ==> Iter:24450/51780, Total_Loss:0.1586, iou_loss:0.0968, mix_loss:0.0618, lr: 0.000020
+2025-12-21 21:04:30,865 INFO ==> Iter:24500/51780, Total_Loss:0.1340, iou_loss:0.0739, mix_loss:0.0601, lr: 0.000020
+2025-12-21 21:05:10,059 INFO ==> Iter:24550/51780, Total_Loss:0.1399, iou_loss:0.0803, mix_loss:0.0596, lr: 0.000020
+2025-12-21 21:05:49,270 INFO ==> Iter:24600/51780, Total_Loss:0.1281, iou_loss:0.0667, mix_loss:0.0614, lr: 0.000020
+2025-12-21 21:06:28,580 INFO ==> Iter:24650/51780, Total_Loss:0.1250, iou_loss:0.0669, mix_loss:0.0581, lr: 0.000020
+2025-12-21 21:07:07,763 INFO ==> Iter:24700/51780, Total_Loss:0.1197, iou_loss:0.0644, mix_loss:0.0553, lr: 0.000020
+2025-12-21 21:07:46,986 INFO ==> Iter:24750/51780, Total_Loss:0.1155, iou_loss:0.0595, mix_loss:0.0559, lr: 0.000020
+2025-12-21 21:08:26,180 INFO ==> Iter:24800/51780, Total_Loss:0.1372, iou_loss:0.0777, mix_loss:0.0596, lr: 0.000020
+2025-12-21 21:09:05,379 INFO ==> Iter:24850/51780, Total_Loss:0.1301, iou_loss:0.0716, mix_loss:0.0585, lr: 0.000020
+2025-12-21 21:09:44,560 INFO ==> Iter:24900/51780, Total_Loss:0.1163, iou_loss:0.0599, mix_loss:0.0564, lr: 0.000020
+2025-12-21 21:10:23,807 INFO ==> Iter:24950/51780, Total_Loss:0.1495, iou_loss:0.0882, mix_loss:0.0613, lr: 0.000020
+2025-12-21 21:11:03,032 INFO ==> Iter:25000/51780, Total_Loss:0.1243, iou_loss:0.0652, mix_loss:0.0592, lr: 0.000020
+2025-12-21 21:11:42,251 INFO ==> Iter:25050/51780, Total_Loss:0.1397, iou_loss:0.0800, mix_loss:0.0597, lr: 0.000020
+2025-12-21 21:12:21,516 INFO ==> Iter:25100/51780, Total_Loss:0.1278, iou_loss:0.0663, mix_loss:0.0616, lr: 0.000020
+2025-12-21 21:13:00,770 INFO ==> Iter:25150/51780, Total_Loss:0.1199, iou_loss:0.0601, mix_loss:0.0598, lr: 0.000020
+2025-12-21 21:13:39,982 INFO ==> Iter:25200/51780, Total_Loss:0.1236, iou_loss:0.0654, mix_loss:0.0581, lr: 0.000020
+2025-12-21 21:14:19,250 INFO ==> Iter:25250/51780, Total_Loss:0.1270, iou_loss:0.0670, mix_loss:0.0600, lr: 0.000020
+2025-12-21 21:14:58,439 INFO ==> Iter:25300/51780, Total_Loss:0.1175, iou_loss:0.0575, mix_loss:0.0600, lr: 0.000020
+2025-12-21 21:15:37,730 INFO ==> Iter:25350/51780, Total_Loss:0.1278, iou_loss:0.0666, mix_loss:0.0613, lr: 0.000020
+2025-12-21 21:16:16,899 INFO ==> Iter:25400/51780, Total_Loss:0.1320, iou_loss:0.0732, mix_loss:0.0588, lr: 0.000020
+2025-12-21 21:16:56,038 INFO ==> Iter:25450/51780, Total_Loss:0.1167, iou_loss:0.0616, mix_loss:0.0551, lr: 0.000020
+2025-12-21 21:17:35,203 INFO ==> Iter:25500/51780, Total_Loss:0.1414, iou_loss:0.0807, mix_loss:0.0607, lr: 0.000020
+2025-12-21 21:18:14,440 INFO ==> Iter:25550/51780, Total_Loss:0.1213, iou_loss:0.0631, mix_loss:0.0582, lr: 0.000020
+2025-12-21 21:18:53,649 INFO ==> Iter:25600/51780, Total_Loss:0.1339, iou_loss:0.0717, mix_loss:0.0622, lr: 0.000020
+2025-12-21 21:19:32,859 INFO ==> Iter:25650/51780, Total_Loss:0.1259, iou_loss:0.0650, mix_loss:0.0609, lr: 0.000020
+2025-12-21 21:20:12,184 INFO ==> Iter:25700/51780, Total_Loss:0.1216, iou_loss:0.0638, mix_loss:0.0578, lr: 0.000020
+2025-12-21 21:20:51,360 INFO ==> Iter:25750/51780, Total_Loss:0.1080, iou_loss:0.0533, mix_loss:0.0547, lr: 0.000020
+2025-12-21 21:21:30,578 INFO ==> Iter:25800/51780, Total_Loss:0.1314, iou_loss:0.0695, mix_loss:0.0619, lr: 0.000020
+2025-12-21 21:22:09,897 INFO ==> Iter:25850/51780, Total_Loss:0.1245, iou_loss:0.0664, mix_loss:0.0581, lr: 0.000020
+2025-12-21 21:25:27,099 INFO ==> save best model to work_dir/AVSegFormer_res50_s4/S4_best.pth
+2025-12-21 21:25:27,100 INFO ==> Epoch: 14, Miou: 0.7476378679275513, maxMiou: 0.7476378679275513
+2025-12-21 21:25:38,084 INFO ==> Iter:25900/51780, Total_Loss:0.1303, iou_loss:0.0710, mix_loss:0.0593, lr: 0.000020
+2025-12-21 21:26:17,365 INFO ==> Iter:25950/51780, Total_Loss:0.1300, iou_loss:0.0711, mix_loss:0.0590, lr: 0.000020
+2025-12-21 21:26:56,569 INFO ==> Iter:26000/51780, Total_Loss:0.1085, iou_loss:0.0513, mix_loss:0.0572, lr: 0.000020
+2025-12-21 21:27:35,800 INFO ==> Iter:26050/51780, Total_Loss:0.1259, iou_loss:0.0653, mix_loss:0.0605, lr: 0.000020
+2025-12-21 21:28:15,013 INFO ==> Iter:26100/51780, Total_Loss:0.1231, iou_loss:0.0626, mix_loss:0.0605, lr: 0.000020
+2025-12-21 21:28:54,213 INFO ==> Iter:26150/51780, Total_Loss:0.1211, iou_loss:0.0607, mix_loss:0.0604, lr: 0.000020
+2025-12-21 21:29:33,421 INFO ==> Iter:26200/51780, Total_Loss:0.1221, iou_loss:0.0613, mix_loss:0.0609, lr: 0.000020
+2025-12-21 21:30:12,714 INFO ==> Iter:26250/51780, Total_Loss:0.1168, iou_loss:0.0584, mix_loss:0.0585, lr: 0.000020
+2025-12-21 21:30:51,982 INFO ==> Iter:26300/51780, Total_Loss:0.1321, iou_loss:0.0718, mix_loss:0.0602, lr: 0.000020
+2025-12-21 21:31:31,161 INFO ==> Iter:26350/51780, Total_Loss:0.1184, iou_loss:0.0624, mix_loss:0.0561, lr: 0.000020
+2025-12-21 21:32:10,386 INFO ==> Iter:26400/51780, Total_Loss:0.1149, iou_loss:0.0583, mix_loss:0.0567, lr: 0.000020
+2025-12-21 21:32:49,565 INFO ==> Iter:26450/51780, Total_Loss:0.1195, iou_loss:0.0604, mix_loss:0.0591, lr: 0.000020
+2025-12-21 21:33:28,865 INFO ==> Iter:26500/51780, Total_Loss:0.1147, iou_loss:0.0570, mix_loss:0.0577, lr: 0.000020
+2025-12-21 21:34:08,081 INFO ==> Iter:26550/51780, Total_Loss:0.1163, iou_loss:0.0580, mix_loss:0.0583, lr: 0.000020
+2025-12-21 21:34:47,297 INFO ==> Iter:26600/51780, Total_Loss:0.1071, iou_loss:0.0507, mix_loss:0.0564, lr: 0.000020
+2025-12-21 21:35:26,458 INFO ==> Iter:26650/51780, Total_Loss:0.1206, iou_loss:0.0627, mix_loss:0.0579, lr: 0.000020
+2025-12-21 21:36:05,646 INFO ==> Iter:26700/51780, Total_Loss:0.1161, iou_loss:0.0593, mix_loss:0.0567, lr: 0.000020
+2025-12-21 21:36:44,849 INFO ==> Iter:26750/51780, Total_Loss:0.1168, iou_loss:0.0593, mix_loss:0.0575, lr: 0.000020
+2025-12-21 21:37:24,042 INFO ==> Iter:26800/51780, Total_Loss:0.1230, iou_loss:0.0646, mix_loss:0.0584, lr: 0.000020
+2025-12-21 21:38:03,260 INFO ==> Iter:26850/51780, Total_Loss:0.1271, iou_loss:0.0671, mix_loss:0.0600, lr: 0.000020
+2025-12-21 21:38:42,569 INFO ==> Iter:26900/51780, Total_Loss:0.1192, iou_loss:0.0601, mix_loss:0.0591, lr: 0.000020
+2025-12-21 21:39:21,767 INFO ==> Iter:26950/51780, Total_Loss:0.1593, iou_loss:0.0981, mix_loss:0.0612, lr: 0.000020
+2025-12-21 21:40:01,072 INFO ==> Iter:27000/51780, Total_Loss:0.1598, iou_loss:0.1006, mix_loss:0.0592, lr: 0.000020
+2025-12-21 21:40:40,248 INFO ==> Iter:27050/51780, Total_Loss:0.1394, iou_loss:0.0827, mix_loss:0.0566, lr: 0.000020
+2025-12-21 21:41:19,477 INFO ==> Iter:27100/51780, Total_Loss:0.1514, iou_loss:0.0916, mix_loss:0.0598, lr: 0.000020
+2025-12-21 21:41:58,776 INFO ==> Iter:27150/51780, Total_Loss:0.1829, iou_loss:0.1249, mix_loss:0.0580, lr: 0.000020
+2025-12-21 21:42:37,941 INFO ==> Iter:27200/51780, Total_Loss:0.1513, iou_loss:0.0901, mix_loss:0.0612, lr: 0.000020
+2025-12-21 21:43:17,179 INFO ==> Iter:27250/51780, Total_Loss:0.1348, iou_loss:0.0778, mix_loss:0.0570, lr: 0.000020
+2025-12-21 21:43:56,417 INFO ==> Iter:27300/51780, Total_Loss:0.1824, iou_loss:0.1245, mix_loss:0.0579, lr: 0.000020
+2025-12-21 21:44:35,702 INFO ==> Iter:27350/51780, Total_Loss:0.1742, iou_loss:0.1159, mix_loss:0.0583, lr: 0.000020
+2025-12-21 21:45:14,874 INFO ==> Iter:27400/51780, Total_Loss:0.1864, iou_loss:0.1310, mix_loss:0.0555, lr: 0.000020
+2025-12-21 21:45:54,026 INFO ==> Iter:27450/51780, Total_Loss:0.1556, iou_loss:0.0964, mix_loss:0.0592, lr: 0.000020
+2025-12-21 21:46:33,275 INFO ==> Iter:27500/51780, Total_Loss:0.1475, iou_loss:0.0878, mix_loss:0.0597, lr: 0.000020
+2025-12-21 21:47:12,451 INFO ==> Iter:27550/51780, Total_Loss:0.1370, iou_loss:0.0801, mix_loss:0.0569, lr: 0.000020
+2025-12-21 21:47:51,653 INFO ==> Iter:27600/51780, Total_Loss:0.1455, iou_loss:0.0854, mix_loss:0.0601, lr: 0.000020
+2025-12-21 21:50:48,896 INFO ==> Epoch: 15, Miou: 0.7335320115089417, maxMiou: 0.7476378679275513
+2025-12-21 21:51:18,762 INFO ==> Iter:27650/51780, Total_Loss:0.1265, iou_loss:0.0719, mix_loss:0.0545, lr: 0.000020
+2025-12-21 21:51:57,944 INFO ==> Iter:27700/51780, Total_Loss:0.1283, iou_loss:0.0674, mix_loss:0.0609, lr: 0.000020
+2025-12-21 21:52:37,092 INFO ==> Iter:27750/51780, Total_Loss:0.1253, iou_loss:0.0657, mix_loss:0.0596, lr: 0.000020
+2025-12-21 21:53:16,408 INFO ==> Iter:27800/51780, Total_Loss:0.1316, iou_loss:0.0726, mix_loss:0.0589, lr: 0.000020
+2025-12-21 21:53:55,626 INFO ==> Iter:27850/51780, Total_Loss:0.1188, iou_loss:0.0652, mix_loss:0.0536, lr: 0.000020
+2025-12-21 21:54:34,863 INFO ==> Iter:27900/51780, Total_Loss:0.1093, iou_loss:0.0534, mix_loss:0.0559, lr: 0.000020
+2025-12-21 21:55:14,045 INFO ==> Iter:27950/51780, Total_Loss:0.1311, iou_loss:0.0708, mix_loss:0.0603, lr: 0.000020
+2025-12-21 21:55:53,293 INFO ==> Iter:28000/51780, Total_Loss:0.1308, iou_loss:0.0719, mix_loss:0.0590, lr: 0.000020
+2025-12-21 21:56:32,499 INFO ==> Iter:28050/51780, Total_Loss:0.1314, iou_loss:0.0705, mix_loss:0.0609, lr: 0.000020
+2025-12-21 21:57:11,688 INFO ==> Iter:28100/51780, Total_Loss:0.1297, iou_loss:0.0720, mix_loss:0.0577, lr: 0.000020
+2025-12-21 21:57:50,980 INFO ==> Iter:28150/51780, Total_Loss:0.1160, iou_loss:0.0588, mix_loss:0.0572, lr: 0.000020
+2025-12-21 21:58:30,245 INFO ==> Iter:28200/51780, Total_Loss:0.1265, iou_loss:0.0688, mix_loss:0.0577, lr: 0.000020
+2025-12-21 21:59:09,405 INFO ==> Iter:28250/51780, Total_Loss:0.1302, iou_loss:0.0717, mix_loss:0.0586, lr: 0.000020
+2025-12-21 21:59:48,556 INFO ==> Iter:28300/51780, Total_Loss:0.1388, iou_loss:0.0792, mix_loss:0.0597, lr: 0.000020
+2025-12-21 22:00:27,720 INFO ==> Iter:28350/51780, Total_Loss:0.1234, iou_loss:0.0653, mix_loss:0.0581, lr: 0.000020
+2025-12-21 22:01:06,886 INFO ==> Iter:28400/51780, Total_Loss:0.1251, iou_loss:0.0673, mix_loss:0.0579, lr: 0.000020
+2025-12-21 22:01:46,048 INFO ==> Iter:28450/51780, Total_Loss:0.1170, iou_loss:0.0603, mix_loss:0.0568, lr: 0.000020
+2025-12-21 22:02:25,209 INFO ==> Iter:28500/51780, Total_Loss:0.1289, iou_loss:0.0726, mix_loss:0.0563, lr: 0.000020
+2025-12-21 22:03:04,415 INFO ==> Iter:28550/51780, Total_Loss:0.1256, iou_loss:0.0655, mix_loss:0.0602, lr: 0.000020
+2025-12-21 22:03:43,633 INFO ==> Iter:28600/51780, Total_Loss:0.1168, iou_loss:0.0590, mix_loss:0.0579, lr: 0.000020
+2025-12-21 22:04:22,897 INFO ==> Iter:28650/51780, Total_Loss:0.1167, iou_loss:0.0575, mix_loss:0.0592, lr: 0.000020
+2025-12-21 22:05:02,117 INFO ==> Iter:28700/51780, Total_Loss:0.1222, iou_loss:0.0627, mix_loss:0.0595, lr: 0.000020
+2025-12-21 22:05:41,318 INFO ==> Iter:28750/51780, Total_Loss:0.1168, iou_loss:0.0577, mix_loss:0.0591, lr: 0.000020
+2025-12-21 22:06:20,523 INFO ==> Iter:28800/51780, Total_Loss:0.1134, iou_loss:0.0561, mix_loss:0.0573, lr: 0.000020
+2025-12-21 22:06:59,690 INFO ==> Iter:28850/51780, Total_Loss:0.1322, iou_loss:0.0708, mix_loss:0.0614, lr: 0.000020
+2025-12-21 22:07:38,902 INFO ==> Iter:28900/51780, Total_Loss:0.1141, iou_loss:0.0557, mix_loss:0.0584, lr: 0.000020
+2025-12-21 22:08:18,041 INFO ==> Iter:28950/51780, Total_Loss:0.1300, iou_loss:0.0720, mix_loss:0.0580, lr: 0.000020
+2025-12-21 22:08:57,226 INFO ==> Iter:29000/51780, Total_Loss:0.1506, iou_loss:0.0913, mix_loss:0.0593, lr: 0.000020
+2025-12-21 22:09:36,434 INFO ==> Iter:29050/51780, Total_Loss:0.1310, iou_loss:0.0722, mix_loss:0.0588, lr: 0.000020
+2025-12-21 22:10:15,614 INFO ==> Iter:29100/51780, Total_Loss:0.1195, iou_loss:0.0616, mix_loss:0.0579, lr: 0.000020
+2025-12-21 22:10:54,822 INFO ==> Iter:29150/51780, Total_Loss:0.1258, iou_loss:0.0687, mix_loss:0.0571, lr: 0.000020
+2025-12-21 22:11:34,014 INFO ==> Iter:29200/51780, Total_Loss:0.1448, iou_loss:0.0886, mix_loss:0.0562, lr: 0.000020
+2025-12-21 22:12:13,208 INFO ==> Iter:29250/51780, Total_Loss:0.1268, iou_loss:0.0696, mix_loss:0.0572, lr: 0.000020
+2025-12-21 22:12:52,470 INFO ==> Iter:29300/51780, Total_Loss:0.1216, iou_loss:0.0661, mix_loss:0.0555, lr: 0.000020
+2025-12-21 22:16:10,121 INFO ==> Epoch: 16, Miou: 0.7317018508911133, maxMiou: 0.7476378679275513
+2025-12-21 22:16:19,479 INFO ==> Iter:29350/51780, Total_Loss:0.1093, iou_loss:0.0550, mix_loss:0.0543, lr: 0.000020
+2025-12-21 22:16:58,614 INFO ==> Iter:29400/51780, Total_Loss:0.1281, iou_loss:0.0640, mix_loss:0.0641, lr: 0.000020
+2025-12-21 22:17:37,891 INFO ==> Iter:29450/51780, Total_Loss:0.1087, iou_loss:0.0556, mix_loss:0.0531, lr: 0.000020
+2025-12-21 22:18:17,088 INFO ==> Iter:29500/51780, Total_Loss:0.1189, iou_loss:0.0601, mix_loss:0.0588, lr: 0.000020
+2025-12-21 22:18:56,352 INFO ==> Iter:29550/51780, Total_Loss:0.1107, iou_loss:0.0553, mix_loss:0.0554, lr: 0.000020
+2025-12-21 22:19:35,600 INFO ==> Iter:29600/51780, Total_Loss:0.1263, iou_loss:0.0704, mix_loss:0.0559, lr: 0.000020
+2025-12-21 22:20:14,871 INFO ==> Iter:29650/51780, Total_Loss:0.1386, iou_loss:0.0797, mix_loss:0.0589, lr: 0.000020
+2025-12-21 22:20:54,077 INFO ==> Iter:29700/51780, Total_Loss:0.1190, iou_loss:0.0600, mix_loss:0.0590, lr: 0.000020
+2025-12-21 22:21:33,256 INFO ==> Iter:29750/51780, Total_Loss:0.1404, iou_loss:0.0786, mix_loss:0.0619, lr: 0.000020
+2025-12-21 22:22:12,510 INFO ==> Iter:29800/51780, Total_Loss:0.1052, iou_loss:0.0505, mix_loss:0.0547, lr: 0.000020
+2025-12-21 22:22:51,699 INFO ==> Iter:29850/51780, Total_Loss:0.1223, iou_loss:0.0612, mix_loss:0.0611, lr: 0.000020
+2025-12-21 22:23:30,902 INFO ==> Iter:29900/51780, Total_Loss:0.1089, iou_loss:0.0537, mix_loss:0.0552, lr: 0.000020
+2025-12-21 22:24:10,166 INFO ==> Iter:29950/51780, Total_Loss:0.1041, iou_loss:0.0485, mix_loss:0.0555, lr: 0.000020
+2025-12-21 22:24:49,419 INFO ==> Iter:30000/51780, Total_Loss:0.1106, iou_loss:0.0549, mix_loss:0.0557, lr: 0.000020
+2025-12-21 22:25:28,587 INFO ==> Iter:30050/51780, Total_Loss:0.1290, iou_loss:0.0724, mix_loss:0.0566, lr: 0.000020
+2025-12-21 22:26:07,744 INFO ==> Iter:30100/51780, Total_Loss:0.1112, iou_loss:0.0544, mix_loss:0.0568, lr: 0.000020
+2025-12-21 22:26:46,890 INFO ==> Iter:30150/51780, Total_Loss:0.1153, iou_loss:0.0584, mix_loss:0.0569, lr: 0.000020
+2025-12-21 22:27:26,145 INFO ==> Iter:30200/51780, Total_Loss:0.1165, iou_loss:0.0611, mix_loss:0.0555, lr: 0.000020
+2025-12-21 22:28:05,400 INFO ==> Iter:30250/51780, Total_Loss:0.1225, iou_loss:0.0618, mix_loss:0.0608, lr: 0.000020
+2025-12-21 22:28:44,707 INFO ==> Iter:30300/51780, Total_Loss:0.1098, iou_loss:0.0528, mix_loss:0.0570, lr: 0.000020
+2025-12-21 22:29:23,971 INFO ==> Iter:30350/51780, Total_Loss:0.1246, iou_loss:0.0672, mix_loss:0.0574, lr: 0.000020
+2025-12-21 22:30:03,222 INFO ==> Iter:30400/51780, Total_Loss:0.1086, iou_loss:0.0545, mix_loss:0.0541, lr: 0.000020
+2025-12-21 22:30:42,478 INFO ==> Iter:30450/51780, Total_Loss:0.1174, iou_loss:0.0614, mix_loss:0.0560, lr: 0.000020
+2025-12-21 22:31:21,649 INFO ==> Iter:30500/51780, Total_Loss:0.1178, iou_loss:0.0597, mix_loss:0.0580, lr: 0.000020
+2025-12-21 22:32:00,819 INFO ==> Iter:30550/51780, Total_Loss:0.1237, iou_loss:0.0647, mix_loss:0.0589, lr: 0.000020
+2025-12-21 22:32:40,009 INFO ==> Iter:30600/51780, Total_Loss:0.1142, iou_loss:0.0562, mix_loss:0.0580, lr: 0.000020
+2025-12-21 22:33:19,258 INFO ==> Iter:30650/51780, Total_Loss:0.1329, iou_loss:0.0749, mix_loss:0.0581, lr: 0.000020
+2025-12-21 22:33:58,538 INFO ==> Iter:30700/51780, Total_Loss:0.1235, iou_loss:0.0690, mix_loss:0.0545, lr: 0.000020
+2025-12-21 22:34:37,771 INFO ==> Iter:30750/51780, Total_Loss:0.1134, iou_loss:0.0566, mix_loss:0.0568, lr: 0.000020
+2025-12-21 22:35:16,981 INFO ==> Iter:30800/51780, Total_Loss:0.1343, iou_loss:0.0753, mix_loss:0.0591, lr: 0.000020
+2025-12-21 22:35:56,218 INFO ==> Iter:30850/51780, Total_Loss:0.1213, iou_loss:0.0644, mix_loss:0.0569, lr: 0.000020
+2025-12-21 22:36:35,472 INFO ==> Iter:30900/51780, Total_Loss:0.1173, iou_loss:0.0589, mix_loss:0.0584, lr: 0.000020
+2025-12-21 22:37:14,664 INFO ==> Iter:30950/51780, Total_Loss:0.1291, iou_loss:0.0747, mix_loss:0.0544, lr: 0.000020
+2025-12-21 22:37:53,942 INFO ==> Iter:31000/51780, Total_Loss:0.1107, iou_loss:0.0553, mix_loss:0.0554, lr: 0.000020
+2025-12-21 22:38:33,120 INFO ==> Iter:31050/51780, Total_Loss:0.1212, iou_loss:0.0647, mix_loss:0.0565, lr: 0.000020
+2025-12-21 22:41:32,207 INFO ==> Epoch: 17, Miou: 0.7408992052078247, maxMiou: 0.7476378679275513
+2025-12-21 22:42:00,397 INFO ==> Iter:31100/51780, Total_Loss:0.1098, iou_loss:0.0545, mix_loss:0.0553, lr: 0.000020
+2025-12-21 22:42:39,561 INFO ==> Iter:31150/51780, Total_Loss:0.1101, iou_loss:0.0526, mix_loss:0.0574, lr: 0.000020
+2025-12-21 22:43:18,742 INFO ==> Iter:31200/51780, Total_Loss:0.1245, iou_loss:0.0656, mix_loss:0.0589, lr: 0.000020
+2025-12-21 22:43:57,971 INFO ==> Iter:31250/51780, Total_Loss:0.1101, iou_loss:0.0535, mix_loss:0.0566, lr: 0.000020
+2025-12-21 22:44:37,163 INFO ==> Iter:31300/51780, Total_Loss:0.1095, iou_loss:0.0510, mix_loss:0.0585, lr: 0.000020
+2025-12-21 22:45:16,409 INFO ==> Iter:31350/51780, Total_Loss:0.1059, iou_loss:0.0539, mix_loss:0.0520, lr: 0.000020
+2025-12-21 22:45:55,664 INFO ==> Iter:31400/51780, Total_Loss:0.1131, iou_loss:0.0574, mix_loss:0.0557, lr: 0.000020
+2025-12-21 22:46:34,871 INFO ==> Iter:31450/51780, Total_Loss:0.1136, iou_loss:0.0585, mix_loss:0.0552, lr: 0.000020
+2025-12-21 22:47:14,133 INFO ==> Iter:31500/51780, Total_Loss:0.1125, iou_loss:0.0581, mix_loss:0.0544, lr: 0.000020
+2025-12-21 22:47:53,348 INFO ==> Iter:31550/51780, Total_Loss:0.1219, iou_loss:0.0626, mix_loss:0.0593, lr: 0.000020
+2025-12-21 22:48:32,591 INFO ==> Iter:31600/51780, Total_Loss:0.1270, iou_loss:0.0675, mix_loss:0.0595, lr: 0.000020
+2025-12-21 22:49:11,794 INFO ==> Iter:31650/51780, Total_Loss:0.1117, iou_loss:0.0537, mix_loss:0.0580, lr: 0.000020
+2025-12-21 22:49:50,971 INFO ==> Iter:31700/51780, Total_Loss:0.1117, iou_loss:0.0557, mix_loss:0.0560, lr: 0.000020
+2025-12-21 22:50:30,134 INFO ==> Iter:31750/51780, Total_Loss:0.1270, iou_loss:0.0690, mix_loss:0.0580, lr: 0.000020
+2025-12-21 22:51:09,399 INFO ==> Iter:31800/51780, Total_Loss:0.1269, iou_loss:0.0730, mix_loss:0.0540, lr: 0.000020
+2025-12-21 22:51:48,590 INFO ==> Iter:31850/51780, Total_Loss:0.1242, iou_loss:0.0654, mix_loss:0.0588, lr: 0.000020
+2025-12-21 22:52:27,847 INFO ==> Iter:31900/51780, Total_Loss:0.1089, iou_loss:0.0526, mix_loss:0.0563, lr: 0.000020
+2025-12-21 22:53:07,048 INFO ==> Iter:31950/51780, Total_Loss:0.1104, iou_loss:0.0527, mix_loss:0.0577, lr: 0.000020
+2025-12-21 22:53:46,222 INFO ==> Iter:32000/51780, Total_Loss:0.1236, iou_loss:0.0602, mix_loss:0.0634, lr: 0.000020
+2025-12-21 22:54:25,494 INFO ==> Iter:32050/51780, Total_Loss:0.1126, iou_loss:0.0577, mix_loss:0.0549, lr: 0.000020
+2025-12-21 22:55:04,777 INFO ==> Iter:32100/51780, Total_Loss:0.1443, iou_loss:0.0854, mix_loss:0.0589, lr: 0.000020
+2025-12-21 22:55:44,038 INFO ==> Iter:32150/51780, Total_Loss:0.1512, iou_loss:0.0930, mix_loss:0.0582, lr: 0.000020
+2025-12-21 22:56:23,284 INFO ==> Iter:32200/51780, Total_Loss:0.1344, iou_loss:0.0785, mix_loss:0.0559, lr: 0.000020
+2025-12-21 22:57:02,504 INFO ==> Iter:32250/51780, Total_Loss:0.1204, iou_loss:0.0633, mix_loss:0.0571, lr: 0.000020
+2025-12-21 22:57:41,797 INFO ==> Iter:32300/51780, Total_Loss:0.1230, iou_loss:0.0662, mix_loss:0.0568, lr: 0.000020
+2025-12-21 22:58:20,988 INFO ==> Iter:32350/51780, Total_Loss:0.1205, iou_loss:0.0666, mix_loss:0.0539, lr: 0.000020
+2025-12-21 22:59:00,199 INFO ==> Iter:32400/51780, Total_Loss:0.1138, iou_loss:0.0577, mix_loss:0.0561, lr: 0.000020
+2025-12-21 22:59:39,402 INFO ==> Iter:32450/51780, Total_Loss:0.1326, iou_loss:0.0785, mix_loss:0.0542, lr: 0.000020
+2025-12-21 23:00:18,621 INFO ==> Iter:32500/51780, Total_Loss:0.1669, iou_loss:0.1108, mix_loss:0.0561, lr: 0.000020
+2025-12-21 23:00:57,848 INFO ==> Iter:32550/51780, Total_Loss:0.1458, iou_loss:0.0900, mix_loss:0.0558, lr: 0.000020
+2025-12-21 23:01:37,122 INFO ==> Iter:32600/51780, Total_Loss:0.1341, iou_loss:0.0785, mix_loss:0.0556, lr: 0.000020
+2025-12-21 23:02:16,306 INFO ==> Iter:32650/51780, Total_Loss:0.1449, iou_loss:0.0890, mix_loss:0.0559, lr: 0.000020
+2025-12-21 23:02:55,574 INFO ==> Iter:32700/51780, Total_Loss:0.1423, iou_loss:0.0859, mix_loss:0.0564, lr: 0.000020
+2025-12-21 23:03:34,910 INFO ==> Iter:32750/51780, Total_Loss:0.1261, iou_loss:0.0683, mix_loss:0.0578, lr: 0.000020
+2025-12-21 23:06:54,184 INFO ==> Epoch: 18, Miou: 0.7122498750686646, maxMiou: 0.7476378679275513
+2025-12-21 23:07:02,091 INFO ==> Iter:32800/51780, Total_Loss:0.1210, iou_loss:0.0671, mix_loss:0.0539, lr: 0.000020
+2025-12-21 23:07:41,214 INFO ==> Iter:32850/51780, Total_Loss:0.1306, iou_loss:0.0737, mix_loss:0.0570, lr: 0.000020
+2025-12-21 23:08:20,377 INFO ==> Iter:32900/51780, Total_Loss:0.1228, iou_loss:0.0654, mix_loss:0.0574, lr: 0.000020
+2025-12-21 23:08:59,683 INFO ==> Iter:32950/51780, Total_Loss:0.1181, iou_loss:0.0629, mix_loss:0.0553, lr: 0.000020
+2025-12-21 23:09:38,918 INFO ==> Iter:33000/51780, Total_Loss:0.1178, iou_loss:0.0634, mix_loss:0.0544, lr: 0.000020
+2025-12-21 23:10:18,143 INFO ==> Iter:33050/51780, Total_Loss:0.1218, iou_loss:0.0644, mix_loss:0.0575, lr: 0.000020
+2025-12-21 23:10:57,368 INFO ==> Iter:33100/51780, Total_Loss:0.1300, iou_loss:0.0706, mix_loss:0.0594, lr: 0.000020
+2025-12-21 23:11:36,599 INFO ==> Iter:33150/51780, Total_Loss:0.1159, iou_loss:0.0630, mix_loss:0.0529, lr: 0.000020
+2025-12-21 23:12:15,806 INFO ==> Iter:33200/51780, Total_Loss:0.1239, iou_loss:0.0647, mix_loss:0.0592, lr: 0.000020
+2025-12-21 23:12:55,029 INFO ==> Iter:33250/51780, Total_Loss:0.1040, iou_loss:0.0503, mix_loss:0.0537, lr: 0.000020
+2025-12-21 23:13:34,240 INFO ==> Iter:33300/51780, Total_Loss:0.1118, iou_loss:0.0569, mix_loss:0.0549, lr: 0.000020
+2025-12-21 23:14:13,458 INFO ==> Iter:33350/51780, Total_Loss:0.1333, iou_loss:0.0748, mix_loss:0.0585, lr: 0.000020
+2025-12-21 23:14:52,806 INFO ==> Iter:33400/51780, Total_Loss:0.1691, iou_loss:0.1116, mix_loss:0.0575, lr: 0.000020
+2025-12-21 23:15:32,004 INFO ==> Iter:33450/51780, Total_Loss:0.1354, iou_loss:0.0791, mix_loss:0.0563, lr: 0.000020
+2025-12-21 23:16:11,285 INFO ==> Iter:33500/51780, Total_Loss:0.1138, iou_loss:0.0610, mix_loss:0.0528, lr: 0.000020
+2025-12-21 23:16:50,507 INFO ==> Iter:33550/51780, Total_Loss:0.1248, iou_loss:0.0672, mix_loss:0.0576, lr: 0.000020
+2025-12-21 23:17:29,691 INFO ==> Iter:33600/51780, Total_Loss:0.1246, iou_loss:0.0680, mix_loss:0.0566, lr: 0.000020
+2025-12-21 23:18:08,907 INFO ==> Iter:33650/51780, Total_Loss:0.1283, iou_loss:0.0725, mix_loss:0.0559, lr: 0.000020
+2025-12-21 23:18:48,133 INFO ==> Iter:33700/51780, Total_Loss:0.1181, iou_loss:0.0614, mix_loss:0.0566, lr: 0.000020
+2025-12-21 23:19:27,348 INFO ==> Iter:33750/51780, Total_Loss:0.1144, iou_loss:0.0573, mix_loss:0.0571, lr: 0.000020
+2025-12-21 23:20:06,586 INFO ==> Iter:33800/51780, Total_Loss:0.1325, iou_loss:0.0748, mix_loss:0.0577, lr: 0.000020
+2025-12-21 23:20:45,813 INFO ==> Iter:33850/51780, Total_Loss:0.1291, iou_loss:0.0712, mix_loss:0.0579, lr: 0.000020
+2025-12-21 23:21:25,102 INFO ==> Iter:33900/51780, Total_Loss:0.1404, iou_loss:0.0826, mix_loss:0.0578, lr: 0.000020
+2025-12-21 23:22:04,404 INFO ==> Iter:33950/51780, Total_Loss:0.1331, iou_loss:0.0754, mix_loss:0.0577, lr: 0.000020
+2025-12-21 23:22:43,604 INFO ==> Iter:34000/51780, Total_Loss:0.1186, iou_loss:0.0617, mix_loss:0.0570, lr: 0.000020
+2025-12-21 23:23:22,787 INFO ==> Iter:34050/51780, Total_Loss:0.1085, iou_loss:0.0552, mix_loss:0.0533, lr: 0.000020
+2025-12-21 23:24:02,040 INFO ==> Iter:34100/51780, Total_Loss:0.1201, iou_loss:0.0619, mix_loss:0.0582, lr: 0.000020
+2025-12-21 23:24:41,240 INFO ==> Iter:34150/51780, Total_Loss:0.1194, iou_loss:0.0618, mix_loss:0.0576, lr: 0.000020
+2025-12-21 23:25:20,503 INFO ==> Iter:34200/51780, Total_Loss:0.1198, iou_loss:0.0626, mix_loss:0.0572, lr: 0.000020
+2025-12-21 23:25:59,700 INFO ==> Iter:34250/51780, Total_Loss:0.1226, iou_loss:0.0672, mix_loss:0.0554, lr: 0.000020
+2025-12-21 23:26:39,003 INFO ==> Iter:34300/51780, Total_Loss:0.1127, iou_loss:0.0566, mix_loss:0.0561, lr: 0.000020
+2025-12-21 23:27:18,202 INFO ==> Iter:34350/51780, Total_Loss:0.1127, iou_loss:0.0555, mix_loss:0.0571, lr: 0.000020
+2025-12-21 23:27:57,363 INFO ==> Iter:34400/51780, Total_Loss:0.1153, iou_loss:0.0590, mix_loss:0.0563, lr: 0.000020
+2025-12-21 23:28:36,586 INFO ==> Iter:34450/51780, Total_Loss:0.1036, iou_loss:0.0500, mix_loss:0.0536, lr: 0.000020
+2025-12-21 23:29:15,800 INFO ==> Iter:34500/51780, Total_Loss:0.1386, iou_loss:0.0833, mix_loss:0.0553, lr: 0.000020
+2025-12-21 23:32:16,438 INFO ==> Epoch: 19, Miou: 0.7328294515609741, maxMiou: 0.7476378679275513
+2025-12-21 23:32:43,122 INFO ==> Iter:34550/51780, Total_Loss:0.1234, iou_loss:0.0661, mix_loss:0.0573, lr: 0.000020
+2025-12-21 23:33:22,355 INFO ==> Iter:34600/51780, Total_Loss:0.1208, iou_loss:0.0604, mix_loss:0.0605, lr: 0.000020
+2025-12-21 23:34:01,527 INFO ==> Iter:34650/51780, Total_Loss:0.1090, iou_loss:0.0509, mix_loss:0.0581, lr: 0.000020
+2025-12-21 23:34:40,692 INFO ==> Iter:34700/51780, Total_Loss:0.1200, iou_loss:0.0615, mix_loss:0.0585, lr: 0.000020
+2025-12-21 23:35:19,912 INFO ==> Iter:34750/51780, Total_Loss:0.1131, iou_loss:0.0578, mix_loss:0.0553, lr: 0.000020
+2025-12-21 23:35:59,092 INFO ==> Iter:34800/51780, Total_Loss:0.1137, iou_loss:0.0551, mix_loss:0.0585, lr: 0.000020
+2025-12-21 23:36:38,460 INFO ==> Iter:34850/51780, Total_Loss:0.1151, iou_loss:0.0557, mix_loss:0.0594, lr: 0.000020
+2025-12-21 23:37:17,719 INFO ==> Iter:34900/51780, Total_Loss:0.1072, iou_loss:0.0540, mix_loss:0.0532, lr: 0.000020
+2025-12-21 23:37:56,930 INFO ==> Iter:34950/51780, Total_Loss:0.1235, iou_loss:0.0676, mix_loss:0.0559, lr: 0.000020
+2025-12-21 23:38:36,190 INFO ==> Iter:35000/51780, Total_Loss:0.1098, iou_loss:0.0553, mix_loss:0.0545, lr: 0.000020
+2025-12-21 23:39:15,410 INFO ==> Iter:35050/51780, Total_Loss:0.1367, iou_loss:0.0804, mix_loss:0.0564, lr: 0.000020
+2025-12-21 23:39:54,673 INFO ==> Iter:35100/51780, Total_Loss:0.1161, iou_loss:0.0618, mix_loss:0.0543, lr: 0.000020
+2025-12-21 23:40:33,874 INFO ==> Iter:35150/51780, Total_Loss:0.1187, iou_loss:0.0622, mix_loss:0.0565, lr: 0.000020
+2025-12-21 23:41:13,231 INFO ==> Iter:35200/51780, Total_Loss:0.0971, iou_loss:0.0463, mix_loss:0.0508, lr: 0.000020
+2025-12-21 23:41:52,476 INFO ==> Iter:35250/51780, Total_Loss:0.1080, iou_loss:0.0514, mix_loss:0.0565, lr: 0.000020
+2025-12-21 23:42:31,744 INFO ==> Iter:35300/51780, Total_Loss:0.1101, iou_loss:0.0542, mix_loss:0.0558, lr: 0.000020
+2025-12-21 23:43:10,930 INFO ==> Iter:35350/51780, Total_Loss:0.1150, iou_loss:0.0600, mix_loss:0.0550, lr: 0.000020
+2025-12-21 23:43:50,168 INFO ==> Iter:35400/51780, Total_Loss:0.1070, iou_loss:0.0522, mix_loss:0.0548, lr: 0.000020
+2025-12-21 23:44:29,438 INFO ==> Iter:35450/51780, Total_Loss:0.1089, iou_loss:0.0543, mix_loss:0.0546, lr: 0.000020
+2025-12-21 23:45:08,636 INFO ==> Iter:35500/51780, Total_Loss:0.1159, iou_loss:0.0581, mix_loss:0.0578, lr: 0.000020
+2025-12-21 23:45:47,899 INFO ==> Iter:35550/51780, Total_Loss:0.1167, iou_loss:0.0601, mix_loss:0.0567, lr: 0.000020
+2025-12-21 23:46:27,090 INFO ==> Iter:35600/51780, Total_Loss:0.1160, iou_loss:0.0601, mix_loss:0.0559, lr: 0.000020
+2025-12-21 23:47:06,414 INFO ==> Iter:35650/51780, Total_Loss:0.1159, iou_loss:0.0625, mix_loss:0.0533, lr: 0.000020
+2025-12-21 23:47:45,616 INFO ==> Iter:35700/51780, Total_Loss:0.1191, iou_loss:0.0656, mix_loss:0.0535, lr: 0.000020
+2025-12-21 23:48:24,817 INFO ==> Iter:35750/51780, Total_Loss:0.1093, iou_loss:0.0526, mix_loss:0.0566, lr: 0.000020
+2025-12-21 23:49:04,010 INFO ==> Iter:35800/51780, Total_Loss:0.1170, iou_loss:0.0604, mix_loss:0.0567, lr: 0.000020
+2025-12-21 23:49:43,258 INFO ==> Iter:35850/51780, Total_Loss:0.1194, iou_loss:0.0637, mix_loss:0.0557, lr: 0.000020
+2025-12-21 23:50:22,544 INFO ==> Iter:35900/51780, Total_Loss:0.1056, iou_loss:0.0539, mix_loss:0.0517, lr: 0.000020
+2025-12-21 23:51:01,726 INFO ==> Iter:35950/51780, Total_Loss:0.1083, iou_loss:0.0544, mix_loss:0.0539, lr: 0.000020
+2025-12-21 23:51:40,947 INFO ==> Iter:36000/51780, Total_Loss:0.1063, iou_loss:0.0522, mix_loss:0.0541, lr: 0.000020
+2025-12-21 23:52:20,093 INFO ==> Iter:36050/51780, Total_Loss:0.1036, iou_loss:0.0516, mix_loss:0.0520, lr: 0.000020
+2025-12-21 23:52:59,353 INFO ==> Iter:36100/51780, Total_Loss:0.1198, iou_loss:0.0613, mix_loss:0.0584, lr: 0.000020
+2025-12-21 23:53:38,585 INFO ==> Iter:36150/51780, Total_Loss:0.1076, iou_loss:0.0531, mix_loss:0.0545, lr: 0.000020
+2025-12-21 23:54:17,791 INFO ==> Iter:36200/51780, Total_Loss:0.1006, iou_loss:0.0447, mix_loss:0.0558, lr: 0.000020
+2025-12-21 23:57:39,725 INFO ==> save best model to work_dir/AVSegFormer_res50_s4/S4_best.pth
+2025-12-21 23:57:39,726 INFO ==> Epoch: 20, Miou: 0.7496184706687927, maxMiou: 0.7496184706687927
+2025-12-21 23:57:46,133 INFO ==> Iter:36250/51780, Total_Loss:0.1127, iou_loss:0.0565, mix_loss:0.0562, lr: 0.000020
+2025-12-21 23:58:25,274 INFO ==> Iter:36300/51780, Total_Loss:0.1023, iou_loss:0.0464, mix_loss:0.0560, lr: 0.000020
+2025-12-21 23:59:04,412 INFO ==> Iter:36350/51780, Total_Loss:0.0998, iou_loss:0.0465, mix_loss:0.0533, lr: 0.000020
+2025-12-21 23:59:43,518 INFO ==> Iter:36400/51780, Total_Loss:0.1152, iou_loss:0.0550, mix_loss:0.0603, lr: 0.000020
+2025-12-22 00:00:22,729 INFO ==> Iter:36450/51780, Total_Loss:0.1119, iou_loss:0.0526, mix_loss:0.0593, lr: 0.000020
+2025-12-22 00:01:02,016 INFO ==> Iter:36500/51780, Total_Loss:0.1031, iou_loss:0.0501, mix_loss:0.0530, lr: 0.000020
+2025-12-22 00:01:41,210 INFO ==> Iter:36550/51780, Total_Loss:0.1076, iou_loss:0.0526, mix_loss:0.0550, lr: 0.000020
+2025-12-22 00:02:20,448 INFO ==> Iter:36600/51780, Total_Loss:0.1067, iou_loss:0.0506, mix_loss:0.0560, lr: 0.000020
+2025-12-22 00:02:59,736 INFO ==> Iter:36650/51780, Total_Loss:0.1538, iou_loss:0.1013, mix_loss:0.0525, lr: 0.000020
+2025-12-22 00:03:38,931 INFO ==> Iter:36700/51780, Total_Loss:0.1611, iou_loss:0.1045, mix_loss:0.0567, lr: 0.000020
+2025-12-22 00:04:18,187 INFO ==> Iter:36750/51780, Total_Loss:0.1267, iou_loss:0.0731, mix_loss:0.0537, lr: 0.000020
+2025-12-22 00:04:57,455 INFO ==> Iter:36800/51780, Total_Loss:0.1231, iou_loss:0.0625, mix_loss:0.0606, lr: 0.000020
+2025-12-22 00:05:36,708 INFO ==> Iter:36850/51780, Total_Loss:0.1090, iou_loss:0.0572, mix_loss:0.0518, lr: 0.000020
+2025-12-22 00:06:15,951 INFO ==> Iter:36900/51780, Total_Loss:0.1242, iou_loss:0.0671, mix_loss:0.0571, lr: 0.000020
+2025-12-22 00:06:55,170 INFO ==> Iter:36950/51780, Total_Loss:0.1168, iou_loss:0.0613, mix_loss:0.0555, lr: 0.000020
+2025-12-22 00:07:34,326 INFO ==> Iter:37000/51780, Total_Loss:0.1178, iou_loss:0.0614, mix_loss:0.0564, lr: 0.000020
+2025-12-22 00:08:13,541 INFO ==> Iter:37050/51780, Total_Loss:0.1230, iou_loss:0.0639, mix_loss:0.0591, lr: 0.000020
+2025-12-22 00:08:52,696 INFO ==> Iter:37100/51780, Total_Loss:0.1201, iou_loss:0.0595, mix_loss:0.0606, lr: 0.000020
+2025-12-22 00:09:31,908 INFO ==> Iter:37150/51780, Total_Loss:0.1070, iou_loss:0.0484, mix_loss:0.0586, lr: 0.000020
+2025-12-22 00:10:11,165 INFO ==> Iter:37200/51780, Total_Loss:0.1113, iou_loss:0.0562, mix_loss:0.0551, lr: 0.000020
+2025-12-22 00:10:50,359 INFO ==> Iter:37250/51780, Total_Loss:0.1101, iou_loss:0.0561, mix_loss:0.0539, lr: 0.000020
+2025-12-22 00:11:29,644 INFO ==> Iter:37300/51780, Total_Loss:0.1118, iou_loss:0.0560, mix_loss:0.0557, lr: 0.000020
+2025-12-22 00:12:08,792 INFO ==> Iter:37350/51780, Total_Loss:0.1157, iou_loss:0.0610, mix_loss:0.0547, lr: 0.000020
+2025-12-22 00:12:48,000 INFO ==> Iter:37400/51780, Total_Loss:0.1373, iou_loss:0.0836, mix_loss:0.0537, lr: 0.000020
+2025-12-22 00:13:27,199 INFO ==> Iter:37450/51780, Total_Loss:0.1356, iou_loss:0.0778, mix_loss:0.0579, lr: 0.000020
+2025-12-22 00:14:06,377 INFO ==> Iter:37500/51780, Total_Loss:0.1318, iou_loss:0.0738, mix_loss:0.0580, lr: 0.000020
+2025-12-22 00:14:45,601 INFO ==> Iter:37550/51780, Total_Loss:0.1117, iou_loss:0.0587, mix_loss:0.0529, lr: 0.000020
+2025-12-22 00:15:24,882 INFO ==> Iter:37600/51780, Total_Loss:0.1155, iou_loss:0.0605, mix_loss:0.0550, lr: 0.000020
+2025-12-22 00:16:04,072 INFO ==> Iter:37650/51780, Total_Loss:0.1091, iou_loss:0.0536, mix_loss:0.0555, lr: 0.000020
+2025-12-22 00:16:43,228 INFO ==> Iter:37700/51780, Total_Loss:0.0979, iou_loss:0.0477, mix_loss:0.0502, lr: 0.000020
+2025-12-22 00:17:22,474 INFO ==> Iter:37750/51780, Total_Loss:0.1039, iou_loss:0.0530, mix_loss:0.0508, lr: 0.000020
+2025-12-22 00:18:01,700 INFO ==> Iter:37800/51780, Total_Loss:0.1052, iou_loss:0.0519, mix_loss:0.0533, lr: 0.000020
+2025-12-22 00:18:40,873 INFO ==> Iter:37850/51780, Total_Loss:0.1025, iou_loss:0.0500, mix_loss:0.0525, lr: 0.000020
+2025-12-22 00:19:20,090 INFO ==> Iter:37900/51780, Total_Loss:0.1042, iou_loss:0.0508, mix_loss:0.0534, lr: 0.000020
+2025-12-22 00:19:59,328 INFO ==> Iter:37950/51780, Total_Loss:0.1207, iou_loss:0.0664, mix_loss:0.0543, lr: 0.000020
+2025-12-22 00:23:02,582 INFO ==> save best model to work_dir/AVSegFormer_res50_s4/S4_best.pth
+2025-12-22 00:23:02,584 INFO ==> Epoch: 21, Miou: 0.7522236108779907, maxMiou: 0.7522236108779907
+2025-12-22 00:23:27,699 INFO ==> Iter:38000/51780, Total_Loss:0.1090, iou_loss:0.0539, mix_loss:0.0551, lr: 0.000020
+2025-12-22 00:24:06,782 INFO ==> Iter:38050/51780, Total_Loss:0.1055, iou_loss:0.0517, mix_loss:0.0538, lr: 0.000020
+2025-12-22 00:24:45,983 INFO ==> Iter:38100/51780, Total_Loss:0.0924, iou_loss:0.0428, mix_loss:0.0495, lr: 0.000020
+2025-12-22 00:25:25,131 INFO ==> Iter:38150/51780, Total_Loss:0.1081, iou_loss:0.0488, mix_loss:0.0594, lr: 0.000020
+2025-12-22 00:26:04,336 INFO ==> Iter:38200/51780, Total_Loss:0.1212, iou_loss:0.0660, mix_loss:0.0552, lr: 0.000020
+2025-12-22 00:26:43,487 INFO ==> Iter:38250/51780, Total_Loss:0.1188, iou_loss:0.0666, mix_loss:0.0522, lr: 0.000020
+2025-12-22 00:27:22,632 INFO ==> Iter:38300/51780, Total_Loss:0.1122, iou_loss:0.0555, mix_loss:0.0567, lr: 0.000020
+2025-12-22 00:28:01,842 INFO ==> Iter:38350/51780, Total_Loss:0.1110, iou_loss:0.0571, mix_loss:0.0539, lr: 0.000020
+2025-12-22 00:28:40,994 INFO ==> Iter:38400/51780, Total_Loss:0.1071, iou_loss:0.0509, mix_loss:0.0561, lr: 0.000020
+2025-12-22 00:29:20,098 INFO ==> Iter:38450/51780, Total_Loss:0.1126, iou_loss:0.0581, mix_loss:0.0545, lr: 0.000020
+2025-12-22 00:29:59,301 INFO ==> Iter:38500/51780, Total_Loss:0.1012, iou_loss:0.0487, mix_loss:0.0526, lr: 0.000020
+2025-12-22 00:30:38,523 INFO ==> Iter:38550/51780, Total_Loss:0.1134, iou_loss:0.0576, mix_loss:0.0557, lr: 0.000020
+2025-12-22 00:31:17,703 INFO ==> Iter:38600/51780, Total_Loss:0.1252, iou_loss:0.0696, mix_loss:0.0556, lr: 0.000020
+2025-12-22 00:31:56,863 INFO ==> Iter:38650/51780, Total_Loss:0.1118, iou_loss:0.0552, mix_loss:0.0566, lr: 0.000020
+2025-12-22 00:32:36,014 INFO ==> Iter:38700/51780, Total_Loss:0.1113, iou_loss:0.0565, mix_loss:0.0548, lr: 0.000020
+2025-12-22 00:33:15,183 INFO ==> Iter:38750/51780, Total_Loss:0.1207, iou_loss:0.0659, mix_loss:0.0548, lr: 0.000020
+2025-12-22 00:33:54,439 INFO ==> Iter:38800/51780, Total_Loss:0.1038, iou_loss:0.0512, mix_loss:0.0526, lr: 0.000020
+2025-12-22 00:34:33,685 INFO ==> Iter:38850/51780, Total_Loss:0.1077, iou_loss:0.0554, mix_loss:0.0523, lr: 0.000020
+2025-12-22 00:35:12,920 INFO ==> Iter:38900/51780, Total_Loss:0.1040, iou_loss:0.0485, mix_loss:0.0555, lr: 0.000020
+2025-12-22 00:35:52,187 INFO ==> Iter:38950/51780, Total_Loss:0.0965, iou_loss:0.0431, mix_loss:0.0534, lr: 0.000020
+2025-12-22 00:36:31,368 INFO ==> Iter:39000/51780, Total_Loss:0.1039, iou_loss:0.0477, mix_loss:0.0562, lr: 0.000020
+2025-12-22 00:37:10,594 INFO ==> Iter:39050/51780, Total_Loss:0.1078, iou_loss:0.0537, mix_loss:0.0541, lr: 0.000020
+2025-12-22 00:37:49,815 INFO ==> Iter:39100/51780, Total_Loss:0.1056, iou_loss:0.0522, mix_loss:0.0534, lr: 0.000020
+2025-12-22 00:38:28,953 INFO ==> Iter:39150/51780, Total_Loss:0.0976, iou_loss:0.0467, mix_loss:0.0510, lr: 0.000020
+2025-12-22 00:39:08,186 INFO ==> Iter:39200/51780, Total_Loss:0.1035, iou_loss:0.0468, mix_loss:0.0566, lr: 0.000020
+2025-12-22 00:39:47,365 INFO ==> Iter:39250/51780, Total_Loss:0.1016, iou_loss:0.0494, mix_loss:0.0521, lr: 0.000020
+2025-12-22 00:40:26,591 INFO ==> Iter:39300/51780, Total_Loss:0.1186, iou_loss:0.0582, mix_loss:0.0603, lr: 0.000020
+2025-12-22 00:41:05,823 INFO ==> Iter:39350/51780, Total_Loss:0.1084, iou_loss:0.0534, mix_loss:0.0549, lr: 0.000020
+2025-12-22 00:41:44,963 INFO ==> Iter:39400/51780, Total_Loss:0.1009, iou_loss:0.0484, mix_loss:0.0525, lr: 0.000020
+2025-12-22 00:42:24,228 INFO ==> Iter:39450/51780, Total_Loss:0.1027, iou_loss:0.0510, mix_loss:0.0517, lr: 0.000020
+2025-12-22 00:43:03,392 INFO ==> Iter:39500/51780, Total_Loss:0.1194, iou_loss:0.0587, mix_loss:0.0607, lr: 0.000020
+2025-12-22 00:43:42,564 INFO ==> Iter:39550/51780, Total_Loss:0.1092, iou_loss:0.0534, mix_loss:0.0558, lr: 0.000020
+2025-12-22 00:44:21,774 INFO ==> Iter:39600/51780, Total_Loss:0.0989, iou_loss:0.0462, mix_loss:0.0527, lr: 0.000020
+2025-12-22 00:45:00,998 INFO ==> Iter:39650/51780, Total_Loss:0.1064, iou_loss:0.0502, mix_loss:0.0562, lr: 0.000020
+2025-12-22 00:48:23,345 INFO ==> Epoch: 22, Miou: 0.7519168257713318, maxMiou: 0.7522236108779907
+2025-12-22 00:48:28,212 INFO ==> Iter:39700/51780, Total_Loss:0.1026, iou_loss:0.0467, mix_loss:0.0558, lr: 0.000020
+2025-12-22 00:49:07,472 INFO ==> Iter:39750/51780, Total_Loss:0.1034, iou_loss:0.0486, mix_loss:0.0548, lr: 0.000020
+2025-12-22 00:49:46,614 INFO ==> Iter:39800/51780, Total_Loss:0.1001, iou_loss:0.0493, mix_loss:0.0508, lr: 0.000020
+2025-12-22 00:50:25,804 INFO ==> Iter:39850/51780, Total_Loss:0.1084, iou_loss:0.0504, mix_loss:0.0579, lr: 0.000020
+2025-12-22 00:51:05,010 INFO ==> Iter:39900/51780, Total_Loss:0.0988, iou_loss:0.0449, mix_loss:0.0538, lr: 0.000020
+2025-12-22 00:51:44,162 INFO ==> Iter:39950/51780, Total_Loss:0.0973, iou_loss:0.0439, mix_loss:0.0533, lr: 0.000020
+2025-12-22 00:52:23,350 INFO ==> Iter:40000/51780, Total_Loss:0.0951, iou_loss:0.0451, mix_loss:0.0500, lr: 0.000020
+2025-12-22 00:53:02,619 INFO ==> Iter:40050/51780, Total_Loss:0.0973, iou_loss:0.0464, mix_loss:0.0509, lr: 0.000020
+2025-12-22 00:53:41,831 INFO ==> Iter:40100/51780, Total_Loss:0.1077, iou_loss:0.0504, mix_loss:0.0573, lr: 0.000020
+2025-12-22 00:54:21,025 INFO ==> Iter:40150/51780, Total_Loss:0.1070, iou_loss:0.0514, mix_loss:0.0557, lr: 0.000020
+2025-12-22 00:55:00,226 INFO ==> Iter:40200/51780, Total_Loss:0.0991, iou_loss:0.0454, mix_loss:0.0537, lr: 0.000020
+2025-12-22 00:55:39,512 INFO ==> Iter:40250/51780, Total_Loss:0.1079, iou_loss:0.0528, mix_loss:0.0551, lr: 0.000020
+2025-12-22 00:56:18,759 INFO ==> Iter:40300/51780, Total_Loss:0.1164, iou_loss:0.0611, mix_loss:0.0553, lr: 0.000020
+2025-12-22 00:56:58,040 INFO ==> Iter:40350/51780, Total_Loss:0.1285, iou_loss:0.0747, mix_loss:0.0538, lr: 0.000020
+2025-12-22 00:57:37,301 INFO ==> Iter:40400/51780, Total_Loss:0.1400, iou_loss:0.0820, mix_loss:0.0580, lr: 0.000020
+2025-12-22 00:58:16,530 INFO ==> Iter:40450/51780, Total_Loss:0.1315, iou_loss:0.0756, mix_loss:0.0559, lr: 0.000020
+2025-12-22 00:58:55,719 INFO ==> Iter:40500/51780, Total_Loss:0.1166, iou_loss:0.0644, mix_loss:0.0522, lr: 0.000020
+2025-12-22 00:59:34,990 INFO ==> Iter:40550/51780, Total_Loss:0.1054, iou_loss:0.0514, mix_loss:0.0540, lr: 0.000020
+2025-12-22 01:00:14,192 INFO ==> Iter:40600/51780, Total_Loss:0.1146, iou_loss:0.0580, mix_loss:0.0565, lr: 0.000020
+2025-12-22 01:00:53,496 INFO ==> Iter:40650/51780, Total_Loss:0.1150, iou_loss:0.0574, mix_loss:0.0577, lr: 0.000020
+2025-12-22 01:01:32,760 INFO ==> Iter:40700/51780, Total_Loss:0.0975, iou_loss:0.0464, mix_loss:0.0511, lr: 0.000020
+2025-12-22 01:02:11,969 INFO ==> Iter:40750/51780, Total_Loss:0.1178, iou_loss:0.0622, mix_loss:0.0556, lr: 0.000020
+2025-12-22 01:02:51,220 INFO ==> Iter:40800/51780, Total_Loss:0.1015, iou_loss:0.0493, mix_loss:0.0523, lr: 0.000020
+2025-12-22 01:03:30,448 INFO ==> Iter:40850/51780, Total_Loss:0.1083, iou_loss:0.0557, mix_loss:0.0526, lr: 0.000020
+2025-12-22 01:04:09,723 INFO ==> Iter:40900/51780, Total_Loss:0.1042, iou_loss:0.0505, mix_loss:0.0536, lr: 0.000020
+2025-12-22 01:04:48,964 INFO ==> Iter:40950/51780, Total_Loss:0.0996, iou_loss:0.0459, mix_loss:0.0537, lr: 0.000020
+2025-12-22 01:05:28,155 INFO ==> Iter:41000/51780, Total_Loss:0.1077, iou_loss:0.0516, mix_loss:0.0561, lr: 0.000020
+2025-12-22 01:06:07,332 INFO ==> Iter:41050/51780, Total_Loss:0.1043, iou_loss:0.0514, mix_loss:0.0530, lr: 0.000020
+2025-12-22 01:06:46,574 INFO ==> Iter:41100/51780, Total_Loss:0.1128, iou_loss:0.0606, mix_loss:0.0522, lr: 0.000020
+2025-12-22 01:07:25,745 INFO ==> Iter:41150/51780, Total_Loss:0.1236, iou_loss:0.0657, mix_loss:0.0579, lr: 0.000020
+2025-12-22 01:08:04,966 INFO ==> Iter:41200/51780, Total_Loss:0.1182, iou_loss:0.0643, mix_loss:0.0540, lr: 0.000020
+2025-12-22 01:08:44,144 INFO ==> Iter:41250/51780, Total_Loss:0.1225, iou_loss:0.0658, mix_loss:0.0568, lr: 0.000020
+2025-12-22 01:09:23,302 INFO ==> Iter:41300/51780, Total_Loss:0.1132, iou_loss:0.0583, mix_loss:0.0549, lr: 0.000020
+2025-12-22 01:10:02,522 INFO ==> Iter:41350/51780, Total_Loss:0.1119, iou_loss:0.0563, mix_loss:0.0556, lr: 0.000020
+2025-12-22 01:10:41,725 INFO ==> Iter:41400/51780, Total_Loss:0.1164, iou_loss:0.0607, mix_loss:0.0557, lr: 0.000020
+2025-12-22 01:13:45,199 INFO ==> Epoch: 23, Miou: 0.7391067147254944, maxMiou: 0.7522236108779907
+2025-12-22 01:14:08,883 INFO ==> Iter:41450/51780, Total_Loss:0.1080, iou_loss:0.0548, mix_loss:0.0532, lr: 0.000020
+2025-12-22 01:14:48,003 INFO ==> Iter:41500/51780, Total_Loss:0.0976, iou_loss:0.0421, mix_loss:0.0555, lr: 0.000020
+2025-12-22 01:15:27,212 INFO ==> Iter:41550/51780, Total_Loss:0.1048, iou_loss:0.0502, mix_loss:0.0546, lr: 0.000020
+2025-12-22 01:16:06,364 INFO ==> Iter:41600/51780, Total_Loss:0.1069, iou_loss:0.0543, mix_loss:0.0526, lr: 0.000020
+2025-12-22 01:16:45,517 INFO ==> Iter:41650/51780, Total_Loss:0.1007, iou_loss:0.0489, mix_loss:0.0518, lr: 0.000020
+2025-12-22 01:17:24,730 INFO ==> Iter:41700/51780, Total_Loss:0.1091, iou_loss:0.0577, mix_loss:0.0515, lr: 0.000020
+2025-12-22 01:18:03,883 INFO ==> Iter:41750/51780, Total_Loss:0.1000, iou_loss:0.0456, mix_loss:0.0544, lr: 0.000020
+2025-12-22 01:18:43,045 INFO ==> Iter:41800/51780, Total_Loss:0.1037, iou_loss:0.0461, mix_loss:0.0576, lr: 0.000020
+2025-12-22 01:19:22,233 INFO ==> Iter:41850/51780, Total_Loss:0.1052, iou_loss:0.0477, mix_loss:0.0575, lr: 0.000020
+2025-12-22 01:20:01,377 INFO ==> Iter:41900/51780, Total_Loss:0.1230, iou_loss:0.0667, mix_loss:0.0563, lr: 0.000020
+2025-12-22 01:20:40,534 INFO ==> Iter:41950/51780, Total_Loss:0.0955, iou_loss:0.0441, mix_loss:0.0514, lr: 0.000020
+2025-12-22 01:21:19,766 INFO ==> Iter:42000/51780, Total_Loss:0.1119, iou_loss:0.0564, mix_loss:0.0555, lr: 0.000020
+2025-12-22 01:21:58,915 INFO ==> Iter:42050/51780, Total_Loss:0.1064, iou_loss:0.0511, mix_loss:0.0553, lr: 0.000020
+2025-12-22 01:22:38,188 INFO ==> Iter:42100/51780, Total_Loss:0.1082, iou_loss:0.0573, mix_loss:0.0509, lr: 0.000020
+2025-12-22 01:23:17,340 INFO ==> Iter:42150/51780, Total_Loss:0.1010, iou_loss:0.0519, mix_loss:0.0491, lr: 0.000020
+2025-12-22 01:23:56,524 INFO ==> Iter:42200/51780, Total_Loss:0.1060, iou_loss:0.0548, mix_loss:0.0512, lr: 0.000020
+2025-12-22 01:24:35,713 INFO ==> Iter:42250/51780, Total_Loss:0.1077, iou_loss:0.0527, mix_loss:0.0550, lr: 0.000020
+2025-12-22 01:25:14,888 INFO ==> Iter:42300/51780, Total_Loss:0.1008, iou_loss:0.0475, mix_loss:0.0532, lr: 0.000020
+2025-12-22 01:25:54,035 INFO ==> Iter:42350/51780, Total_Loss:0.0996, iou_loss:0.0462, mix_loss:0.0534, lr: 0.000020
+2025-12-22 01:26:33,234 INFO ==> Iter:42400/51780, Total_Loss:0.1074, iou_loss:0.0508, mix_loss:0.0566, lr: 0.000020
+2025-12-22 01:27:12,430 INFO ==> Iter:42450/51780, Total_Loss:0.1081, iou_loss:0.0528, mix_loss:0.0552, lr: 0.000020
+2025-12-22 01:27:51,535 INFO ==> Iter:42500/51780, Total_Loss:0.1034, iou_loss:0.0490, mix_loss:0.0544, lr: 0.000020
+2025-12-22 01:28:30,783 INFO ==> Iter:42550/51780, Total_Loss:0.0999, iou_loss:0.0477, mix_loss:0.0521, lr: 0.000020
+2025-12-22 01:29:09,999 INFO ==> Iter:42600/51780, Total_Loss:0.1068, iou_loss:0.0523, mix_loss:0.0545, lr: 0.000020
+2025-12-22 01:29:49,226 INFO ==> Iter:42650/51780, Total_Loss:0.0928, iou_loss:0.0404, mix_loss:0.0524, lr: 0.000020
+2025-12-22 01:30:28,431 INFO ==> Iter:42700/51780, Total_Loss:0.1010, iou_loss:0.0479, mix_loss:0.0531, lr: 0.000020
+2025-12-22 01:31:07,613 INFO ==> Iter:42750/51780, Total_Loss:0.0966, iou_loss:0.0436, mix_loss:0.0530, lr: 0.000020
+2025-12-22 01:31:46,900 INFO ==> Iter:42800/51780, Total_Loss:0.1049, iou_loss:0.0464, mix_loss:0.0585, lr: 0.000020
+2025-12-22 01:32:26,126 INFO ==> Iter:42850/51780, Total_Loss:0.1030, iou_loss:0.0467, mix_loss:0.0563, lr: 0.000020
+2025-12-22 01:33:05,324 INFO ==> Iter:42900/51780, Total_Loss:0.1024, iou_loss:0.0474, mix_loss:0.0551, lr: 0.000020
+2025-12-22 01:33:44,560 INFO ==> Iter:42950/51780, Total_Loss:0.0992, iou_loss:0.0461, mix_loss:0.0531, lr: 0.000020
+2025-12-22 01:34:23,715 INFO ==> Iter:43000/51780, Total_Loss:0.1189, iou_loss:0.0630, mix_loss:0.0559, lr: 0.000020
+2025-12-22 01:35:02,979 INFO ==> Iter:43050/51780, Total_Loss:0.1023, iou_loss:0.0488, mix_loss:0.0535, lr: 0.000020
+2025-12-22 01:35:42,189 INFO ==> Iter:43100/51780, Total_Loss:0.1086, iou_loss:0.0574, mix_loss:0.0512, lr: 0.000020
+2025-12-22 01:39:06,355 INFO ==> Epoch: 24, Miou: 0.7405502200126648, maxMiou: 0.7522236108779907
+2025-12-22 01:39:09,506 INFO ==> Iter:43150/51780, Total_Loss:0.1023, iou_loss:0.0476, mix_loss:0.0548, lr: 0.000020
+2025-12-22 01:39:48,755 INFO ==> Iter:43200/51780, Total_Loss:0.1204, iou_loss:0.0644, mix_loss:0.0561, lr: 0.000020
+2025-12-22 01:40:27,943 INFO ==> Iter:43250/51780, Total_Loss:0.0986, iou_loss:0.0462, mix_loss:0.0525, lr: 0.000020
+2025-12-22 01:41:07,169 INFO ==> Iter:43300/51780, Total_Loss:0.1112, iou_loss:0.0538, mix_loss:0.0574, lr: 0.000020
+2025-12-22 01:41:46,432 INFO ==> Iter:43350/51780, Total_Loss:0.1121, iou_loss:0.0576, mix_loss:0.0545, lr: 0.000020
+2025-12-22 01:42:25,639 INFO ==> Iter:43400/51780, Total_Loss:0.1030, iou_loss:0.0503, mix_loss:0.0527, lr: 0.000020
+2025-12-22 01:43:04,854 INFO ==> Iter:43450/51780, Total_Loss:0.1014, iou_loss:0.0495, mix_loss:0.0519, lr: 0.000020
+2025-12-22 01:43:44,056 INFO ==> Iter:43500/51780, Total_Loss:0.1066, iou_loss:0.0522, mix_loss:0.0543, lr: 0.000020
+2025-12-22 01:44:23,300 INFO ==> Iter:43550/51780, Total_Loss:0.1002, iou_loss:0.0476, mix_loss:0.0525, lr: 0.000020
+2025-12-22 01:45:02,450 INFO ==> Iter:43600/51780, Total_Loss:0.0988, iou_loss:0.0450, mix_loss:0.0538, lr: 0.000020
+2025-12-22 01:45:41,682 INFO ==> Iter:43650/51780, Total_Loss:0.1122, iou_loss:0.0594, mix_loss:0.0528, lr: 0.000020
+2025-12-22 01:46:20,904 INFO ==> Iter:43700/51780, Total_Loss:0.1258, iou_loss:0.0709, mix_loss:0.0549, lr: 0.000020
+2025-12-22 01:47:00,086 INFO ==> Iter:43750/51780, Total_Loss:0.0979, iou_loss:0.0507, mix_loss:0.0472, lr: 0.000020
+2025-12-22 01:47:39,369 INFO ==> Iter:43800/51780, Total_Loss:0.1063, iou_loss:0.0519, mix_loss:0.0544, lr: 0.000020
+2025-12-22 01:48:18,606 INFO ==> Iter:43850/51780, Total_Loss:0.1135, iou_loss:0.0582, mix_loss:0.0553, lr: 0.000020
+2025-12-22 01:48:57,808 INFO ==> Iter:43900/51780, Total_Loss:0.1088, iou_loss:0.0545, mix_loss:0.0543, lr: 0.000020
+2025-12-22 01:49:37,032 INFO ==> Iter:43950/51780, Total_Loss:0.1019, iou_loss:0.0465, mix_loss:0.0555, lr: 0.000020
+2025-12-22 01:50:16,263 INFO ==> Iter:44000/51780, Total_Loss:0.1076, iou_loss:0.0521, mix_loss:0.0555, lr: 0.000020
+2025-12-22 01:50:55,381 INFO ==> Iter:44050/51780, Total_Loss:0.1171, iou_loss:0.0599, mix_loss:0.0572, lr: 0.000020
+2025-12-22 01:51:34,599 INFO ==> Iter:44100/51780, Total_Loss:0.1029, iou_loss:0.0517, mix_loss:0.0511, lr: 0.000020
+2025-12-22 01:52:13,774 INFO ==> Iter:44150/51780, Total_Loss:0.1195, iou_loss:0.0641, mix_loss:0.0554, lr: 0.000020
+2025-12-22 01:52:53,077 INFO ==> Iter:44200/51780, Total_Loss:0.1136, iou_loss:0.0585, mix_loss:0.0551, lr: 0.000020
+2025-12-22 01:53:32,314 INFO ==> Iter:44250/51780, Total_Loss:0.1028, iou_loss:0.0491, mix_loss:0.0537, lr: 0.000020
+2025-12-22 01:54:11,613 INFO ==> Iter:44300/51780, Total_Loss:0.1067, iou_loss:0.0519, mix_loss:0.0548, lr: 0.000020
+2025-12-22 01:54:50,825 INFO ==> Iter:44350/51780, Total_Loss:0.1141, iou_loss:0.0541, mix_loss:0.0600, lr: 0.000020
+2025-12-22 01:55:30,067 INFO ==> Iter:44400/51780, Total_Loss:0.0942, iou_loss:0.0430, mix_loss:0.0512, lr: 0.000020
+2025-12-22 01:56:09,277 INFO ==> Iter:44450/51780, Total_Loss:0.1043, iou_loss:0.0515, mix_loss:0.0528, lr: 0.000020
+2025-12-22 01:56:48,510 INFO ==> Iter:44500/51780, Total_Loss:0.1001, iou_loss:0.0456, mix_loss:0.0545, lr: 0.000020
+2025-12-22 01:57:27,764 INFO ==> Iter:44550/51780, Total_Loss:0.1025, iou_loss:0.0480, mix_loss:0.0544, lr: 0.000020
+2025-12-22 01:58:06,955 INFO ==> Iter:44600/51780, Total_Loss:0.1015, iou_loss:0.0483, mix_loss:0.0532, lr: 0.000020
+2025-12-22 01:58:46,111 INFO ==> Iter:44650/51780, Total_Loss:0.1075, iou_loss:0.0544, mix_loss:0.0531, lr: 0.000020
+2025-12-22 01:59:25,303 INFO ==> Iter:44700/51780, Total_Loss:0.0961, iou_loss:0.0440, mix_loss:0.0522, lr: 0.000020
+2025-12-22 02:00:04,558 INFO ==> Iter:44750/51780, Total_Loss:0.1017, iou_loss:0.0465, mix_loss:0.0552, lr: 0.000020
+2025-12-22 02:00:43,876 INFO ==> Iter:44800/51780, Total_Loss:0.1078, iou_loss:0.0543, mix_loss:0.0535, lr: 0.000020
+2025-12-22 02:01:23,098 INFO ==> Iter:44850/51780, Total_Loss:0.1009, iou_loss:0.0449, mix_loss:0.0560, lr: 0.000020
+2025-12-22 02:04:29,518 INFO ==> save best model to work_dir/AVSegFormer_res50_s4/S4_best.pth
+2025-12-22 02:04:29,519 INFO ==> Epoch: 25, Miou: 0.7605007886886597, maxMiou: 0.7605007886886597
+2025-12-22 02:04:51,634 INFO ==> Iter:44900/51780, Total_Loss:0.1068, iou_loss:0.0492, mix_loss:0.0576, lr: 0.000020
+2025-12-22 02:05:30,810 INFO ==> Iter:44950/51780, Total_Loss:0.0920, iou_loss:0.0406, mix_loss:0.0514, lr: 0.000020
+2025-12-22 02:06:09,973 INFO ==> Iter:45000/51780, Total_Loss:0.0889, iou_loss:0.0376, mix_loss:0.0513, lr: 0.000020
+2025-12-22 02:06:49,180 INFO ==> Iter:45050/51780, Total_Loss:0.0983, iou_loss:0.0448, mix_loss:0.0535, lr: 0.000020
+2025-12-22 02:07:28,461 INFO ==> Iter:45100/51780, Total_Loss:0.1012, iou_loss:0.0471, mix_loss:0.0541, lr: 0.000020
+2025-12-22 02:08:07,623 INFO ==> Iter:45150/51780, Total_Loss:0.1051, iou_loss:0.0524, mix_loss:0.0527, lr: 0.000020
+2025-12-22 02:08:46,808 INFO ==> Iter:45200/51780, Total_Loss:0.0942, iou_loss:0.0421, mix_loss:0.0520, lr: 0.000020
+2025-12-22 02:09:26,080 INFO ==> Iter:45250/51780, Total_Loss:0.0991, iou_loss:0.0481, mix_loss:0.0509, lr: 0.000020
+2025-12-22 02:10:05,344 INFO ==> Iter:45300/51780, Total_Loss:0.1006, iou_loss:0.0448, mix_loss:0.0558, lr: 0.000020
+2025-12-22 02:10:44,535 INFO ==> Iter:45350/51780, Total_Loss:0.0940, iou_loss:0.0412, mix_loss:0.0529, lr: 0.000020
+2025-12-22 02:11:23,704 INFO ==> Iter:45400/51780, Total_Loss:0.1047, iou_loss:0.0485, mix_loss:0.0562, lr: 0.000020
+2025-12-22 02:12:02,837 INFO ==> Iter:45450/51780, Total_Loss:0.0945, iou_loss:0.0414, mix_loss:0.0531, lr: 0.000020
+2025-12-22 02:12:42,081 INFO ==> Iter:45500/51780, Total_Loss:0.0976, iou_loss:0.0470, mix_loss:0.0506, lr: 0.000020
+2025-12-22 02:13:21,266 INFO ==> Iter:45550/51780, Total_Loss:0.0997, iou_loss:0.0469, mix_loss:0.0528, lr: 0.000020
+2025-12-22 02:14:00,598 INFO ==> Iter:45600/51780, Total_Loss:0.1001, iou_loss:0.0482, mix_loss:0.0519, lr: 0.000020
+2025-12-22 02:14:39,820 INFO ==> Iter:45650/51780, Total_Loss:0.0957, iou_loss:0.0419, mix_loss:0.0538, lr: 0.000020
+2025-12-22 02:15:19,015 INFO ==> Iter:45700/51780, Total_Loss:0.0967, iou_loss:0.0443, mix_loss:0.0524, lr: 0.000020
+2025-12-22 02:15:58,224 INFO ==> Iter:45750/51780, Total_Loss:0.0927, iou_loss:0.0420, mix_loss:0.0507, lr: 0.000020
+2025-12-22 02:16:37,433 INFO ==> Iter:45800/51780, Total_Loss:0.0968, iou_loss:0.0445, mix_loss:0.0524, lr: 0.000020
+2025-12-22 02:17:16,611 INFO ==> Iter:45850/51780, Total_Loss:0.1105, iou_loss:0.0531, mix_loss:0.0573, lr: 0.000020
+2025-12-22 02:17:55,819 INFO ==> Iter:45900/51780, Total_Loss:0.0934, iou_loss:0.0421, mix_loss:0.0513, lr: 0.000020
+2025-12-22 02:18:35,084 INFO ==> Iter:45950/51780, Total_Loss:0.0954, iou_loss:0.0420, mix_loss:0.0533, lr: 0.000020
+2025-12-22 02:19:14,317 INFO ==> Iter:46000/51780, Total_Loss:0.0941, iou_loss:0.0413, mix_loss:0.0528, lr: 0.000020
+2025-12-22 02:19:53,544 INFO ==> Iter:46050/51780, Total_Loss:0.0932, iou_loss:0.0423, mix_loss:0.0510, lr: 0.000020
+2025-12-22 02:20:32,815 INFO ==> Iter:46100/51780, Total_Loss:0.1011, iou_loss:0.0452, mix_loss:0.0559, lr: 0.000020
+2025-12-22 02:21:11,994 INFO ==> Iter:46150/51780, Total_Loss:0.0998, iou_loss:0.0441, mix_loss:0.0556, lr: 0.000020
+2025-12-22 02:21:51,215 INFO ==> Iter:46200/51780, Total_Loss:0.0950, iou_loss:0.0422, mix_loss:0.0528, lr: 0.000020
+2025-12-22 02:22:30,478 INFO ==> Iter:46250/51780, Total_Loss:0.1039, iou_loss:0.0480, mix_loss:0.0560, lr: 0.000020
+2025-12-22 02:23:09,733 INFO ==> Iter:46300/51780, Total_Loss:0.1039, iou_loss:0.0487, mix_loss:0.0552, lr: 0.000020
+2025-12-22 02:23:48,928 INFO ==> Iter:46350/51780, Total_Loss:0.1164, iou_loss:0.0594, mix_loss:0.0569, lr: 0.000020
+2025-12-22 02:24:28,207 INFO ==> Iter:46400/51780, Total_Loss:0.1536, iou_loss:0.0998, mix_loss:0.0538, lr: 0.000020
+2025-12-22 02:25:07,401 INFO ==> Iter:46450/51780, Total_Loss:0.1249, iou_loss:0.0731, mix_loss:0.0518, lr: 0.000020
+2025-12-22 02:25:46,674 INFO ==> Iter:46500/51780, Total_Loss:0.1075, iou_loss:0.0546, mix_loss:0.0529, lr: 0.000020
+2025-12-22 02:26:25,869 INFO ==> Iter:46550/51780, Total_Loss:0.1139, iou_loss:0.0573, mix_loss:0.0566, lr: 0.000020
+2025-12-22 02:27:05,076 INFO ==> Iter:46600/51780, Total_Loss:0.1023, iou_loss:0.0497, mix_loss:0.0527, lr: 0.000020
+2025-12-22 02:29:51,583 INFO ==> Epoch: 26, Miou: 0.7437865734100342, maxMiou: 0.7605007886886597
+2025-12-22 02:30:32,354 INFO ==> Iter:46650/51780, Total_Loss:0.0980, iou_loss:0.0476, mix_loss:0.0504, lr: 0.000020
+2025-12-22 02:31:11,543 INFO ==> Iter:46700/51780, Total_Loss:0.1144, iou_loss:0.0595, mix_loss:0.0549, lr: 0.000020
+2025-12-22 02:31:50,783 INFO ==> Iter:46750/51780, Total_Loss:0.1169, iou_loss:0.0646, mix_loss:0.0523, lr: 0.000020
+2025-12-22 02:32:29,933 INFO ==> Iter:46800/51780, Total_Loss:0.1063, iou_loss:0.0510, mix_loss:0.0553, lr: 0.000020
+2025-12-22 02:33:09,166 INFO ==> Iter:46850/51780, Total_Loss:0.0990, iou_loss:0.0458, mix_loss:0.0532, lr: 0.000020
+2025-12-22 02:33:48,436 INFO ==> Iter:46900/51780, Total_Loss:0.1065, iou_loss:0.0480, mix_loss:0.0585, lr: 0.000020
+2025-12-22 02:34:27,657 INFO ==> Iter:46950/51780, Total_Loss:0.0930, iou_loss:0.0407, mix_loss:0.0523, lr: 0.000020
+2025-12-22 02:35:06,907 INFO ==> Iter:47000/51780, Total_Loss:0.0970, iou_loss:0.0453, mix_loss:0.0517, lr: 0.000020
+2025-12-22 02:35:46,119 INFO ==> Iter:47050/51780, Total_Loss:0.1025, iou_loss:0.0466, mix_loss:0.0559, lr: 0.000020
+2025-12-22 02:36:25,343 INFO ==> Iter:47100/51780, Total_Loss:0.0959, iou_loss:0.0427, mix_loss:0.0532, lr: 0.000020
+2025-12-22 02:37:04,529 INFO ==> Iter:47150/51780, Total_Loss:0.0948, iou_loss:0.0464, mix_loss:0.0484, lr: 0.000020
+2025-12-22 02:37:43,741 INFO ==> Iter:47200/51780, Total_Loss:0.1286, iou_loss:0.0704, mix_loss:0.0581, lr: 0.000020
+2025-12-22 02:38:22,896 INFO ==> Iter:47250/51780, Total_Loss:0.0982, iou_loss:0.0468, mix_loss:0.0514, lr: 0.000020
+2025-12-22 02:39:02,050 INFO ==> Iter:47300/51780, Total_Loss:0.0982, iou_loss:0.0452, mix_loss:0.0530, lr: 0.000020
+2025-12-22 02:39:41,356 INFO ==> Iter:47350/51780, Total_Loss:0.0980, iou_loss:0.0443, mix_loss:0.0537, lr: 0.000020
+2025-12-22 02:40:20,571 INFO ==> Iter:47400/51780, Total_Loss:0.1050, iou_loss:0.0499, mix_loss:0.0552, lr: 0.000020
+2025-12-22 02:40:59,730 INFO ==> Iter:47450/51780, Total_Loss:0.1730, iou_loss:0.1146, mix_loss:0.0584, lr: 0.000020
+2025-12-22 02:41:39,028 INFO ==> Iter:47500/51780, Total_Loss:0.1702, iou_loss:0.1193, mix_loss:0.0509, lr: 0.000020
+2025-12-22 02:42:18,261 INFO ==> Iter:47550/51780, Total_Loss:0.1209, iou_loss:0.0660, mix_loss:0.0549, lr: 0.000020
+2025-12-22 02:42:57,478 INFO ==> Iter:47600/51780, Total_Loss:0.1059, iou_loss:0.0570, mix_loss:0.0489, lr: 0.000020
+2025-12-22 02:43:36,700 INFO ==> Iter:47650/51780, Total_Loss:0.1068, iou_loss:0.0555, mix_loss:0.0513, lr: 0.000020
+2025-12-22 02:44:15,893 INFO ==> Iter:47700/51780, Total_Loss:0.1059, iou_loss:0.0504, mix_loss:0.0555, lr: 0.000020
+2025-12-22 02:44:55,115 INFO ==> Iter:47750/51780, Total_Loss:0.1103, iou_loss:0.0566, mix_loss:0.0537, lr: 0.000020
+2025-12-22 02:45:34,360 INFO ==> Iter:47800/51780, Total_Loss:0.1247, iou_loss:0.0662, mix_loss:0.0585, lr: 0.000020
+2025-12-22 02:46:13,563 INFO ==> Iter:47850/51780, Total_Loss:0.1034, iou_loss:0.0494, mix_loss:0.0539, lr: 0.000020
+2025-12-22 02:46:52,832 INFO ==> Iter:47900/51780, Total_Loss:0.1032, iou_loss:0.0513, mix_loss:0.0519, lr: 0.000020
+2025-12-22 02:47:32,036 INFO ==> Iter:47950/51780, Total_Loss:0.1122, iou_loss:0.0556, mix_loss:0.0566, lr: 0.000020
+2025-12-22 02:48:11,216 INFO ==> Iter:48000/51780, Total_Loss:0.1007, iou_loss:0.0493, mix_loss:0.0514, lr: 0.000020
+2025-12-22 02:48:50,426 INFO ==> Iter:48050/51780, Total_Loss:0.1038, iou_loss:0.0491, mix_loss:0.0547, lr: 0.000020
+2025-12-22 02:49:29,633 INFO ==> Iter:48100/51780, Total_Loss:0.1022, iou_loss:0.0489, mix_loss:0.0533, lr: 0.000020
+2025-12-22 02:50:08,779 INFO ==> Iter:48150/51780, Total_Loss:0.1027, iou_loss:0.0486, mix_loss:0.0541, lr: 0.000020
+2025-12-22 02:50:48,007 INFO ==> Iter:48200/51780, Total_Loss:0.0932, iou_loss:0.0425, mix_loss:0.0507, lr: 0.000020
+2025-12-22 02:51:27,195 INFO ==> Iter:48250/51780, Total_Loss:0.0999, iou_loss:0.0467, mix_loss:0.0532, lr: 0.000020
+2025-12-22 02:52:06,424 INFO ==> Iter:48300/51780, Total_Loss:0.1236, iou_loss:0.0698, mix_loss:0.0539, lr: 0.000020
+2025-12-22 02:55:13,358 INFO ==> Epoch: 27, Miou: 0.7490026950836182, maxMiou: 0.7605007886886597
+2025-12-22 02:55:33,662 INFO ==> Iter:48350/51780, Total_Loss:0.0999, iou_loss:0.0454, mix_loss:0.0545, lr: 0.000020
+2025-12-22 02:56:12,772 INFO ==> Iter:48400/51780, Total_Loss:0.0918, iou_loss:0.0386, mix_loss:0.0532, lr: 0.000020
+2025-12-22 02:56:51,967 INFO ==> Iter:48450/51780, Total_Loss:0.0984, iou_loss:0.0461, mix_loss:0.0523, lr: 0.000020
+2025-12-22 02:57:31,192 INFO ==> Iter:48500/51780, Total_Loss:0.0951, iou_loss:0.0432, mix_loss:0.0518, lr: 0.000020
+2025-12-22 02:58:10,493 INFO ==> Iter:48550/51780, Total_Loss:0.0994, iou_loss:0.0433, mix_loss:0.0560, lr: 0.000020
+2025-12-22 02:58:49,673 INFO ==> Iter:48600/51780, Total_Loss:0.0960, iou_loss:0.0437, mix_loss:0.0523, lr: 0.000020
+2025-12-22 02:59:28,922 INFO ==> Iter:48650/51780, Total_Loss:0.1056, iou_loss:0.0500, mix_loss:0.0556, lr: 0.000020
+2025-12-22 03:00:08,081 INFO ==> Iter:48700/51780, Total_Loss:0.1006, iou_loss:0.0474, mix_loss:0.0531, lr: 0.000020
+2025-12-22 03:00:47,307 INFO ==> Iter:48750/51780, Total_Loss:0.0980, iou_loss:0.0454, mix_loss:0.0526, lr: 0.000020
+2025-12-22 03:01:26,525 INFO ==> Iter:48800/51780, Total_Loss:0.1015, iou_loss:0.0464, mix_loss:0.0551, lr: 0.000020
+2025-12-22 03:02:05,674 INFO ==> Iter:48850/51780, Total_Loss:0.0957, iou_loss:0.0422, mix_loss:0.0535, lr: 0.000020
+2025-12-22 03:02:44,875 INFO ==> Iter:48900/51780, Total_Loss:0.0986, iou_loss:0.0433, mix_loss:0.0553, lr: 0.000020
+2025-12-22 03:03:24,025 INFO ==> Iter:48950/51780, Total_Loss:0.0938, iou_loss:0.0419, mix_loss:0.0520, lr: 0.000020
+2025-12-22 03:04:03,228 INFO ==> Iter:49000/51780, Total_Loss:0.1060, iou_loss:0.0494, mix_loss:0.0566, lr: 0.000020
+2025-12-22 03:04:42,423 INFO ==> Iter:49050/51780, Total_Loss:0.1052, iou_loss:0.0489, mix_loss:0.0563, lr: 0.000020
+2025-12-22 03:05:21,696 INFO ==> Iter:49100/51780, Total_Loss:0.0953, iou_loss:0.0416, mix_loss:0.0537, lr: 0.000020
+2025-12-22 03:06:00,966 INFO ==> Iter:49150/51780, Total_Loss:0.0950, iou_loss:0.0392, mix_loss:0.0558, lr: 0.000020
+2025-12-22 03:06:40,164 INFO ==> Iter:49200/51780, Total_Loss:0.0984, iou_loss:0.0441, mix_loss:0.0544, lr: 0.000020
+2025-12-22 03:07:19,403 INFO ==> Iter:49250/51780, Total_Loss:0.0933, iou_loss:0.0411, mix_loss:0.0522, lr: 0.000020
+2025-12-22 03:07:58,671 INFO ==> Iter:49300/51780, Total_Loss:0.1005, iou_loss:0.0480, mix_loss:0.0525, lr: 0.000020
+2025-12-22 03:08:37,914 INFO ==> Iter:49350/51780, Total_Loss:0.0896, iou_loss:0.0379, mix_loss:0.0516, lr: 0.000020
+2025-12-22 03:09:17,216 INFO ==> Iter:49400/51780, Total_Loss:0.0914, iou_loss:0.0395, mix_loss:0.0520, lr: 0.000020
+2025-12-22 03:09:56,460 INFO ==> Iter:49450/51780, Total_Loss:0.0951, iou_loss:0.0413, mix_loss:0.0538, lr: 0.000020
+2025-12-22 03:10:35,720 INFO ==> Iter:49500/51780, Total_Loss:0.0915, iou_loss:0.0389, mix_loss:0.0527, lr: 0.000020
+2025-12-22 03:11:15,000 INFO ==> Iter:49550/51780, Total_Loss:0.0921, iou_loss:0.0403, mix_loss:0.0518, lr: 0.000020
+2025-12-22 03:11:54,205 INFO ==> Iter:49600/51780, Total_Loss:0.0926, iou_loss:0.0401, mix_loss:0.0525, lr: 0.000020
+2025-12-22 03:12:33,458 INFO ==> Iter:49650/51780, Total_Loss:0.0913, iou_loss:0.0411, mix_loss:0.0502, lr: 0.000020
+2025-12-22 03:13:12,691 INFO ==> Iter:49700/51780, Total_Loss:0.0987, iou_loss:0.0417, mix_loss:0.0570, lr: 0.000020
+2025-12-22 03:13:51,894 INFO ==> Iter:49750/51780, Total_Loss:0.0933, iou_loss:0.0405, mix_loss:0.0527, lr: 0.000020
+2025-12-22 03:14:31,112 INFO ==> Iter:49800/51780, Total_Loss:0.0870, iou_loss:0.0365, mix_loss:0.0504, lr: 0.000020
+2025-12-22 03:15:10,401 INFO ==> Iter:49850/51780, Total_Loss:0.0954, iou_loss:0.0422, mix_loss:0.0532, lr: 0.000020
+2025-12-22 03:15:49,609 INFO ==> Iter:49900/51780, Total_Loss:0.0906, iou_loss:0.0386, mix_loss:0.0521, lr: 0.000020
+2025-12-22 03:16:28,878 INFO ==> Iter:49950/51780, Total_Loss:0.0917, iou_loss:0.0406, mix_loss:0.0511, lr: 0.000020
+2025-12-22 03:17:08,097 INFO ==> Iter:50000/51780, Total_Loss:0.0913, iou_loss:0.0414, mix_loss:0.0500, lr: 0.000020
+2025-12-22 03:17:47,295 INFO ==> Iter:50050/51780, Total_Loss:0.0932, iou_loss:0.0410, mix_loss:0.0522, lr: 0.000020
+2025-12-22 03:20:35,222 INFO ==> Epoch: 28, Miou: 0.7603192329406738, maxMiou: 0.7605007886886597
+2025-12-22 03:21:14,652 INFO ==> Iter:50100/51780, Total_Loss:0.0933, iou_loss:0.0413, mix_loss:0.0520, lr: 0.000020
+2025-12-22 03:21:53,831 INFO ==> Iter:50150/51780, Total_Loss:0.0921, iou_loss:0.0391, mix_loss:0.0530, lr: 0.000020
+2025-12-22 03:22:33,097 INFO ==> Iter:50200/51780, Total_Loss:0.0873, iou_loss:0.0360, mix_loss:0.0513, lr: 0.000020
+2025-12-22 03:23:12,370 INFO ==> Iter:50250/51780, Total_Loss:0.0950, iou_loss:0.0423, mix_loss:0.0527, lr: 0.000020
+2025-12-22 03:23:51,586 INFO ==> Iter:50300/51780, Total_Loss:0.0871, iou_loss:0.0353, mix_loss:0.0518, lr: 0.000020
+2025-12-22 03:24:30,781 INFO ==> Iter:50350/51780, Total_Loss:0.0945, iou_loss:0.0415, mix_loss:0.0530, lr: 0.000020
+2025-12-22 03:25:10,038 INFO ==> Iter:50400/51780, Total_Loss:0.0901, iou_loss:0.0398, mix_loss:0.0503, lr: 0.000020
+2025-12-22 03:25:49,332 INFO ==> Iter:50450/51780, Total_Loss:0.0867, iou_loss:0.0348, mix_loss:0.0520, lr: 0.000020
+2025-12-22 03:26:28,573 INFO ==> Iter:50500/51780, Total_Loss:0.1005, iou_loss:0.0439, mix_loss:0.0567, lr: 0.000020
+2025-12-22 03:27:07,775 INFO ==> Iter:50550/51780, Total_Loss:0.0910, iou_loss:0.0368, mix_loss:0.0542, lr: 0.000020
+2025-12-22 03:27:46,984 INFO ==> Iter:50600/51780, Total_Loss:0.0864, iou_loss:0.0367, mix_loss:0.0497, lr: 0.000020
+2025-12-22 03:28:26,194 INFO ==> Iter:50650/51780, Total_Loss:0.0931, iou_loss:0.0409, mix_loss:0.0522, lr: 0.000020
+2025-12-22 03:29:05,390 INFO ==> Iter:50700/51780, Total_Loss:0.0980, iou_loss:0.0443, mix_loss:0.0537, lr: 0.000020
+2025-12-22 03:29:44,605 INFO ==> Iter:50750/51780, Total_Loss:0.0969, iou_loss:0.0417, mix_loss:0.0552, lr: 0.000020
+2025-12-22 03:30:23,884 INFO ==> Iter:50800/51780, Total_Loss:0.0898, iou_loss:0.0395, mix_loss:0.0504, lr: 0.000020
+2025-12-22 03:31:03,153 INFO ==> Iter:50850/51780, Total_Loss:0.0938, iou_loss:0.0396, mix_loss:0.0542, lr: 0.000020
+2025-12-22 03:31:42,363 INFO ==> Iter:50900/51780, Total_Loss:0.0917, iou_loss:0.0401, mix_loss:0.0516, lr: 0.000020
+2025-12-22 03:32:21,570 INFO ==> Iter:50950/51780, Total_Loss:0.0951, iou_loss:0.0383, mix_loss:0.0568, lr: 0.000020
+2025-12-22 03:33:00,787 INFO ==> Iter:51000/51780, Total_Loss:0.0982, iou_loss:0.0448, mix_loss:0.0534, lr: 0.000020
+2025-12-22 03:33:40,054 INFO ==> Iter:51050/51780, Total_Loss:0.0998, iou_loss:0.0475, mix_loss:0.0523, lr: 0.000020
+2025-12-22 03:34:19,302 INFO ==> Iter:51100/51780, Total_Loss:0.1073, iou_loss:0.0524, mix_loss:0.0548, lr: 0.000020
+2025-12-22 03:34:58,518 INFO ==> Iter:51150/51780, Total_Loss:0.1148, iou_loss:0.0600, mix_loss:0.0549, lr: 0.000020
+2025-12-22 03:35:37,722 INFO ==> Iter:51200/51780, Total_Loss:0.1136, iou_loss:0.0585, mix_loss:0.0552, lr: 0.000020
+2025-12-22 03:36:16,942 INFO ==> Iter:51250/51780, Total_Loss:0.1000, iou_loss:0.0479, mix_loss:0.0521, lr: 0.000020
+2025-12-22 03:36:56,186 INFO ==> Iter:51300/51780, Total_Loss:0.0956, iou_loss:0.0436, mix_loss:0.0521, lr: 0.000020
+2025-12-22 03:37:35,409 INFO ==> Iter:51350/51780, Total_Loss:0.0956, iou_loss:0.0457, mix_loss:0.0499, lr: 0.000020
+2025-12-22 03:38:14,625 INFO ==> Iter:51400/51780, Total_Loss:0.1058, iou_loss:0.0542, mix_loss:0.0516, lr: 0.000020
+2025-12-22 03:38:53,858 INFO ==> Iter:51450/51780, Total_Loss:0.0936, iou_loss:0.0404, mix_loss:0.0532, lr: 0.000020
+2025-12-22 03:39:33,164 INFO ==> Iter:51500/51780, Total_Loss:0.1062, iou_loss:0.0511, mix_loss:0.0550, lr: 0.000020
+2025-12-22 03:40:12,366 INFO ==> Iter:51550/51780, Total_Loss:0.1154, iou_loss:0.0596, mix_loss:0.0558, lr: 0.000020
+2025-12-22 03:40:51,579 INFO ==> Iter:51600/51780, Total_Loss:0.0951, iou_loss:0.0448, mix_loss:0.0502, lr: 0.000020
+2025-12-22 03:41:30,775 INFO ==> Iter:51650/51780, Total_Loss:0.1013, iou_loss:0.0492, mix_loss:0.0521, lr: 0.000020
+2025-12-22 03:42:10,112 INFO ==> Iter:51700/51780, Total_Loss:0.1096, iou_loss:0.0547, mix_loss:0.0550, lr: 0.000020
+2025-12-22 03:42:49,321 INFO ==> Iter:51750/51780, Total_Loss:0.1029, iou_loss:0.0493, mix_loss:0.0536, lr: 0.000020
+2025-12-22 03:45:57,598 INFO ==> Epoch: 29, Miou: 0.7510936856269836, maxMiou: 0.7605007886886597
+2025-12-22 03:45:57,603 INFO ==> best val Miou 0.7605007886886597 at peoch: 25
